@@ -2,7 +2,10 @@
 
 namespace MyOnlineStore\Omnipay\KlarnaCheckout;
 
-final class ItemBag extends \Omnipay\Common\ItemBag
+/**
+ * @final
+ */
+class ItemBag extends \Omnipay\Common\ItemBag
 {
     /**
      * @inheritDoc

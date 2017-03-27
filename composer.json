@@ -13,5 +13,8 @@
     "require": {
         "omnipay/common": "^2.5",
         "klarna/kco_rest": "^2.2"
+    },
+    "require-dev": {
+        "omnipay/tests": "^2.1"
     }
 }
