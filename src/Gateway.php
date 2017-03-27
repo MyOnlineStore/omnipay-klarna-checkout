@@ -48,18 +48,42 @@ final class Gateway extends AbstractGateway
     }
 
     /**
+     * @return string
+     */
+    public function getMerchantId()
+    {
+        return $this->getParameter('merchant_id');
+    }
+
+    /**
+     * @return string
+     */
+    public function getSecret()
+    {
+        return $this->getParameter('secret');
+    }
+
+    /**
      * @param string $merchantId
+     *
+     * @return $this
      */
     public function setMerchantId($merchantId)
     {
         $this->setParameter('merchant_id', $merchantId);
+
+        return $this;
     }
 
     /**
      * @param string $secret
+     *
+     * @return $this
      */
     public function setSecret($secret)
     {
         $this->setParameter('secret', $secret);
+
+        return $this;
     }
 }

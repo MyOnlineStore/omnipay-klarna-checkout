@@ -8,6 +8,16 @@ use MyOnlineStore\Omnipay\KlarnaCheckout\ItemBag;
 abstract class AbstractRequest extends \Omnipay\Common\Message\AbstractRequest
 {
     /**
+     * @return ConnectorInterface
+     */
+    public function getConnector()
+    {
+        return $this->getParameter('connector');
+    }
+
+    /**
+     * RFC 1766 customer's locale.
+     *
      * @return string
      */
     public function getLocale()
@@ -16,14 +26,8 @@ abstract class AbstractRequest extends \Omnipay\Common\Message\AbstractRequest
     }
 
     /**
-     * @return string
-     */
-    public function getLocaleRegionCode()
-    {
-        return explode('_', $this->getLocale())[1];
-    }
-
-    /**
+     * Non-negative, minor units. The total tax amount of the order.
+     *
      * @return int
      */
     public function getTaxAmount()
@@ -57,14 +61,6 @@ abstract class AbstractRequest extends \Omnipay\Common\Message\AbstractRequest
     public function setLocale($locale)
     {
         $this->setParameter('locale', $locale);
-    }
-
-    /**
-     * @param string[] $urls
-     */
-    public function setMerchantUrls(array $urls)
-    {
-        $this->setParameter('merchant_urls', $urls);
     }
 
     /**
