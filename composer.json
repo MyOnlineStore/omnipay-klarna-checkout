@@ -1,0 +1,17 @@
+{
+    "name": "myonlinestore/omnipay-klarna-checkout",
+    "type": "library",
+    "description": "Klarna Checkout gateway for Omnipay payment processing library",
+    "keywords": ["Klarna Checkout", "Omnipay"],
+    "homepage": "https://github.com/MyOnlineStore/omnipay-klarna-checkout",
+    "license": "MIT",
+    "autoload": {
+        "psr-4" : {
+            "MyOnlineStore\\Omnipay\\KlarnaCheckout\\" : "src/"
+        }
+    },
+    "require": {
+        "omnipay/common": "^2.5",
+        "klarna/kco_rest": "^2.2"
+    }
+}
