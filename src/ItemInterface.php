@@ -5,9 +5,16 @@ namespace MyOnlineStore\Omnipay\KlarnaCheckout;
 interface ItemInterface extends \Omnipay\Common\ItemInterface
 {
     /**
-     * Non-negative. In percent, two implicit decimals. I.e 2500 = 25%.
+     * Non-negative percentage (i.e. 25 = 25%)
      *
-     * @return int
+     * @return float
      */
     public function getTaxRate();
+
+    /**
+     * Total amount of tax
+     *
+     * @return float
+     */
+    public function getTotalTaxAmount();
 }

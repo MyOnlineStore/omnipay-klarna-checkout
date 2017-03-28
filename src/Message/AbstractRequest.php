@@ -5,6 +5,9 @@ namespace MyOnlineStore\Omnipay\KlarnaCheckout\Message;
 use Klarna\Rest\Transport\ConnectorInterface;
 use MyOnlineStore\Omnipay\KlarnaCheckout\ItemBag;
 
+/**
+ * @method ItemBag|null getItems()
+ */
 abstract class AbstractRequest extends \Omnipay\Common\Message\AbstractRequest
 {
     /**
