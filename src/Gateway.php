@@ -8,6 +8,9 @@ use Omnipay\Common\AbstractGateway;
 
 final class Gateway extends AbstractGateway
 {
+    const API_VERSION_EUROPE = 'EU';
+    const API_VERSION_NORTH_AMERICA = 'NA';
+
     /**
      * @inheritDoc
      */
@@ -22,6 +25,7 @@ final class Gateway extends AbstractGateway
     public function getDefaultParameters()
     {
         return [
+            'api_region' => self::API_VERSION_EUROPE,
             'merchant_id' => '',
             'secret' => '',
             'testMode' => true,
@@ -35,13 +39,15 @@ final class Gateway extends AbstractGateway
     {
         parent::initialize($parameters);
 
+        if (self::API_VERSION_EUROPE === $this->getApiRegion()) {
+            $baseUrl = $this->getTestMode() ? ConnectorInterface::EU_TEST_BASE_URL : ConnectorInterface::EU_BASE_URL;
+        } else {
+            $baseUrl = $this->getTestMode() ? ConnectorInterface::NA_BASE_URL : ConnectorInterface::NA_TEST_BASE_URL;
+        }
+
         $this->parameters->set(
             'connector',
-            Connector::create(
-                $this->getParameter('merchant_id'),
-                $this->getParameter('secret'),
-                $this->getTestMode() ? ConnectorInterface::EU_TEST_BASE_URL : ConnectorInterface::EU_BASE_URL
-            )
+            Connector::create($this->getMerchantId(), $this->getSecret(), $baseUrl)
         );
 
         return $this;
@@ -53,6 +59,14 @@ final class Gateway extends AbstractGateway
     public function getMerchantId()
     {
         return $this->getParameter('merchant_id');
+    }
+
+    /**
+     * @return string REGION_* constant value
+     */
+    public function getApiRegion()
+    {
+        return $this->getParameter('api_region');
     }
 
     /**
@@ -71,6 +85,18 @@ final class Gateway extends AbstractGateway
     public function setMerchantId($merchantId)
     {
         $this->setParameter('merchant_id', $merchantId);
+
+        return $this;
+    }
+
+    /**
+     * @param string $region
+     *
+     * @return $this
+     */
+    public function setApiRegion($region)
+    {
+        $this->setParameter('api_region', $region);
 
         return $this;
     }
