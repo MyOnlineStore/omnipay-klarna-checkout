@@ -15,3 +15,26 @@ To install, simply add it to your `composer.json` file:
 ```shell
 $ composer require myonlinestore/omnipay-klarna-checkout
 ```
+
+## Usage
+
+For general usage instructions, please see the main [Omnipay](https://github.com/thephpleague/omnipay)
+repository.
+
+## Quirks
+
+Klarna Checkout requires an iframe to be rendered when authorizing payments. For this purpose a `render_url` parameter
+was added to the [AuthorizeRequest](https://github.com/MyOnlineStore/omnipay-klarna-checkout/blob/authorize-request/src/Message/AuthorizeRequest.php)
+class.
+
+Providing a `render_url` will trigger a redirect to the given URL after the authorization process has been started at
+Klarna. This is where you should fetch the corresponding transaction (using [FetchTransactionRequest](https://github.com/MyOnlineStore/omnipay-klarna-checkout/blob/authorize-request/src/Message/FetchTransactionRequest.php)),
+and render the iframe. Example:
+
+```php
+$response = $gateway->fetchTransaction(['transactionReference' => 'foobar'])
+    ->send();
+
+echo $response->getData()['html_snippet'];
+```
+Note: when submitting the form within the iframe, Klarna will redirect the client to the provided `return_url`.
