@@ -30,6 +30,6 @@ final class CaptureRequest extends AbstractRequest
 
         $capture = $order->createCapture($data);
 
-        return new CaptureResponse($this, $capture, $order);
+        return new CaptureResponse($this, $capture->fetch(), $this->getTransactionReference());
     }
 }

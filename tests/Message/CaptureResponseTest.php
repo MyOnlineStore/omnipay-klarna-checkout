@@ -9,15 +9,15 @@ class CaptureResponseTest extends TestCase
 {
     public function testGetTransactionReferenceReturnsIdFromOrder()
     {
-        $response = new CaptureResponse($this->getMockRequest(), [], ['order_id' => 'foo']);
+        $response = new CaptureResponse($this->getMockRequest(), [], 'foo');
 
         self::assertEquals('foo', $response->getTransactionReference());
     }
 
     public function testIsSuccessfulWillReturnWhetherResponseContainsErrors()
     {
-        $failResponse = new CaptureResponse($this->getMockRequest(), ['error_code' => 'oh noes!'], []);
-        $successResponse = new CaptureResponse($this->getMockRequest(), [], []);
+        $failResponse = new CaptureResponse($this->getMockRequest(), ['error_code' => 'oh noes!'], 'bar');
+        $successResponse = new CaptureResponse($this->getMockRequest(), [], 'baz');
 
         self::assertFalse($failResponse->isSuccessful());
         self::assertTrue($successResponse->isSuccessful());
