@@ -8,20 +8,20 @@ use Omnipay\Common\Message\ResponseInterface;
 final class CaptureResponse extends AbstractResponse implements ResponseInterface
 {
     /**
-     * @var mixed
+     * @var string
      */
-    private $orderData;
+    private $transactionReference;
 
     /**
      * @param RequestInterface $request
-     * @param mixed            $captureData
-     * @param mixed            $orderData
+     * @param mixed            $data
+     * @param string           $transactionReference
      */
-    public function __construct(RequestInterface $request, $captureData, $orderData)
+    public function __construct(RequestInterface $request, $data, $transactionReference)
     {
-        parent::__construct($request, $captureData);
+        parent::__construct($request, $data);
 
-        $this->orderData = $orderData;
+        $this->transactionReference = $transactionReference;
     }
 
     /**
@@ -29,7 +29,7 @@ final class CaptureResponse extends AbstractResponse implements ResponseInterfac
      */
     public function getTransactionReference()
     {
-        return $this->orderData['order_id'];
+        return $this->transactionReference;
     }
 
     /**
