@@ -26,16 +26,6 @@ final class Gateway extends AbstractGateway
     }
 
     /**
-     * @param array $options
-     *
-     * @return RequestInterface
-     */
-    public function void(array $options = [])
-    {
-        return $this->createRequest(VoidRequest::class, $options);
-    }
-
-    /**
      * @param  array $options
      *
      * @return RequestInterface
@@ -43,6 +33,16 @@ final class Gateway extends AbstractGateway
     public function fetchTransaction(array $options = array())
     {
         return $this->createRequest(FetchTransactionRequest::class, $options);
+    }
+
+    /**
+     * @param array $options
+     *
+     * @return RequestInterface
+     */
+    public function void(array $options = [])
+    {
+        return $this->createRequest(VoidRequest::class, $options);
     }
 
     /**

@@ -22,7 +22,13 @@ final class VoidRequest extends AbstractRequest
     public function sendData($data)
     {
         $order = new Order($this->getConnector(), $this->getTransactionReference());
-        $order->releaseRemainingAuthorization();
+        $order->fetch();
+
+        if (empty($order['captures'])) {
+            $order->cancel();
+        } else {
+            $order->releaseRemainingAuthorization();
+        }
 
         return new VoidResponse($this, $order);
     }
