@@ -4,6 +4,7 @@ namespace MyOnlineStore\Tests\Omnipay\KlarnaCheckout\Message;
 
 use GuzzleHttp\Message\RequestInterface;
 use GuzzleHttp\Message\ResponseInterface;
+use Klarna\Rest\OrderManagement\Capture;
 use Klarna\Rest\Transport\Connector;
 use MyOnlineStore\Omnipay\KlarnaCheckout\Message\VoidRequest;
 use MyOnlineStore\Omnipay\KlarnaCheckout\Message\VoidResponse;
@@ -40,16 +41,42 @@ class VoidRequestTest extends TestCase
         self::assertEquals([], $this->voidRequest->getData());
     }
 
-    public function testSendDataWillVoidOrderAndReturnResponse()
+    /**
+     * @return array
+     */
+    public function voidRequestCaptureDataProvider()
+    {
+        return [
+            [[], '/cancel$/'],
+            [[[Capture::ID_FIELD => 1]], '/release-remaining-authorization$/']
+        ];
+
+    }
+
+    /**
+     * @dataProvider voidRequestCaptureDataProvider
+     *
+     * @param array  $captures
+     * @param string$expectedPostRoute
+     */
+    public function testSendDataWillVoidOrderAndReturnResponse(array $captures, $expectedPostRoute)
     {
         $request = \Mockery::mock(RequestInterface::class);
 
         $response = \Mockery::spy(ResponseInterface::class);
-        $response->shouldReceive('getStatusCode')->once()->andReturn('204');
+        $response->shouldReceive('getStatusCode')->twice()->andReturn('200', '204');
+        $response->shouldReceive('hasHeader')->with(\Mockery::type('string'))->andReturn(true);
+        $response->shouldReceive('getHeader')->with('Location')->andReturn('Over there!');
+        $response->shouldReceive('getHeader')->with('Content-Type')->andReturn('application/json');
+        $response->shouldReceive('json')->andReturn(['captures' => $captures]);
 
         $connector = \Mockery::spy(Connector::class);
         $connector->shouldReceive('createRequest')
-            ->with(\Mockery::type('string'), 'POST', [])
+            ->with(\Mockery::type('string'), 'GET', [])
+            ->once()
+            ->andReturn($request);
+        $connector->shouldReceive('createRequest')
+            ->with($expectedPostRoute, 'POST', [])
             ->once()
             ->andReturn($request);
         $connector->shouldReceive('send')->andReturn($response);
