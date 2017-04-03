@@ -6,6 +6,7 @@ use Klarna\Rest\Transport\Connector;
 use Klarna\Rest\Transport\ConnectorInterface;
 use MyOnlineStore\Omnipay\KlarnaCheckout\Message\AuthorizeRequest;
 use MyOnlineStore\Omnipay\KlarnaCheckout\Message\FetchTransactionRequest;
+use MyOnlineStore\Omnipay\KlarnaCheckout\Message\VoidRequest;
 use Omnipay\Common\AbstractGateway;
 use Omnipay\Common\Message\RequestInterface;
 
@@ -22,6 +23,16 @@ final class Gateway extends AbstractGateway
     public function authorize(array $options = [])
     {
         return $this->createRequest(AuthorizeRequest::class, $options);
+    }
+
+    /**
+     * @param array $options
+     *
+     * @return RequestInterface
+     */
+    public function void(array $options = [])
+    {
+        return $this->createRequest(VoidRequest::class, $options);
     }
 
     /**
