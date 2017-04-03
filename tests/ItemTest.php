@@ -1,6 +1,8 @@
 <?php
 
-namespace MyOnlineStore\Omnipay\KlarnaCheckout;
+namespace MyOnlineStore\Tests\Omnipay\KlarnaCheckout;
+
+use MyOnlineStore\Omnipay\KlarnaCheckout\Item;
 
 class ItemTest extends \PHPUnit_Framework_TestCase
 {
