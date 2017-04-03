@@ -47,6 +47,30 @@ abstract class AbstractRequest extends \Omnipay\Common\Message\AbstractRequest
     }
 
     /**
+     * @return string REGION_* constant value
+     */
+    public function getApiRegion()
+    {
+        return $this->getParameter('api_region');
+    }
+
+    /**
+     * @return string
+     */
+    public function getMerchantId()
+    {
+        return $this->getParameter('merchant_id');
+    }
+
+    /**
+     * @return string
+     */
+    public function getSecret()
+    {
+        return $this->getParameter('secret');
+    }
+
+    /**
      * @inheritdoc
      */
     public function setItems($items)
@@ -72,5 +96,41 @@ abstract class AbstractRequest extends \Omnipay\Common\Message\AbstractRequest
     public function setTaxAmount($value)
     {
         $this->setParameter('tax_amount', $value);
+    }
+
+    /**
+     * @param string $merchantId
+     *
+     * @return $this
+     */
+    public function setMerchantId($merchantId)
+    {
+        $this->setParameter('merchant_id', $merchantId);
+
+        return $this;
+    }
+
+    /**
+     * @param string $region
+     *
+     * @return $this
+     */
+    public function setApiRegion($region)
+    {
+        $this->setParameter('api_region', $region);
+
+        return $this;
+    }
+
+    /**
+     * @param string $secret
+     *
+     * @return $this
+     */
+    public function setSecret($secret)
+    {
+        $this->setParameter('secret', $secret);
+
+        return $this;
     }
 }
