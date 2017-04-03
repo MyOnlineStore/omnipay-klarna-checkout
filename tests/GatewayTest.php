@@ -1,7 +1,8 @@
 <?php
 
-namespace MyOnlineStore\Omnipay\KlarnaCheckout;
+namespace MyOnlineStore\Tests\Omnipay\KlarnaCheckout;
 
+use MyOnlineStore\Omnipay\KlarnaCheckout\Gateway;
 use Omnipay\Tests\GatewayTestCase;
 
 class GatewayTest extends GatewayTestCase
