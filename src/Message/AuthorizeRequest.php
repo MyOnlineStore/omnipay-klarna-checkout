@@ -30,7 +30,7 @@ final class AuthorizeRequest extends AbstractRequest
         return [
             'locale' => str_replace('_', '-', $this->getLocale()),
             'order_amount' => $this->getAmountInteger(),
-            'order_tax_amount' => $this->getTaxAmount() * 100,
+            'order_tax_amount' => (int) $this->getTaxAmount() * 100,
             'order_lines' => $this->getItemData($this->getItems()),
             'merchant_urls' => [
                 'checkout' => $this->getReturnUrl(),
