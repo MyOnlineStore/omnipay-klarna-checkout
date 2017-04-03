@@ -14,7 +14,7 @@ trait ItemDataTestTrait
         $item = \Mockery::mock(ItemInterface::class);
         $item->shouldReceive('getName')->andReturn('item-name');
         $item->shouldReceive('getQuantity')->andReturn(1);
-        $item->shouldReceive('getTaxRate')->andReturn(20);
+        $item->shouldReceive('getTaxRate')->andReturn(20.0);
         $item->shouldReceive('getQuantity')->andReturn(1);
         $item->shouldReceive('getPrice')->andReturn(10);
         $item->shouldReceive('getTotalTaxAmount')->andReturn(2);

@@ -23,7 +23,7 @@ trait ItemDataTrait
             $orderLines[] = [
                 'name' => $item->getName(),
                 'quantity' => $item->getQuantity(),
-                'tax_rate' => $item->getTaxRate() * 100,
+                'tax_rate' => (int) $item->getTaxRate() * 100,
                 'total_amount' => $item->getQuantity() * $item->getPrice() * 100,
                 'total_tax_amount' => $item->getTotalTaxAmount() * 100,
                 'unit_price' => $item->getPrice() * 100,
