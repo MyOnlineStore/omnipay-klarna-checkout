@@ -4,6 +4,8 @@ namespace MyOnlineStore\Omnipay\KlarnaCheckout;
 
 /**
  * @final
+ *
+ * @method ItemInterface[] getIterator()
  */
 class ItemBag extends \Omnipay\Common\ItemBag
 {

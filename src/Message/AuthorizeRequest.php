@@ -3,13 +3,14 @@
 namespace MyOnlineStore\Omnipay\KlarnaCheckout\Message;
 
 use Klarna\Rest\Checkout\Order;
-use MyOnlineStore\Omnipay\KlarnaCheckout\ItemInterface;
 
 /**
  * Creates a Klarna Checkout order if it does not exist
  */
 final class AuthorizeRequest extends AbstractRequest
 {
+    use ItemDataTrait;
+
     /**
      * @inheritDoc
      */
@@ -26,25 +27,11 @@ final class AuthorizeRequest extends AbstractRequest
             'terms_url'
         );
 
-        $orderLines = [];
-
-        /** @var ItemInterface $item */
-        foreach ($this->getItems() as $item) {
-            $orderLines[] = [
-                'name' => $item->getName(),
-                'quantity' => $item->getQuantity(),
-                'tax_rate' => $item->getTaxRate() * 100,
-                'total_amount' => $item->getQuantity() * $item->getPrice() * 100,
-                'total_tax_amount' => $item->getTotalTaxAmount() * 100,
-                'unit_price' => $item->getPrice() * 100,
-            ];
-        }
-
         return [
             'locale' => str_replace('_', '-', $this->getLocale()),
             'order_amount' => $this->getAmountInteger(),
             'order_tax_amount' => $this->getTaxAmount() * 100,
-            'order_lines' => $orderLines,
+            'order_lines' => $this->getItemData($this->getItems()),
             'merchant_urls' => [
                 'checkout' => $this->getReturnUrl(),
                 'confirmation' => $this->getReturnUrl(),
