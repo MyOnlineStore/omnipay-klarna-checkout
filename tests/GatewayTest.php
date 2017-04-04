@@ -2,7 +2,6 @@
 
 namespace MyOnlineStore\Tests\Omnipay\KlarnaCheckout;
 
-use Klarna\Rest\Transport\ConnectorInterface;
 use MyOnlineStore\Omnipay\KlarnaCheckout\Gateway;
 use MyOnlineStore\Omnipay\KlarnaCheckout\Message\AcknowledgeRequest;
 use MyOnlineStore\Omnipay\KlarnaCheckout\Message\AuthorizeRequest;
@@ -24,25 +23,30 @@ class GatewayTest extends GatewayTestCase
         $this->gateway = new Gateway($this->getHttpClient(), $this->getHttpRequest());
     }
 
-    public function testInitialisationForUSRegion()
+    /**
+     * @return array
+     */
+    public function baseUrlDataProvider()
     {
-        $this->gateway->initialize([
-            'api_region' => Gateway::API_VERSION_NORTH_AMERICA,
-            'testMode' => false
-        ]);
-        self::assertEquals(
-            ConnectorInterface::NA_BASE_URL,
-            $this->gateway->getParameter('connector')->getClient()->getBaseUrl()
-        );
+        return [
+            [true, Gateway::API_VERSION_EUROPE, Gateway::EU_TEST_BASE_URL],
+            [false, Gateway::API_VERSION_EUROPE, Gateway::EU_BASE_URL],
+            [true, Gateway::API_VERSION_NORTH_AMERICA, Gateway::NA_TEST_BASE_URL],
+            [false, Gateway::API_VERSION_NORTH_AMERICA, Gateway::NA_BASE_URL],
+        ];
+    }
 
-        $this->gateway->initialize([
-            'api_region' => Gateway::API_VERSION_NORTH_AMERICA,
-            'testMode' => true
-        ]);
-        self::assertEquals(
-            ConnectorInterface::NA_TEST_BASE_URL,
-            $this->gateway->getParameter('connector')->getClient()->getBaseUrl()
-        );
+    /**
+     * @dataProvider baseUrlDataProvider
+     *
+     * @param bool   $testMode
+     * @param string $region
+     * @param string $expectedUrl
+     */
+    public function testInitialisationWillSetCorrectBaseUrl($testMode, $region, $expectedUrl)
+    {
+        $this->gateway->initialize(['testMode' => $testMode, 'api_region' => $region]);
+        self::assertEquals($expectedUrl, $this->gateway->getParameter('base_url'));
     }
 
     public function testAcknowledge()

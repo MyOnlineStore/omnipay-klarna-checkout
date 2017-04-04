@@ -2,9 +2,9 @@
 
 namespace MyOnlineStore\Tests\Omnipay\KlarnaCheckout\Message;
 
-use GuzzleHttp\Message\RequestInterface;
-use GuzzleHttp\Message\ResponseInterface;
-use Klarna\Rest\Transport\Connector;
+use Guzzle\Http\ClientInterface;
+use Guzzle\Http\Message\Response;
+use Guzzle\Http\Message\RequestInterface;
 use MyOnlineStore\Omnipay\KlarnaCheckout\Message\AuthorizeRequest;
 use MyOnlineStore\Omnipay\KlarnaCheckout\Message\AuthorizeResponse;
 use Omnipay\Common\Exception\InvalidRequestException;
@@ -13,6 +13,11 @@ use Omnipay\Tests\TestCase;
 class AuthorizeRequestTest extends TestCase
 {
     use ItemDataTestTrait;
+
+    /**
+     * @var ClientInterface|\Mockery\MockInterface
+     */
+    private $httpClient;
 
     /**
      * @var AuthorizeRequest
@@ -24,12 +29,43 @@ class AuthorizeRequestTest extends TestCase
      */
     protected function setUp()
     {
-        $this->authorizeRequest = new AuthorizeRequest($this->getHttpClient(), $this->getHttpRequest());
+        $this->httpClient = \Mockery::mock(ClientInterface::class);
+        $this->authorizeRequest = new AuthorizeRequest($this->httpClient, $this->getHttpRequest());
     }
 
-    public function testGetDataWillThrowExceptionForInvalidRequest()
+    /**
+     * @return array
+     */
+    public function invalidRequestDataProvider()
     {
-        $this->authorizeRequest->initialize([]);
+        $data = [
+            'amount' => true,
+            'currency' => true,
+            'items' => [],
+            'locale' => true,
+            'notifyUrl' => true,
+            'returnUrl' => true,
+            'tax_amount' => true,
+            'terms_url' => true,
+        ];
+
+        $cases = [];
+
+        foreach ($data as $key => $value) {
+            $cases[] = [array_diff_key($data, [$key => $value])];
+        }
+
+        return $cases;
+    }
+
+    /**
+     * @dataProvider invalidRequestDataProvider
+     *
+     * @param array $requestData
+     */
+    public function testGetDataWillThrowExceptionForInvalidRequest(array $requestData)
+    {
+        $this->authorizeRequest->initialize($requestData);
 
         $this->setExpectedException(InvalidRequestException::class);
         $this->authorizeRequest->getData();
@@ -69,61 +105,70 @@ class AuthorizeRequestTest extends TestCase
 
     public function testSendDataWillCreateOrderAndReturnResponse()
     {
+        $inputData = ['request-data' => 'yey?'];
+        $expectedData = ['response-data' => 'yey!'];
+
+        $response = \Mockery::mock(Response::class);
+        $response->shouldReceive('getBody')->with(true)->andReturn(json_encode($expectedData));
+        $response->shouldReceive('json')->andReturn($expectedData);
+
         $request = \Mockery::mock(RequestInterface::class);
+        $request->shouldReceive('send')->once()->andReturn($response);
 
-        $response = \Mockery::spy(ResponseInterface::class);
-        $response->shouldReceive('getStatusCode')->twice()->andReturn('201', '200');
-        $response->shouldReceive('hasHeader')->with(\Mockery::type('string'))->andReturn(true);
-        $response->shouldReceive('getHeader')->with('Location')->andReturn('Over there!');
-        $response->shouldReceive('getHeader')->with('Content-Type')->andReturn('application/json');
-        $response->shouldReceive('json')->andReturn(['response-data' => 'yey!']);
-
-        $connector = \Mockery::spy(Connector::class);
-        $connector->shouldReceive('createRequest')
-            ->with(\Mockery::type('string'), 'POST', ['json' => ['request-data' => 'yey?']])
-            ->once()
-            ->andReturn($request);
-        $connector->shouldReceive('createRequest')
-            ->with(\Mockery::type('string'), 'GET', [])
-            ->once()
-            ->andReturn($request);
-        $connector->shouldReceive('send')->andReturn($response);
-
-        $this->authorizeRequest->initialize(['connector' => $connector]);
-
-        $response = $this->authorizeRequest->sendData(['request-data' => 'yey?']);
-
-        self::assertInstanceOf(AuthorizeResponse::class, $response);
-        self::assertEquals('yey!', $response->getData()['response-data']);
-    }
-
-    public function testSendDataWillReturnResponseIfTransactionIdAlreadySet()
-    {
-        $request = \Mockery::mock(RequestInterface::class);
-
-        $response = \Mockery::spy(ResponseInterface::class);
-        $response->shouldReceive('getStatusCode')->once()->andReturn('200');
-        $response->shouldReceive('hasHeader')->with(\Mockery::type('string'))->andReturn(true);
-        $response->shouldReceive('getHeader')->with('Location')->andReturn('Over there!');
-        $response->shouldReceive('getHeader')->with('Content-Type')->andReturn('application/json');
-        $response->shouldReceive('json')->andReturn(['response-data' => 'yey!']);
-
-        $connector = \Mockery::spy(Connector::class);
-        $connector->shouldReceive('createRequest')
-            ->with(\Mockery::type('string'), 'GET', [])
-            ->once()
-            ->andReturn($request);
-        $connector->shouldReceive('send')->andReturn($response);
+        $this->httpClient->shouldReceive('createRequest')
+            ->with(
+                'POST',
+                'localhost/checkout/v3/orders',
+                ['Content-Type' => 'application/json'],
+                json_encode($inputData),
+                ['auth' => ['merchant-32', 'very-secret-stuff']]
+            )->andReturn($request);
 
         $this->authorizeRequest->initialize([
-            'connector' => $connector,
-            'transactionReference' => 'f60e69e8-464a-48c0-a452-6fd562540f37',
-            'render_url' => 'localhost/render',
+            'base_url' => 'localhost',
+            'merchant_id' => 'merchant-32',
+            'secret' => 'very-secret-stuff'
         ]);
+        $this->authorizeRequest->setRenderUrl('localhost/render');
 
-        $response = $this->authorizeRequest->sendData(['request-data' => 'yey?']);
+        $response = $this->authorizeRequest->sendData($inputData);
 
         self::assertInstanceOf(AuthorizeResponse::class, $response);
-        self::assertEquals('yey!', $response->getData()['response-data']);
+        self::assertSame($expectedData, $response->getData());
+        self::assertEquals('localhost/render', $response->getRedirectUrl());
+    }
+
+    public function testSendDataWillFetchOrderAndReturnResponseIfTransactionIdAlreadySet()
+    {
+        $inputData = ['request-data' => 'yey?'];
+        $expectedData = ['response-data' => 'yey!'];
+
+        $response = \Mockery::mock(Response::class);
+        $response->shouldReceive('getBody')->with(true)->andReturn(json_encode($expectedData));
+        $response->shouldReceive('json')->andReturn($expectedData);
+
+        $request = \Mockery::mock(RequestInterface::class);
+        $request->shouldReceive('send')->once()->andReturn($response);
+
+        $this->httpClient->shouldReceive('createRequest')
+            ->with(
+                'GET',
+                'localhost/checkout/v3/orders/f60e69e8-464a-48c0-a452-6fd562540f37',
+                null,
+                null,
+                ['auth' => ['merchant-32', 'very-secret-stuff']]
+            )->andReturn($request);
+
+        $this->authorizeRequest->initialize([
+            'base_url' => 'localhost',
+            'merchant_id' => 'merchant-32',
+            'secret' => 'very-secret-stuff',
+            'transactionReference' => 'f60e69e8-464a-48c0-a452-6fd562540f37',
+        ]);
+
+        $response = $this->authorizeRequest->sendData($inputData);
+
+        self::assertInstanceOf(AuthorizeResponse::class, $response);
+        self::assertSame($expectedData, $response->getData());
     }
 }

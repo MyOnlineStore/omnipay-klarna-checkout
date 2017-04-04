@@ -31,12 +31,4 @@ final class CaptureResponse extends AbstractResponse implements ResponseInterfac
     {
         return $this->transactionReference;
     }
-
-    /**
-     * @inheritDoc
-     */
-    public function isSuccessful()
-    {
-        return !isset($this->data['error_code']);
-    }
 }

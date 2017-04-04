@@ -2,7 +2,6 @@
 
 namespace MyOnlineStore\Tests\Omnipay\KlarnaCheckout\Message;
 
-use Klarna\Rest\Transport\ConnectorInterface;
 use MyOnlineStore\Omnipay\KlarnaCheckout\ItemBag;
 use MyOnlineStore\Omnipay\KlarnaCheckout\Message\AbstractRequest;
 use Omnipay\Tests\TestCase;
@@ -24,16 +23,12 @@ class AbstractRequestTest extends TestCase
 
     public function testGetters()
     {
-        /** @var ConnectorInterface $connector */
-        $connector = $this->getMock(ConnectorInterface::class);
         $locale = 'nl_NL';
         $taxAmount = 50.1;
 
-        $this->request->setConnector($connector);
         $this->request->setLocale($locale);
         $this->request->setTaxAmount($taxAmount);
 
-        self::assertSame($connector, $this->request->getConnector());
         self::assertSame($locale, $this->request->getLocale());
         self::assertSame($taxAmount, $this->request->getTaxAmount());
     }

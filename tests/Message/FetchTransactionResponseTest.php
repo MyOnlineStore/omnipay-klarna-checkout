@@ -7,12 +7,28 @@ use Omnipay\Tests\TestCase;
 
 class FetchTransactionResponseTest extends TestCase
 {
-    public function testResponseIsSuccessful()
+    /**
+     * @return array
+     */
+    public function responseDataProvider()
     {
-        $failResponse = new FetchTransactionResponse($this->getMockRequest(), []);
-        $successResponse = new FetchTransactionResponse($this->getMockRequest(), ['status' => 'foo']);
+        return [
+            [['error_code' => 'oh_noes'], false],
+            [[], false],
+            [['status' => 'all_is_well'], true],
+        ];
+    }
 
-        self::assertFalse($failResponse->isSuccessful());
-        self::assertTrue($successResponse->isSuccessful());
+    /**
+     * @dataProvider responseDataProvider
+     *
+     * @param array $responseData
+     * @param bool  $expected
+     */
+    public function testIsSuccessfulWillReturnWhetherResponseIsSuccessfull($responseData, $expected)
+    {
+        $response = new FetchTransactionResponse($this->getMockRequest(), $responseData);
+
+        self::assertEquals($expected, $response->isSuccessful());
     }
 }
