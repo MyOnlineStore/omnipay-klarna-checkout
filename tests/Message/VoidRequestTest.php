@@ -2,10 +2,9 @@
 
 namespace MyOnlineStore\Tests\Omnipay\KlarnaCheckout\Message;
 
-use GuzzleHttp\Message\RequestInterface;
-use GuzzleHttp\Message\ResponseInterface;
-use Klarna\Rest\OrderManagement\Capture;
-use Klarna\Rest\Transport\Connector;
+use Guzzle\Http\ClientInterface;
+use Guzzle\Http\Message\RequestInterface;
+use Guzzle\Http\Message\Response;
 use MyOnlineStore\Omnipay\KlarnaCheckout\Message\VoidRequest;
 use MyOnlineStore\Omnipay\KlarnaCheckout\Message\VoidResponse;
 use Omnipay\Common\Exception\InvalidRequestException;
@@ -13,6 +12,13 @@ use Omnipay\Tests\TestCase;
 
 class VoidRequestTest extends TestCase
 {
+    const TRANSACTION_REF = 'foo';
+
+    /**
+     * @var ClientInterface|\Mockery\MockInterface
+     */
+    private $httpClient;
+
     /**
      * @var VoidRequest
      */
@@ -23,7 +29,8 @@ class VoidRequestTest extends TestCase
      */
     protected function setUp()
     {
-        $this->voidRequest = new VoidRequest($this->getHttpClient(), $this->getHttpRequest());
+        $this->httpClient = \Mockery::mock(ClientInterface::class);
+        $this->voidRequest = new VoidRequest($this->httpClient, $this->getHttpRequest());
     }
 
     public function testGetDataWillThrowExceptionForInvalidRequest()
@@ -47,8 +54,8 @@ class VoidRequestTest extends TestCase
     public function voidRequestCaptureDataProvider()
     {
         return [
-            [[], '/cancel$/'],
-            [[[Capture::ID_FIELD => 1]], '/release-remaining-authorization$/']
+            [[], '/cancel'],
+            [[['capture-id' => 1]], '/release-remaining-authorization']
         ];
 
     }
@@ -57,34 +64,52 @@ class VoidRequestTest extends TestCase
      * @dataProvider voidRequestCaptureDataProvider
      *
      * @param array  $captures
-     * @param string$expectedPostRoute
+     * @param string $expectedPostRoute
      */
     public function testSendDataWillVoidOrderAndReturnResponse(array $captures, $expectedPostRoute)
     {
+        $inputData = ['request-data' => 'yey?'];
+        $orderData = ['captures' => $captures];
+        $expectedData = [];
+
+        $response = \Mockery::mock(Response::class);
+        $response->shouldReceive('getBody')
+            ->with(true)
+            ->twice()
+            ->andReturn(json_encode($orderData), json_encode($expectedData));
+        $response->shouldReceive('json')->twice()->andReturn($orderData, $expectedData);
+
         $request = \Mockery::mock(RequestInterface::class);
+        $request->shouldReceive('send')->twice()->andReturn($response);
 
-        $response = \Mockery::spy(ResponseInterface::class);
-        $response->shouldReceive('getStatusCode')->twice()->andReturn('200', '204');
-        $response->shouldReceive('hasHeader')->with(\Mockery::type('string'))->andReturn(true);
-        $response->shouldReceive('getHeader')->with('Location')->andReturn('Over there!');
-        $response->shouldReceive('getHeader')->with('Content-Type')->andReturn('application/json');
-        $response->shouldReceive('json')->andReturn(['captures' => $captures]);
+        $this->httpClient->shouldReceive('createRequest')
+            ->with(
+                'GET',
+                'localhost/ordermanagement/v1/orders/'.self::TRANSACTION_REF,
+                null,
+                null,
+                ['auth' => ['merchant-32', 'very-secret-stuff']]
+            )->andReturn($request);
 
-        $connector = \Mockery::spy(Connector::class);
-        $connector->shouldReceive('createRequest')
-            ->with(\Mockery::type('string'), 'GET', [])
-            ->once()
-            ->andReturn($request);
-        $connector->shouldReceive('createRequest')
-            ->with($expectedPostRoute, 'POST', [])
-            ->once()
-            ->andReturn($request);
-        $connector->shouldReceive('send')->andReturn($response);
+        $this->httpClient->shouldReceive('createRequest')
+            ->with(
+                'POST',
+                'localhost/ordermanagement/v1/orders/'.self::TRANSACTION_REF.$expectedPostRoute,
+                ['Content-Type' => 'application/json'],
+                json_encode($inputData),
+                ['auth' => ['merchant-32', 'very-secret-stuff']]
+            )->andReturn($request);
 
-        $this->voidRequest->initialize(['connector' => $connector]);
+        $this->voidRequest->initialize([
+            'base_url' => 'localhost',
+            'merchant_id' => 'merchant-32',
+            'secret' => 'very-secret-stuff',
+            'transactionReference' => self::TRANSACTION_REF,
+        ]);
 
-        $response = $this->voidRequest->sendData([]);
+        $response = $this->voidRequest->sendData($inputData);
 
         self::assertInstanceOf(VoidResponse::class, $response);
+        self::assertSame($expectedData, $response->getData());
     }
 }

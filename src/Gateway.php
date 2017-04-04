@@ -2,8 +2,6 @@
 
 namespace MyOnlineStore\Omnipay\KlarnaCheckout;
 
-use Klarna\Rest\Transport\Connector;
-use Klarna\Rest\Transport\ConnectorInterface;
 use MyOnlineStore\Omnipay\KlarnaCheckout\Message\AcknowledgeRequest;
 use MyOnlineStore\Omnipay\KlarnaCheckout\Message\AuthorizeRequest;
 use MyOnlineStore\Omnipay\KlarnaCheckout\Message\CaptureRequest;
@@ -17,6 +15,11 @@ final class Gateway extends AbstractGateway implements GatewayInterface
 {
     const API_VERSION_EUROPE = 'EU';
     const API_VERSION_NORTH_AMERICA = 'NA';
+
+    const EU_BASE_URL = 'https://api.klarna.com';
+    const EU_TEST_BASE_URL = 'https://api.playground.klarna.com';
+    const NA_BASE_URL = 'https://api-na.klarna.com';
+    const NA_TEST_BASE_URL = 'https://api-na.playground.klarna.com';
 
     /**
      * @inheritdoc
@@ -102,16 +105,11 @@ final class Gateway extends AbstractGateway implements GatewayInterface
     {
         parent::initialize($parameters);
 
-        if (self::API_VERSION_EUROPE === $this->getApiRegion()) {
-            $baseUrl = $this->getTestMode() ? ConnectorInterface::EU_TEST_BASE_URL : ConnectorInterface::EU_BASE_URL;
+        if (Gateway::API_VERSION_EUROPE === $this->getApiRegion()) {
+            $this->parameters->set('base_url', $this->getTestMode() ? self::EU_TEST_BASE_URL : self::EU_BASE_URL);
         } else {
-            $baseUrl = $this->getTestMode() ? ConnectorInterface::NA_TEST_BASE_URL : ConnectorInterface::NA_BASE_URL;
+            $this->parameters->set('base_url', $this->getTestMode() ? self::NA_TEST_BASE_URL : self::NA_BASE_URL);
         }
-
-        $this->parameters->set(
-            'connector',
-            Connector::create($this->getMerchantId(), $this->getSecret(), $baseUrl)
-        );
 
         return $this;
     }

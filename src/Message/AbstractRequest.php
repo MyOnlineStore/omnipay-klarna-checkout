@@ -2,8 +2,8 @@
 
 namespace MyOnlineStore\Omnipay\KlarnaCheckout\Message;
 
-use Klarna\Rest\Transport\ConnectorInterface;
 use MyOnlineStore\Omnipay\KlarnaCheckout\CurrencyAwareTrait;
+use Guzzle\Http\Message\Response;
 use MyOnlineStore\Omnipay\KlarnaCheckout\ItemBag;
 
 /**
@@ -12,14 +12,6 @@ use MyOnlineStore\Omnipay\KlarnaCheckout\ItemBag;
 abstract class AbstractRequest extends \Omnipay\Common\Message\AbstractRequest
 {
     use CurrencyAwareTrait;
-
-    /**
-     * @return ConnectorInterface
-     */
-    public function getConnector()
-    {
-        return $this->getParameter('connector');
-    }
 
     /**
      * RFC 1766 customer's locale.
@@ -39,14 +31,6 @@ abstract class AbstractRequest extends \Omnipay\Common\Message\AbstractRequest
     public function getTaxAmount()
     {
         return $this->getParameter('tax_amount');
-    }
-
-    /**
-     * @param ConnectorInterface $connector
-     */
-    public function setConnector(ConnectorInterface $connector)
-    {
-        $this->setParameter('connector', $connector);
     }
 
     /**
@@ -71,6 +55,14 @@ abstract class AbstractRequest extends \Omnipay\Common\Message\AbstractRequest
     public function getSecret()
     {
         return $this->getParameter('secret');
+    }
+
+    /**
+     * @return string
+     */
+    public function getBaseUrl()
+    {
+        return $this->getParameter('base_url');
     }
 
     /**
@@ -135,5 +127,63 @@ abstract class AbstractRequest extends \Omnipay\Common\Message\AbstractRequest
         $this->setParameter('secret', $secret);
 
         return $this;
+    }
+
+    /**
+     * @param string $baseUrl
+     *
+     * @return $this
+     */
+    public function setBaseUrl($baseUrl)
+    {
+        $this->setParameter('base_url', $baseUrl);
+
+        return $this;
+    }
+
+    /**
+     * @param string $method
+     * @param string $url
+     * @param mixed  $data
+     *
+     * @return Response
+     */
+    protected function sendRequest($method, $url, $data)
+    {
+        if ("GET" === $method) {
+            return $this->httpClient->createRequest(
+                "GET",
+                $this->getBaseUrl().$url,
+                null,
+                null,
+                $this->getRequestOptions()
+            )->send();
+        }
+
+        return $this->httpClient->createRequest(
+            $method,
+            $this->getBaseUrl().$url,
+            ['Content-Type' => 'application/json'],
+            json_encode($data),
+            $this->getRequestOptions()
+        )->send();
+    }
+
+    /**
+     * @return array
+     */
+    protected function getRequestOptions()
+    {
+        return ['auth' => [$this->getMerchantId(), $this->getSecret()]];
+    }
+
+    /**
+     * @param Response $response
+     *
+     * @return array
+     */
+    protected function getResponseBody(Response $response)
+    {
+        return empty($response->getBody(true)) ? [] : $response->json();
     }
 }

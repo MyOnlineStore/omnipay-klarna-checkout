@@ -24,12 +24,28 @@ class AuthorizeResponseTest extends TestCase
         self::assertTrue($response->isRedirect());
     }
 
-    public function testIsSuccessfulWillReturnWhetherResponseStatusIsIncomplete()
+    /**
+     * @return array
+     */
+    public function responseDataProvider()
     {
-        $failResponse = new AuthorizeResponse($this->getMockRequest(), ['status' => 'checkout_incomplete']);
-        $successResponse = new AuthorizeResponse($this->getMockRequest(), ['status' => 'all_is_well']);
+        return [
+            [['error_code' => 'oh_noes'], false],
+            [['status' => 'checkout_incomplete'], false],
+            [['status' => 'all_is_well'], true],
+        ];
+    }
 
-        self::assertFalse($failResponse->isSuccessful());
-        self::assertTrue($successResponse->isSuccessful());
+    /**
+     * @dataProvider responseDataProvider
+     *
+     * @param array $responseData
+     * @param bool  $expected
+     */
+    public function testIsSuccessfulWillReturnWhetherResponseIsSuccessfull($responseData, $expected)
+    {
+        $response = new AuthorizeResponse($this->getMockRequest(), $responseData);
+
+        self::assertEquals($expected, $response->isSuccessful());
     }
 }

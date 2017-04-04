@@ -2,8 +2,6 @@
 
 namespace MyOnlineStore\Omnipay\KlarnaCheckout\Message;
 
-use Klarna\Rest\OrderManagement\Order;
-
 final class RefundRequest extends AbstractRequest
 {
     use ItemDataTrait;
@@ -29,9 +27,8 @@ final class RefundRequest extends AbstractRequest
      */
     public function sendData($data)
     {
-        $order = new Order($this->getConnector(), $this->getTransactionReference());
-        $order->refund($data);
+        $url = '/ordermanagement/v1/orders/'.$this->getTransactionReference().'/refunds';
 
-        return new RefundResponse($this, $order);
+        return new RefundResponse($this, $this->getResponseBody($this->sendRequest("POST", $url, $data)));
     }
 }

@@ -2,8 +2,6 @@
 
 namespace MyOnlineStore\Omnipay\KlarnaCheckout\Message;
 
-use Klarna\Rest\OrderManagement\Order;
-
 final class CaptureRequest extends AbstractRequest
 {
     use ItemDataTrait;
@@ -29,10 +27,25 @@ final class CaptureRequest extends AbstractRequest
      */
     public function sendData($data)
     {
-        $order = new Order($this->getConnector(), $this->getTransactionReference());
+        $createResponse = $this->sendRequest("POST", $this->getEndpoint(), $data);
+        $getResponse = $this->sendRequest(
+            "GET",
+            $this->getEndpoint().'/'.$createResponse->getHeader('capture-id'),
+            []
+        );
 
-        $capture = $order->createCapture($data);
+        return new CaptureResponse(
+            $this,
+            $this->getResponseBody($getResponse),
+            $this->getTransactionReference()
+        );
+    }
 
-        return new CaptureResponse($this, $capture->fetch(), $this->getTransactionReference());
+    /**
+     * @inheritdoc
+     */
+    private function getEndpoint()
+    {
+        return '/ordermanagement/v1/orders/'.$this->getTransactionReference().'/captures';
     }
 }

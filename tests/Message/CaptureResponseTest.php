@@ -13,13 +13,4 @@ class CaptureResponseTest extends TestCase
 
         self::assertEquals('foo', $response->getTransactionReference());
     }
-
-    public function testIsSuccessfulWillReturnWhetherResponseContainsErrors()
-    {
-        $failResponse = new CaptureResponse($this->getMockRequest(), ['error_code' => 'oh noes!'], 'bar');
-        $successResponse = new CaptureResponse($this->getMockRequest(), [], 'baz');
-
-        self::assertFalse($failResponse->isSuccessful());
-        self::assertTrue($successResponse->isSuccessful());
-    }
 }
