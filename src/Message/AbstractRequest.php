@@ -3,6 +3,7 @@
 namespace MyOnlineStore\Omnipay\KlarnaCheckout\Message;
 
 use Klarna\Rest\Transport\ConnectorInterface;
+use MyOnlineStore\Omnipay\KlarnaCheckout\CurrencyAwareTrait;
 use MyOnlineStore\Omnipay\KlarnaCheckout\ItemBag;
 
 /**
@@ -10,6 +11,8 @@ use MyOnlineStore\Omnipay\KlarnaCheckout\ItemBag;
  */
 abstract class AbstractRequest extends \Omnipay\Common\Message\AbstractRequest
 {
+    use CurrencyAwareTrait;
+
     /**
      * @return ConnectorInterface
      */
@@ -29,7 +32,7 @@ abstract class AbstractRequest extends \Omnipay\Common\Message\AbstractRequest
     }
 
     /**
-     * Non-negative, minor units. The total tax amount of the order.
+     * The total tax amount of the order
      *
      * @return int
      */

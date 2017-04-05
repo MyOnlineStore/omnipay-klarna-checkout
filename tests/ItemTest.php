@@ -8,8 +8,8 @@ class ItemTest extends \PHPUnit_Framework_TestCase
 {
     public function testGetters()
     {
-        $taxRate = 2100;
-        $totalTaxAmount = 9000;
+        $taxRate = 21;
+        $totalTaxAmount = 9.45;
 
         $item = new Item();
         $item->setTaxRate($taxRate);

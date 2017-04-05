@@ -27,7 +27,7 @@ class AbstractRequestTest extends TestCase
         /** @var ConnectorInterface $connector */
         $connector = $this->getMock(ConnectorInterface::class);
         $locale = 'nl_NL';
-        $taxAmount = 5000;
+        $taxAmount = 50.1;
 
         $this->request->setConnector($connector);
         $this->request->setLocale($locale);
@@ -49,7 +49,7 @@ class AbstractRequestTest extends TestCase
 
     public function testSetItemsWithArray()
     {
-        $itemsArray = [['tax_rate' => 1000]];
+        $itemsArray = [['tax_rate' => 10]];
 
         $this->request->setItems($itemsArray);
 
