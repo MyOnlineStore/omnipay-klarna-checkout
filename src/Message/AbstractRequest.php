@@ -3,10 +3,16 @@
 namespace MyOnlineStore\Omnipay\KlarnaCheckout\Message;
 
 use Klarna\Rest\Transport\ConnectorInterface;
+use MyOnlineStore\Omnipay\KlarnaCheckout\CurrencyAwareTrait;
 use MyOnlineStore\Omnipay\KlarnaCheckout\ItemBag;
 
+/**
+ * @method ItemBag|null getItems()
+ */
 abstract class AbstractRequest extends \Omnipay\Common\Message\AbstractRequest
 {
+    use CurrencyAwareTrait;
+
     /**
      * @return ConnectorInterface
      */
@@ -26,7 +32,7 @@ abstract class AbstractRequest extends \Omnipay\Common\Message\AbstractRequest
     }
 
     /**
-     * Non-negative, minor units. The total tax amount of the order.
+     * The total tax amount of the order
      *
      * @return int
      */
@@ -41,6 +47,30 @@ abstract class AbstractRequest extends \Omnipay\Common\Message\AbstractRequest
     public function setConnector(ConnectorInterface $connector)
     {
         $this->setParameter('connector', $connector);
+    }
+
+    /**
+     * @return string REGION_* constant value
+     */
+    public function getApiRegion()
+    {
+        return $this->getParameter('api_region');
+    }
+
+    /**
+     * @return string
+     */
+    public function getMerchantId()
+    {
+        return $this->getParameter('merchant_id');
+    }
+
+    /**
+     * @return string
+     */
+    public function getSecret()
+    {
+        return $this->getParameter('secret');
     }
 
     /**
@@ -69,5 +99,41 @@ abstract class AbstractRequest extends \Omnipay\Common\Message\AbstractRequest
     public function setTaxAmount($value)
     {
         $this->setParameter('tax_amount', $value);
+    }
+
+    /**
+     * @param string $merchantId
+     *
+     * @return $this
+     */
+    public function setMerchantId($merchantId)
+    {
+        $this->setParameter('merchant_id', $merchantId);
+
+        return $this;
+    }
+
+    /**
+     * @param string $region
+     *
+     * @return $this
+     */
+    public function setApiRegion($region)
+    {
+        $this->setParameter('api_region', $region);
+
+        return $this;
+    }
+
+    /**
+     * @param string $secret
+     *
+     * @return $this
+     */
+    public function setSecret($secret)
+    {
+        $this->setParameter('secret', $secret);
+
+        return $this;
     }
 }

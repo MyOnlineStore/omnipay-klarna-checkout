@@ -4,7 +4,10 @@ namespace MyOnlineStore\Omnipay\KlarnaCheckout;
 
 use Klarna\Rest\Transport\Connector;
 use Klarna\Rest\Transport\ConnectorInterface;
+use MyOnlineStore\Omnipay\KlarnaCheckout\Message\AuthorizeRequest;
+use MyOnlineStore\Omnipay\KlarnaCheckout\Message\FetchTransactionRequest;
 use Omnipay\Common\AbstractGateway;
+use Omnipay\Common\Message\RequestInterface;
 
 final class Gateway extends AbstractGateway
 {
@@ -12,11 +15,31 @@ final class Gateway extends AbstractGateway
     const API_VERSION_NORTH_AMERICA = 'NA';
 
     /**
-     * @inheritDoc
+     * @param array $options
+     *
+     * @return RequestInterface
      */
-    public function getName()
+    public function authorize(array $options = [])
     {
-        return 'KlarnaCheckout';
+        return $this->createRequest(AuthorizeRequest::class, $options);
+    }
+
+    /**
+     * @param  array $options
+     *
+     * @return RequestInterface
+     */
+    public function fetchTransaction(array $options = array())
+    {
+        return $this->createRequest(FetchTransactionRequest::class, $options);
+    }
+
+    /**
+     * @return string REGION_* constant value
+     */
+    public function getApiRegion()
+    {
+        return $this->getParameter('api_region');
     }
 
     /**
@@ -33,6 +56,30 @@ final class Gateway extends AbstractGateway
     }
 
     /**
+     * @return string
+     */
+    public function getMerchantId()
+    {
+        return $this->getParameter('merchant_id');
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getName()
+    {
+        return 'KlarnaCheckout';
+    }
+
+    /**
+     * @return string
+     */
+    public function getSecret()
+    {
+        return $this->getParameter('secret');
+    }
+
+    /**
      * @inheritDoc
      */
     public function initialize(array $parameters = array())
@@ -42,7 +89,7 @@ final class Gateway extends AbstractGateway
         if (self::API_VERSION_EUROPE === $this->getApiRegion()) {
             $baseUrl = $this->getTestMode() ? ConnectorInterface::EU_TEST_BASE_URL : ConnectorInterface::EU_BASE_URL;
         } else {
-            $baseUrl = $this->getTestMode() ? ConnectorInterface::NA_BASE_URL : ConnectorInterface::NA_TEST_BASE_URL;
+            $baseUrl = $this->getTestMode() ? ConnectorInterface::NA_TEST_BASE_URL : ConnectorInterface::NA_BASE_URL;
         }
 
         $this->parameters->set(
@@ -51,30 +98,6 @@ final class Gateway extends AbstractGateway
         );
 
         return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function getMerchantId()
-    {
-        return $this->getParameter('merchant_id');
-    }
-
-    /**
-     * @return string REGION_* constant value
-     */
-    public function getApiRegion()
-    {
-        return $this->getParameter('api_region');
-    }
-
-    /**
-     * @return string
-     */
-    public function getSecret()
-    {
-        return $this->getParameter('secret');
     }
 
     /**
