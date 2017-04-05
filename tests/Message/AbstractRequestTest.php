@@ -1,24 +1,14 @@
 <?php
 
-namespace MyOnlineStore\Omnipay\KlarnaCheckout\Message;
+namespace MyOnlineStore\Tests\Omnipay\KlarnaCheckout\Message;
 
-use Guzzle\Http\ClientInterface;
 use Klarna\Rest\Transport\ConnectorInterface;
 use MyOnlineStore\Omnipay\KlarnaCheckout\ItemBag;
-use Symfony\Component\HttpFoundation\Request;
+use MyOnlineStore\Omnipay\KlarnaCheckout\Message\AbstractRequest;
+use Omnipay\Tests\TestCase;
 
-class AbstractRequestTest extends \PHPUnit_Framework_TestCase
+class AbstractRequestTest extends TestCase
 {
-    /**
-     * @var ClientInterface|\PHPUnit_Framework_MockObject_MockObject
-     */
-    private $httpClient;
-
-    /**
-     * @var Request|\PHPUnit_Framework_MockObject_MockObject
-     */
-    private $httpRequest;
-
     /**
      * @var AbstractRequest
      */
@@ -26,12 +16,8 @@ class AbstractRequestTest extends \PHPUnit_Framework_TestCase
 
     protected function setUp()
     {
-        $this->httpClient = $this->getMock(ClientInterface::class);
-        $this->httpRequest = $this->getMockBuilder(Request::class)->disableOriginalConstructor()->getMock();
-
-        /** @var AbstractRequest $request */
         $this->request = $this->getMockBuilder(AbstractRequest::class)
-            ->setConstructorArgs([$this->httpClient, $this->httpRequest])
+            ->setConstructorArgs([$this->getHttpClient(), $this->getHttpRequest()])
             ->setMethods([])
             ->getMockForAbstractClass();
     }
@@ -41,7 +27,7 @@ class AbstractRequestTest extends \PHPUnit_Framework_TestCase
         /** @var ConnectorInterface $connector */
         $connector = $this->getMock(ConnectorInterface::class);
         $locale = 'nl_NL';
-        $taxAmount = 5000;
+        $taxAmount = 50.1;
 
         $this->request->setConnector($connector);
         $this->request->setLocale($locale);
@@ -63,7 +49,7 @@ class AbstractRequestTest extends \PHPUnit_Framework_TestCase
 
     public function testSetItemsWithArray()
     {
-        $itemsArray = [['tax_rate' => 1000]];
+        $itemsArray = [['tax_rate' => 10]];
 
         $this->request->setItems($itemsArray);
 
