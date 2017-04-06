@@ -2,14 +2,12 @@
 
 namespace MyOnlineStore\Tests\Omnipay\KlarnaCheckout\Message;
 
-use GuzzleHttp\Message\RequestInterface;
-use GuzzleHttp\Message\ResponseInterface;
-use Klarna\Rest\Transport\Connector;
+use Guzzle\Http\Message\RequestInterface;
+use Guzzle\Http\Message\Response;
 use MyOnlineStore\Omnipay\KlarnaCheckout\Message\AcknowledgeRequest;
 use MyOnlineStore\Omnipay\KlarnaCheckout\Message\AcknowledgeResponse;
-use Omnipay\Tests\TestCase;
 
-class AcknowledgeRequestTest extends TestCase
+class AcknowledgeRequestTest extends RequestTestCase
 {
     /**
      * @var AcknowledgeRequest
@@ -21,7 +19,8 @@ class AcknowledgeRequestTest extends TestCase
      */
     protected function setUp()
     {
-        $this->acknowledgeRequest = new AcknowledgeRequest($this->getHttpClient(), $this->getHttpRequest());
+        parent::setUp();
+        $this->acknowledgeRequest = new AcknowledgeRequest($this->httpClient, $this->getHttpRequest());
     }
 
     public function testGetData()
@@ -33,21 +32,35 @@ class AcknowledgeRequestTest extends TestCase
 
     public function testSendData()
     {
-        $connector = \Mockery::spy(Connector::class);
-        $this->acknowledgeRequest->initialize(['connector' => $connector]);
+        $inputData = ['request-data' => 'yey?'];
+        $expectedData = [];
+
+        $response = \Mockery::mock(Response::class);
+        $response->shouldReceive('getBody')->with(true)->once()->andReturn(json_encode($expectedData));
+        $response->shouldReceive('json')->once()->andReturn($expectedData);
 
         $request = \Mockery::mock(RequestInterface::class);
-        $connector->shouldReceive('createRequest')
-            ->with(\Mockery::type('string'), 'POST', [])
-            ->andReturn($request);
+        $request->shouldReceive('send')->once()->andReturn($response);
 
-        $response = \Mockery::spy(ResponseInterface::class);
-        $connector->shouldReceive('send')->with($request)->andReturn($response);
+        $this->httpClient->shouldReceive('createRequest')
+            ->with(
+                RequestInterface::POST,
+                'localhost/ordermanagement/v1/orders/foo/acknowledge',
+                ['Content-Type' => 'application/json'],
+                json_encode($inputData),
+                ['auth' => ['merchant-32', 'very-secret-stuff']]
+            )->andReturn($request);
 
-        $response->shouldReceive('getStatusCode')->andReturn('204');
+        $this->acknowledgeRequest->initialize([
+            'base_url' => 'localhost',
+            'merchant_id' => 'merchant-32',
+            'secret' => 'very-secret-stuff',
+            'transactionReference' => 'foo',
+        ]);
 
-        $response = $this->acknowledgeRequest->sendData(['foo' => 'bar?']);
+        $response = $this->acknowledgeRequest->sendData($inputData);
 
         self::assertInstanceOf(AcknowledgeResponse::class, $response);
+        self::assertSame($expectedData, $response->getData());
     }
 }

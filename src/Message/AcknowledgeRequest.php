@@ -2,7 +2,7 @@
 
 namespace MyOnlineStore\Omnipay\KlarnaCheckout\Message;
 
-use Klarna\Rest\OrderManagement\Order;
+use Guzzle\Http\Message\RequestInterface;
 
 final class AcknowledgeRequest extends AbstractRequest
 {
@@ -21,9 +21,11 @@ final class AcknowledgeRequest extends AbstractRequest
      */
     public function sendData($data)
     {
-        $order = new Order($this->getConnector(), $this->getTransactionReference());
-        $order->acknowledge();
+        $url = '/ordermanagement/v1/orders/'.$this->getTransactionReference().'/acknowledge';
 
-        return new AcknowledgeResponse($this, $order);
+        return new AcknowledgeResponse(
+            $this,
+            $this->getResponseBody($this->sendRequest(RequestInterface::POST, $url, $data))
+        );
     }
 }
