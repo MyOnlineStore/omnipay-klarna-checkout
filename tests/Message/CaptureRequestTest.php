@@ -51,16 +51,30 @@ class CaptureRequestTest extends TestCase
         $this->captureRequest->getData();
     }
 
-    public function testGetDataWillReturnCorrectData()
+    /**
+     * @return array
+     */
+    public function validRequestDataProvider()
+    {
+        return [
+            [null, []],   // No item data should return result without order_line entry
+            [[$this->getItemMock()], ['order_lines' => [$this->getExpectedOrderLine()]]],
+        ];
+    }
+
+    /**
+     * @dataProvider validRequestDataProvider
+     *
+     * @param array|null $items
+     * @param array      $expectedItemData
+     */
+    public function testGetDataWillReturnCorrectData($items, array $expectedItemData)
     {
         $this->captureRequest->initialize(['transactionReference' => 'foo', 'amount' => '10.00']);
-        $this->captureRequest->setItems([$this->getItemMock()]);
+        $this->captureRequest->setItems($items);
 
         self::assertEquals(
-            [
-                'captured_amount' => 1000,
-                'order_lines' => [$this->getExpectedOrderLine()],
-            ],
+            ['captured_amount' => 1000] + $expectedItemData,
             $this->captureRequest->getData()
         );
     }

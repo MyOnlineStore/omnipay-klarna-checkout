@@ -15,10 +15,13 @@ final class CaptureRequest extends AbstractRequest
     {
         $this->validate('transactionReference', 'amount');
 
-        return [
-            'captured_amount' => $this->getAmountInteger(),
-            'order_lines' => $this->getItemData($this->getItems()),
-        ];
+        $data = ['captured_amount' => $this->getAmountInteger()];
+
+        if (null !== $items = $this->getItems()) {
+            $data['order_lines'] = $this->getItemData($items);
+        }
+
+        return $data;
     }
 
     /**
