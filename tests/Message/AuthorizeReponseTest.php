@@ -1,4 +1,5 @@
 <?php
+
 namespace MyOnlineStore\Tests\Omnipay\KlarnaCheckout\Message;
 
 use MyOnlineStore\Omnipay\KlarnaCheckout\Message\AuthorizeResponse;
