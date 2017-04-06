@@ -15,10 +15,13 @@ final class RefundRequest extends AbstractRequest
     {
         $this->validate('transactionReference', 'amount');
 
-        return [
-            'refunded_amount' => $this->getAmountInteger(),
-            'order_lines' => $this->getItemData($this->getItems()),
-        ];
+        $data = ['refunded_amount' => $this->getAmountInteger()];
+
+        if (null !== $items = $this->getItems()) {
+            $data['order_lines'] = $this->getItemData($items);
+        }
+
+        return $data;
     }
 
     /**
