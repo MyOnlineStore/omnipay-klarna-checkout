@@ -4,6 +4,7 @@ namespace MyOnlineStore\Tests\Omnipay\KlarnaCheckout;
 
 use Klarna\Rest\Transport\ConnectorInterface;
 use MyOnlineStore\Omnipay\KlarnaCheckout\Gateway;
+use MyOnlineStore\Omnipay\KlarnaCheckout\Message\AcknowledgeRequest;
 use MyOnlineStore\Omnipay\KlarnaCheckout\Message\AuthorizeRequest;
 use MyOnlineStore\Omnipay\KlarnaCheckout\Message\CaptureRequest;
 use MyOnlineStore\Omnipay\KlarnaCheckout\Message\FetchTransactionRequest;
@@ -42,6 +43,11 @@ class GatewayTest extends GatewayTestCase
             ConnectorInterface::NA_TEST_BASE_URL,
             $this->gateway->getParameter('connector')->getClient()->getBaseUrl()
         );
+    }
+
+    public function testAcknowledge()
+    {
+        $this->assertInstanceOf(AcknowledgeRequest::class, $this->gateway->acknowledge());
     }
 
     public function testAuthorize()
