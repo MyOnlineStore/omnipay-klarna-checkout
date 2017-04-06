@@ -5,6 +5,7 @@ namespace MyOnlineStore\Tests\Omnipay\KlarnaCheckout;
 use Klarna\Rest\Transport\ConnectorInterface;
 use MyOnlineStore\Omnipay\KlarnaCheckout\Gateway;
 use MyOnlineStore\Omnipay\KlarnaCheckout\Message\AuthorizeRequest;
+use MyOnlineStore\Omnipay\KlarnaCheckout\Message\CaptureRequest;
 use MyOnlineStore\Omnipay\KlarnaCheckout\Message\FetchTransactionRequest;
 use Omnipay\Tests\GatewayTestCase;
 
@@ -44,6 +45,11 @@ class GatewayTest extends GatewayTestCase
     public function testAuthorize()
     {
         $this->assertInstanceOf(AuthorizeRequest::class, $this->gateway->authorize());
+    }
+
+    public function testCapture()
+    {
+        $this->assertInstanceOf(CaptureRequest::class, $this->gateway->capture());
     }
 
     public function testFetchTransaction()
