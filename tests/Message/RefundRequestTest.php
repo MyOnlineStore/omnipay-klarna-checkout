@@ -2,22 +2,15 @@
 
 namespace MyOnlineStore\Tests\Omnipay\KlarnaCheckout\Message;
 
-use Guzzle\Http\ClientInterface;
-use Guzzle\Http\Message\Response;
 use Guzzle\Http\Message\RequestInterface;
+use Guzzle\Http\Message\Response;
 use MyOnlineStore\Omnipay\KlarnaCheckout\Message\RefundRequest;
 use MyOnlineStore\Omnipay\KlarnaCheckout\Message\RefundResponse;
 use Omnipay\Common\Exception\InvalidRequestException;
-use Omnipay\Tests\TestCase;
 
-class RefundRequestTest extends TestCase
+class RefundRequestTest extends RequestTestCase
 {
     use ItemDataTestTrait;
-
-    /**
-     * @var ClientInterface|\Mockery\MockInterface
-     */
-    private $httpClient;
 
     /**
      * @var RefundRequest
@@ -29,7 +22,7 @@ class RefundRequestTest extends TestCase
      */
     protected function setUp()
     {
-        $this->httpClient = \Mockery::mock(ClientInterface::class);
+        parent::setUp();
         $this->refundRequest = new RefundRequest($this->httpClient, $this->getHttpRequest());
     }
 

@@ -2,7 +2,6 @@
 
 namespace MyOnlineStore\Tests\Omnipay\KlarnaCheckout\Message;
 
-use Guzzle\Http\ClientInterface;
 use Guzzle\Http\Message\Response;
 use Guzzle\Http\Message\RequestInterface;
 use MyOnlineStore\Omnipay\KlarnaCheckout\Message\FetchTransactionRequest;
@@ -10,13 +9,8 @@ use MyOnlineStore\Omnipay\KlarnaCheckout\Message\FetchTransactionResponse;
 use Omnipay\Common\Exception\InvalidRequestException;
 use Omnipay\Tests\TestCase;
 
-class FetchTransactionRequestTest extends TestCase
+class FetchTransactionRequestTest extends RequestTestCase
 {
-    /**
-     * @var ClientInterface|\Mockery\MockInterface
-     */
-    private $httpClient;
-
     /**
      * @var FetchTransactionRequest
      */
@@ -27,7 +21,7 @@ class FetchTransactionRequestTest extends TestCase
      */
     protected function setUp()
     {
-        $this->httpClient = \Mockery::mock(ClientInterface::class);
+        parent::setUp();
         $this->fetchTransactionRequest = new FetchTransactionRequest($this->httpClient, $this->getHttpRequest());
     }
 

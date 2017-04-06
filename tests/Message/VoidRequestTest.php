@@ -2,22 +2,15 @@
 
 namespace MyOnlineStore\Tests\Omnipay\KlarnaCheckout\Message;
 
-use Guzzle\Http\ClientInterface;
 use Guzzle\Http\Message\RequestInterface;
 use Guzzle\Http\Message\Response;
 use MyOnlineStore\Omnipay\KlarnaCheckout\Message\VoidRequest;
 use MyOnlineStore\Omnipay\KlarnaCheckout\Message\VoidResponse;
 use Omnipay\Common\Exception\InvalidRequestException;
-use Omnipay\Tests\TestCase;
 
-class VoidRequestTest extends TestCase
+class VoidRequestTest extends RequestTestCase
 {
     const TRANSACTION_REF = 'foo';
-
-    /**
-     * @var ClientInterface|\Mockery\MockInterface
-     */
-    private $httpClient;
 
     /**
      * @var VoidRequest
@@ -29,7 +22,7 @@ class VoidRequestTest extends TestCase
      */
     protected function setUp()
     {
-        $this->httpClient = \Mockery::mock(ClientInterface::class);
+        parent::setUp();
         $this->voidRequest = new VoidRequest($this->httpClient, $this->getHttpRequest());
     }
 
@@ -57,7 +50,6 @@ class VoidRequestTest extends TestCase
             [[], '/cancel'],
             [[['capture-id' => 1]], '/release-remaining-authorization']
         ];
-
     }
 
     /**

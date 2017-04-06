@@ -2,22 +2,15 @@
 
 namespace MyOnlineStore\Tests\Omnipay\KlarnaCheckout\Message;
 
-use Guzzle\Http\ClientInterface;
-use Guzzle\Http\Message\Response;
 use Guzzle\Http\Message\RequestInterface;
+use Guzzle\Http\Message\Response;
 use MyOnlineStore\Omnipay\KlarnaCheckout\Message\AuthorizeRequest;
 use MyOnlineStore\Omnipay\KlarnaCheckout\Message\AuthorizeResponse;
 use Omnipay\Common\Exception\InvalidRequestException;
-use Omnipay\Tests\TestCase;
 
-class AuthorizeRequestTest extends TestCase
+class AuthorizeRequestTest extends RequestTestCase
 {
     use ItemDataTestTrait;
-
-    /**
-     * @var ClientInterface|\Mockery\MockInterface
-     */
-    private $httpClient;
 
     /**
      * @var AuthorizeRequest
@@ -29,7 +22,7 @@ class AuthorizeRequestTest extends TestCase
      */
     protected function setUp()
     {
-        $this->httpClient = \Mockery::mock(ClientInterface::class);
+        parent::setUp();
         $this->authorizeRequest = new AuthorizeRequest($this->httpClient, $this->getHttpRequest());
     }
 

@@ -2,10 +2,13 @@
 
 namespace MyOnlineStore\Omnipay\KlarnaCheckout\Message;
 
+use Guzzle\Common\Event;
+use Guzzle\Http\ClientInterface;
 use Guzzle\Http\Message\RequestInterface;
-use MyOnlineStore\Omnipay\KlarnaCheckout\CurrencyAwareTrait;
 use Guzzle\Http\Message\Response;
+use MyOnlineStore\Omnipay\KlarnaCheckout\CurrencyAwareTrait;
 use MyOnlineStore\Omnipay\KlarnaCheckout\ItemBag;
+use Symfony\Component\HttpFoundation\Request as HttpRequest;
 
 /**
  * @method ItemBag|null getItems()
@@ -13,6 +16,24 @@ use MyOnlineStore\Omnipay\KlarnaCheckout\ItemBag;
 abstract class AbstractRequest extends \Omnipay\Common\Message\AbstractRequest
 {
     use CurrencyAwareTrait;
+
+    /**
+     * @inheritdoc
+     */
+    public function __construct(ClientInterface $httpClient, HttpRequest $httpRequest)
+    {
+        parent::__construct($httpClient, $httpRequest);
+
+        // don't throw exceptions for 4xx errors
+        $this->httpClient->getEventDispatcher()->addListener(
+            'request.error',
+            function (Event $event) {
+                if ($event['response']->isClientError()) {
+                    $event->stopPropagation();
+                }
+            }
+        );
+    }
 
     /**
      * RFC 1766 customer's locale.
