@@ -7,6 +7,7 @@ use MyOnlineStore\Omnipay\KlarnaCheckout\Gateway;
 use MyOnlineStore\Omnipay\KlarnaCheckout\Message\AuthorizeRequest;
 use MyOnlineStore\Omnipay\KlarnaCheckout\Message\CaptureRequest;
 use MyOnlineStore\Omnipay\KlarnaCheckout\Message\FetchTransactionRequest;
+use MyOnlineStore\Omnipay\KlarnaCheckout\Message\VoidRequest;
 use Omnipay\Tests\GatewayTestCase;
 
 class GatewayTest extends GatewayTestCase
@@ -55,5 +56,10 @@ class GatewayTest extends GatewayTestCase
     public function testFetchTransaction()
     {
         $this->assertInstanceOf(FetchTransactionRequest::class, $this->gateway->fetchTransaction());
+    }
+
+    public function testVoid()
+    {
+        $this->assertInstanceOf(VoidRequest::class, $this->gateway->void());
     }
 }
