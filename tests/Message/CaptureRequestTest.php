@@ -103,7 +103,7 @@ class CaptureRequestTest extends TestCase
 
         $this->httpClient->shouldReceive('createRequest')
             ->with(
-                'POST',
+                RequestInterface::POST,
                 'localhost/ordermanagement/v1/orders/'.self::TRANSACTION_REF.'/captures',
                 ['Content-Type' => 'application/json'],
                 json_encode($inputData),
@@ -112,7 +112,7 @@ class CaptureRequestTest extends TestCase
 
         $this->httpClient->shouldReceive('createRequest')
             ->with(
-                'GET',
+                RequestInterface::GET,
                 'localhost/ordermanagement/v1/orders/'.self::TRANSACTION_REF.'/captures/'.self::CAPTURE_ID,
                 null,
                 null,

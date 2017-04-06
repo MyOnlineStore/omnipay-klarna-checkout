@@ -117,7 +117,7 @@ class AuthorizeRequestTest extends TestCase
 
         $this->httpClient->shouldReceive('createRequest')
             ->with(
-                'POST',
+                RequestInterface::POST,
                 'localhost/checkout/v3/orders',
                 ['Content-Type' => 'application/json'],
                 json_encode($inputData),
@@ -152,7 +152,7 @@ class AuthorizeRequestTest extends TestCase
 
         $this->httpClient->shouldReceive('createRequest')
             ->with(
-                'GET',
+                RequestInterface::GET,
                 'localhost/checkout/v3/orders/f60e69e8-464a-48c0-a452-6fd562540f37',
                 null,
                 null,

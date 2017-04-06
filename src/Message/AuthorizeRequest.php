@@ -2,6 +2,8 @@
 
 namespace MyOnlineStore\Omnipay\KlarnaCheckout\Message;
 
+use Guzzle\Http\Message\RequestInterface;
+
 /**
  * Creates a Klarna Checkout order if it does not exist
  */
@@ -65,7 +67,7 @@ final class AuthorizeRequest extends AbstractRequest
         if (!$this->getTransactionReference()) {
             return new AuthorizeResponse(
                 $this,
-                $this->getResponseBody($this->sendRequest("POST", '/checkout/v3/orders', $data)),
+                $this->getResponseBody($this->sendRequest(RequestInterface::POST, '/checkout/v3/orders', $data)),
                 $this->getRenderUrl()
             );
         }
@@ -73,7 +75,11 @@ final class AuthorizeRequest extends AbstractRequest
         return new AuthorizeResponse(
             $this,
             $this->getResponseBody(
-                $this->sendRequest("GET", '/checkout/v3/orders/'.$this->getTransactionReference(), $data)
+                $this->sendRequest(
+                    RequestInterface::GET,
+                    '/checkout/v3/orders/'.$this->getTransactionReference(),
+                    $data
+                )
             ),
             $this->getRenderUrl()
         );

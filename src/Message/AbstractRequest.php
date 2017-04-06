@@ -2,6 +2,7 @@
 
 namespace MyOnlineStore\Omnipay\KlarnaCheckout\Message;
 
+use Guzzle\Http\Message\RequestInterface;
 use MyOnlineStore\Omnipay\KlarnaCheckout\CurrencyAwareTrait;
 use Guzzle\Http\Message\Response;
 use MyOnlineStore\Omnipay\KlarnaCheckout\ItemBag;
@@ -150,9 +151,9 @@ abstract class AbstractRequest extends \Omnipay\Common\Message\AbstractRequest
      */
     protected function sendRequest($method, $url, $data)
     {
-        if ("GET" === $method) {
+        if (RequestInterface::GET === $method) {
             return $this->httpClient->createRequest(
-                "GET",
+                $method,
                 $this->getBaseUrl().$url,
                 null,
                 null,

@@ -84,7 +84,7 @@ class VoidRequestTest extends TestCase
 
         $this->httpClient->shouldReceive('createRequest')
             ->with(
-                'GET',
+                RequestInterface::GET,
                 'localhost/ordermanagement/v1/orders/'.self::TRANSACTION_REF,
                 null,
                 null,
@@ -93,7 +93,7 @@ class VoidRequestTest extends TestCase
 
         $this->httpClient->shouldReceive('createRequest')
             ->with(
-                'POST',
+                RequestInterface::POST,
                 'localhost/ordermanagement/v1/orders/'.self::TRANSACTION_REF.$expectedPostRoute,
                 ['Content-Type' => 'application/json'],
                 json_encode($inputData),

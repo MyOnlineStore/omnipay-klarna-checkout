@@ -99,7 +99,7 @@ class RefundRequestTest extends TestCase
 
         $this->httpClient->shouldReceive('createRequest')
             ->with(
-                'POST',
+                RequestInterface::POST,
                 'localhost/ordermanagement/v1/orders/foo/refunds',
                 ['Content-Type' => 'application/json'],
                 json_encode($inputData),

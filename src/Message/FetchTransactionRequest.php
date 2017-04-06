@@ -2,6 +2,8 @@
 
 namespace MyOnlineStore\Omnipay\KlarnaCheckout\Message;
 
+use Guzzle\Http\Message\RequestInterface;
+
 final class FetchTransactionRequest extends AbstractRequest
 {
     /**
@@ -23,7 +25,7 @@ final class FetchTransactionRequest extends AbstractRequest
 
         return new FetchTransactionResponse(
             $this,
-            $this->getResponseBody($this->sendRequest("GET", $url, $data))
+            $this->getResponseBody($this->sendRequest(RequestInterface::GET, $url, $data))
         );
     }
 }

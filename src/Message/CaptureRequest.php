@@ -2,6 +2,8 @@
 
 namespace MyOnlineStore\Omnipay\KlarnaCheckout\Message;
 
+use Guzzle\Http\Message\RequestInterface;
+
 final class CaptureRequest extends AbstractRequest
 {
     use ItemDataTrait;
@@ -27,9 +29,9 @@ final class CaptureRequest extends AbstractRequest
      */
     public function sendData($data)
     {
-        $createResponse = $this->sendRequest("POST", $this->getEndpoint(), $data);
+        $createResponse = $this->sendRequest(RequestInterface::POST, $this->getEndpoint(), $data);
         $getResponse = $this->sendRequest(
-            "GET",
+            RequestInterface::GET,
             $this->getEndpoint().'/'.$createResponse->getHeader('capture-id'),
             []
         );

@@ -2,6 +2,8 @@
 
 namespace MyOnlineStore\Omnipay\KlarnaCheckout\Message;
 
+use Guzzle\Http\Message\RequestInterface;
+
 final class RefundRequest extends AbstractRequest
 {
     use ItemDataTrait;
@@ -29,6 +31,9 @@ final class RefundRequest extends AbstractRequest
     {
         $url = '/ordermanagement/v1/orders/'.$this->getTransactionReference().'/refunds';
 
-        return new RefundResponse($this, $this->getResponseBody($this->sendRequest("POST", $url, $data)));
+        return new RefundResponse(
+            $this,
+            $this->getResponseBody($this->sendRequest(RequestInterface::POST, $url, $data))
+        );
     }
 }
