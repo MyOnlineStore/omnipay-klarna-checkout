@@ -4,7 +4,7 @@ namespace MyOnlineStore\Tests\Omnipay\KlarnaCheckout\Message;
 
 use Guzzle\Http\ClientInterface;
 use Guzzle\Http\Message\Response;
-use GuzzleHttp\Message\RequestInterface;
+use Guzzle\Http\Message\RequestInterface;
 use MyOnlineStore\Omnipay\KlarnaCheckout\Message\FetchTransactionRequest;
 use MyOnlineStore\Omnipay\KlarnaCheckout\Message\FetchTransactionResponse;
 use Omnipay\Common\Exception\InvalidRequestException;
@@ -60,7 +60,7 @@ class FetchTransactionRequestTest extends TestCase
 
         $this->httpClient->shouldReceive('createRequest')
             ->with(
-                'GET',
+                RequestInterface::GET,
                 'localhost/ordermanagement/v1/orders/foo',
                 null,
                 null,
