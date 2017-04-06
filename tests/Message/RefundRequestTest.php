@@ -51,16 +51,30 @@ class RefundRequestTest extends TestCase
         $this->refundRequest->getData();
     }
 
-    public function testGetDataWillReturnCorrectData()
+    /**
+     * @return array
+     */
+    public function validRequestDataProvider()
+    {
+        return [
+            [null, []],   // No item data should return result without order_line entry
+            [[$this->getItemMock()], ['order_lines' => [$this->getExpectedOrderLine()]]],
+        ];
+    }
+
+    /**
+     * @dataProvider validRequestDataProvider
+     *
+     * @param array|null $items
+     * @param array      $expectedItemData
+     */
+    public function testGetDataWillReturnCorrectData($items, array $expectedItemData)
     {
         $this->refundRequest->initialize(['transactionReference' => 'foo', 'amount' => '10.00']);
-        $this->refundRequest->setItems([$this->getItemMock()]);
+        $this->refundRequest->setItems($items);
 
         self::assertEquals(
-            [
-                'refunded_amount' => 1000,
-                'order_lines' => [$this->getExpectedOrderLine()],
-            ],
+            ['refunded_amount' => 1000] + $expectedItemData,
             $this->refundRequest->getData()
         );
     }
