@@ -2,14 +2,14 @@
 
 namespace MyOnlineStore\Tests\Omnipay\KlarnaCheckout\Message;
 
-use MyOnlineStore\Omnipay\KlarnaCheckout\Message\VoidResponse;
+use MyOnlineStore\Omnipay\KlarnaCheckout\Message\AcknowledgeResponse;
 use Omnipay\Tests\TestCase;
 
-class VoidResponseTest extends TestCase
+class AcknowledgeResponseTest extends TestCase
 {
     public function testIsSuccessfulWillReturnTrue()
     {
-        $response = new VoidResponse($this->getMockRequest(), []);
+        $response = new AcknowledgeResponse($this->getMockRequest(), []);
         self::assertTrue($response->isSuccessful());
     }
 }

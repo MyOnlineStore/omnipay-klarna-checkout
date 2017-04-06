@@ -4,6 +4,7 @@ namespace MyOnlineStore\Omnipay\KlarnaCheckout;
 
 use Klarna\Rest\Transport\Connector;
 use Klarna\Rest\Transport\ConnectorInterface;
+use MyOnlineStore\Omnipay\KlarnaCheckout\Message\AcknowledgeRequest;
 use MyOnlineStore\Omnipay\KlarnaCheckout\Message\AuthorizeRequest;
 use MyOnlineStore\Omnipay\KlarnaCheckout\Message\CaptureRequest;
 use MyOnlineStore\Omnipay\KlarnaCheckout\Message\FetchTransactionRequest;
@@ -12,15 +13,21 @@ use MyOnlineStore\Omnipay\KlarnaCheckout\Message\VoidRequest;
 use Omnipay\Common\AbstractGateway;
 use Omnipay\Common\Message\RequestInterface;
 
-final class Gateway extends AbstractGateway
+final class Gateway extends AbstractGateway implements GatewayInterface
 {
     const API_VERSION_EUROPE = 'EU';
     const API_VERSION_NORTH_AMERICA = 'NA';
 
     /**
-     * @param array $options
-     *
-     * @return RequestInterface
+     * @inheritdoc
+     */
+    public function acknowledge(array $options = [])
+    {
+        return $this->createRequest(AcknowledgeRequest::class, $options);
+    }
+
+    /**
+     * @inheritdoc
      */
     public function authorize(array $options = [])
     {
@@ -28,9 +35,7 @@ final class Gateway extends AbstractGateway
     }
 
     /**
-     * @param array $options
-     *
-     * @return RequestInterface
+     * @inheritdoc
      */
     public function capture(array $options = [])
     {
@@ -38,33 +43,11 @@ final class Gateway extends AbstractGateway
     }
 
     /**
-     * @param  array $options
-     *
-     * @return RequestInterface
+     * @inheritdoc
      */
     public function fetchTransaction(array $options = array())
     {
         return $this->createRequest(FetchTransactionRequest::class, $options);
-    }
-
-    /**
-     * @param array $options
-     *
-     * @return RequestInterface
-     */
-    public function refund(array $options = [])
-    {
-        return $this->createRequest(RefundRequest::class, $options);
-    }
-
-    /**
-     * @param array $options
-     *
-     * @return RequestInterface
-     */
-    public function void(array $options = [])
-    {
-        return $this->createRequest(VoidRequest::class, $options);
     }
 
     /**
@@ -167,5 +150,21 @@ final class Gateway extends AbstractGateway
         $this->setParameter('secret', $secret);
 
         return $this;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function refund(array $options = [])
+    {
+        return $this->createRequest(RefundRequest::class, $options);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function void(array $options = [])
+    {
+        return $this->createRequest(VoidRequest::class, $options);
     }
 }
