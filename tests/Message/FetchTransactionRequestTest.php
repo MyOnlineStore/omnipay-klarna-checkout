@@ -2,12 +2,9 @@
 
 namespace MyOnlineStore\Tests\Omnipay\KlarnaCheckout\Message;
 
-use Guzzle\Http\Message\Response;
-use Guzzle\Http\Message\RequestInterface;
 use MyOnlineStore\Omnipay\KlarnaCheckout\Message\FetchTransactionRequest;
 use MyOnlineStore\Omnipay\KlarnaCheckout\Message\FetchTransactionResponse;
 use Omnipay\Common\Exception\InvalidRequestException;
-use Omnipay\Tests\TestCase;
 
 class FetchTransactionRequestTest extends RequestTestCase
 {
@@ -42,35 +39,19 @@ class FetchTransactionRequestTest extends RequestTestCase
 
     public function testSendData()
     {
-        $inputData = ['request-data' => 'yey?'];
         $expectedData = ['response-data' => 'yey!'];
-
-        $response = \Mockery::mock(Response::class);
-        $response->shouldReceive('getBody')->with(true)->andReturn(json_encode($expectedData));
-        $response->shouldReceive('json')->andReturn($expectedData);
-
-        $request = \Mockery::mock(RequestInterface::class);
-        $request->shouldReceive('send')->once()->andReturn($response);
-
-        $this->httpClient->shouldReceive('createRequest')
-            ->with(
-                RequestInterface::GET,
-                'localhost/ordermanagement/v1/orders/foo',
-                null,
-                null,
-                ['auth' => ['merchant-32', 'very-secret-stuff']]
-            )->andReturn($request);
+        $this->setExpectedGetRequest($expectedData, self::BASE_URL.'/ordermanagement/v1/orders/foo');
 
         $this->fetchTransactionRequest->initialize([
-            'base_url' => 'localhost',
-            'merchant_id' => 'merchant-32',
-            'secret' => 'very-secret-stuff',
+            'base_url' => self::BASE_URL,
+            'merchant_id' => self::MERCHANT_ID,
+            'secret' => self::SECRET,
             'transactionReference' => 'foo',
         ]);
 
-        $response = $this->fetchTransactionRequest->sendData($inputData);
+        $fetchResponse = $this->fetchTransactionRequest->sendData([]);
 
-        self::assertInstanceOf(FetchTransactionResponse::class, $response);
-        self::assertSame($expectedData, $response->getData());
+        self::assertInstanceOf(FetchTransactionResponse::class, $fetchResponse);
+        self::assertSame($expectedData, $fetchResponse->getData());
     }
 }

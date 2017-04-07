@@ -2,8 +2,6 @@
 
 namespace MyOnlineStore\Tests\Omnipay\KlarnaCheckout\Message;
 
-use Guzzle\Http\Message\RequestInterface;
-use Guzzle\Http\Message\Response;
 use MyOnlineStore\Omnipay\KlarnaCheckout\Message\AcknowledgeRequest;
 use MyOnlineStore\Omnipay\KlarnaCheckout\Message\AcknowledgeResponse;
 
@@ -35,32 +33,22 @@ class AcknowledgeRequestTest extends RequestTestCase
         $inputData = ['request-data' => 'yey?'];
         $expectedData = [];
 
-        $response = \Mockery::mock(Response::class);
-        $response->shouldReceive('getBody')->with(true)->once()->andReturn(json_encode($expectedData));
-        $response->shouldReceive('json')->once()->andReturn($expectedData);
-
-        $request = \Mockery::mock(RequestInterface::class);
-        $request->shouldReceive('send')->once()->andReturn($response);
-
-        $this->httpClient->shouldReceive('createRequest')
-            ->with(
-                RequestInterface::POST,
-                'localhost/ordermanagement/v1/orders/foo/acknowledge',
-                ['Content-Type' => 'application/json'],
-                json_encode($inputData),
-                ['auth' => ['merchant-32', 'very-secret-stuff']]
-            )->andReturn($request);
+        $this->setExpectedPostRequest(
+            $inputData,
+            $expectedData,
+            self::BASE_URL.'/ordermanagement/v1/orders/foo/acknowledge'
+        );
 
         $this->acknowledgeRequest->initialize([
-            'base_url' => 'localhost',
-            'merchant_id' => 'merchant-32',
-            'secret' => 'very-secret-stuff',
+            'base_url' => self::BASE_URL,
+            'merchant_id' => self::MERCHANT_ID,
+            'secret' => self::SECRET,
             'transactionReference' => 'foo',
         ]);
 
-        $response = $this->acknowledgeRequest->sendData($inputData);
+        $acknowledgeResponse = $this->acknowledgeRequest->sendData($inputData);
 
-        self::assertInstanceOf(AcknowledgeResponse::class, $response);
-        self::assertSame($expectedData, $response->getData());
+        self::assertInstanceOf(AcknowledgeResponse::class, $acknowledgeResponse);
+        self::assertSame($expectedData, $acknowledgeResponse->getData());
     }
 }
