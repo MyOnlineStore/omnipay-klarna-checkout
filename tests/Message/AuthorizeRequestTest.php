@@ -2,8 +2,6 @@
 
 namespace MyOnlineStore\Tests\Omnipay\KlarnaCheckout\Message;
 
-use Guzzle\Http\Message\RequestInterface;
-use Guzzle\Http\Message\Response;
 use MyOnlineStore\Omnipay\KlarnaCheckout\Message\AuthorizeRequest;
 use MyOnlineStore\Omnipay\KlarnaCheckout\Message\AuthorizeResponse;
 use Omnipay\Common\Exception\InvalidRequestException;
@@ -101,34 +99,20 @@ class AuthorizeRequestTest extends RequestTestCase
         $inputData = ['request-data' => 'yey?'];
         $expectedData = ['response-data' => 'yey!'];
 
-        $response = \Mockery::mock(Response::class);
-        $response->shouldReceive('getBody')->with(true)->andReturn(json_encode($expectedData));
-        $response->shouldReceive('json')->andReturn($expectedData);
-
-        $request = \Mockery::mock(RequestInterface::class);
-        $request->shouldReceive('send')->once()->andReturn($response);
-
-        $this->httpClient->shouldReceive('createRequest')
-            ->with(
-                RequestInterface::POST,
-                'localhost/checkout/v3/orders',
-                ['Content-Type' => 'application/json'],
-                json_encode($inputData),
-                ['auth' => ['merchant-32', 'very-secret-stuff']]
-            )->andReturn($request);
+        $this->setExpectedPostRequest($inputData, $expectedData, self::BASE_URL.'/checkout/v3/orders');
 
         $this->authorizeRequest->initialize([
-            'base_url' => 'localhost',
-            'merchant_id' => 'merchant-32',
-            'secret' => 'very-secret-stuff'
+            'base_url' => self::BASE_URL,
+            'merchant_id' => self::MERCHANT_ID,
+            'secret' => self::SECRET,
         ]);
         $this->authorizeRequest->setRenderUrl('localhost/render');
 
-        $response = $this->authorizeRequest->sendData($inputData);
+        $authorizeResponse = $this->authorizeRequest->sendData($inputData);
 
-        self::assertInstanceOf(AuthorizeResponse::class, $response);
-        self::assertSame($expectedData, $response->getData());
-        self::assertEquals('localhost/render', $response->getRedirectUrl());
+        self::assertInstanceOf(AuthorizeResponse::class, $authorizeResponse);
+        self::assertSame($expectedData, $authorizeResponse->getData());
+        self::assertEquals('localhost/render', $authorizeResponse->getRedirectUrl());
     }
 
     public function testSendDataWillFetchOrderAndReturnResponseIfTransactionIdAlreadySet()
@@ -136,26 +120,15 @@ class AuthorizeRequestTest extends RequestTestCase
         $inputData = ['request-data' => 'yey?'];
         $expectedData = ['response-data' => 'yey!'];
 
-        $response = \Mockery::mock(Response::class);
-        $response->shouldReceive('getBody')->with(true)->andReturn(json_encode($expectedData));
-        $response->shouldReceive('json')->andReturn($expectedData);
-
-        $request = \Mockery::mock(RequestInterface::class);
-        $request->shouldReceive('send')->once()->andReturn($response);
-
-        $this->httpClient->shouldReceive('createRequest')
-            ->with(
-                RequestInterface::GET,
-                'localhost/checkout/v3/orders/f60e69e8-464a-48c0-a452-6fd562540f37',
-                null,
-                null,
-                ['auth' => ['merchant-32', 'very-secret-stuff']]
-            )->andReturn($request);
+        $this->setExpectedGetRequest(
+            $expectedData,
+            self::BASE_URL.'/checkout/v3/orders/f60e69e8-464a-48c0-a452-6fd562540f37'
+        );
 
         $this->authorizeRequest->initialize([
-            'base_url' => 'localhost',
-            'merchant_id' => 'merchant-32',
-            'secret' => 'very-secret-stuff',
+            'base_url' => self::BASE_URL,
+            'merchant_id' => self::MERCHANT_ID,
+            'secret' => self::SECRET,
             'transactionReference' => 'f60e69e8-464a-48c0-a452-6fd562540f37',
         ]);
 

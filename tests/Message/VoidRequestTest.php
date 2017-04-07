@@ -2,8 +2,6 @@
 
 namespace MyOnlineStore\Tests\Omnipay\KlarnaCheckout\Message;
 
-use Guzzle\Http\Message\RequestInterface;
-use Guzzle\Http\Message\Response;
 use MyOnlineStore\Omnipay\KlarnaCheckout\Message\VoidRequest;
 use MyOnlineStore\Omnipay\KlarnaCheckout\Message\VoidResponse;
 use Omnipay\Common\Exception\InvalidRequestException;
@@ -61,47 +59,29 @@ class VoidRequestTest extends RequestTestCase
     public function testSendDataWillVoidOrderAndReturnResponse(array $captures, $expectedPostRoute)
     {
         $inputData = ['request-data' => 'yey?'];
-        $orderData = ['captures' => $captures];
         $expectedData = [];
 
-        $response = \Mockery::mock(Response::class);
-        $response->shouldReceive('getBody')
-            ->with(true)
-            ->twice()
-            ->andReturn(json_encode($orderData), json_encode($expectedData));
-        $response->shouldReceive('json')->twice()->andReturn($orderData, $expectedData);
+        $this->setExpectedGetRequest(
+            ['captures' => $captures],
+            self::BASE_URL.'/ordermanagement/v1/orders/'.self::TRANSACTION_REF
+        );
 
-        $request = \Mockery::mock(RequestInterface::class);
-        $request->shouldReceive('send')->twice()->andReturn($response);
-
-        $this->httpClient->shouldReceive('createRequest')
-            ->with(
-                RequestInterface::GET,
-                'localhost/ordermanagement/v1/orders/'.self::TRANSACTION_REF,
-                null,
-                null,
-                ['auth' => ['merchant-32', 'very-secret-stuff']]
-            )->andReturn($request);
-
-        $this->httpClient->shouldReceive('createRequest')
-            ->with(
-                RequestInterface::POST,
-                'localhost/ordermanagement/v1/orders/'.self::TRANSACTION_REF.$expectedPostRoute,
-                ['Content-Type' => 'application/json'],
-                json_encode($inputData),
-                ['auth' => ['merchant-32', 'very-secret-stuff']]
-            )->andReturn($request);
+        $this->setExpectedPostRequest(
+            $inputData,
+            $expectedData,
+            self::BASE_URL.'/ordermanagement/v1/orders/'.self::TRANSACTION_REF.$expectedPostRoute
+        );
 
         $this->voidRequest->initialize([
-            'base_url' => 'localhost',
-            'merchant_id' => 'merchant-32',
-            'secret' => 'very-secret-stuff',
+            'base_url' => self::BASE_URL,
+            'merchant_id' => self::MERCHANT_ID,
+            'secret' => self::SECRET,
             'transactionReference' => self::TRANSACTION_REF,
         ]);
 
-        $response = $this->voidRequest->sendData($inputData);
+        $voidResponse = $this->voidRequest->sendData($inputData);
 
-        self::assertInstanceOf(VoidResponse::class, $response);
-        self::assertSame($expectedData, $response->getData());
+        self::assertInstanceOf(VoidResponse::class, $voidResponse);
+        self::assertSame($expectedData, $voidResponse->getData());
     }
 }

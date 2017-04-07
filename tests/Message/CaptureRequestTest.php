@@ -88,40 +88,34 @@ class CaptureRequestTest extends RequestTestCase
 
         $response = \Mockery::mock(Response::class);
         $response->shouldReceive('getHeader')->with('capture-id')->once()->andReturn(self::CAPTURE_ID);
-        $response->shouldReceive('getBody')->with(true)->once()->andReturn(json_encode($expectedData));
-        $response->shouldReceive('json')->once()->andReturn($expectedData);
 
         $request = \Mockery::mock(RequestInterface::class);
-        $request->shouldReceive('send')->twice()->andReturn($response);
+        $request->shouldReceive('send')->once()->andReturn($response);
 
         $this->httpClient->shouldReceive('createRequest')
             ->with(
                 RequestInterface::POST,
-                'localhost/ordermanagement/v1/orders/'.self::TRANSACTION_REF.'/captures',
+                self::BASE_URL.'/ordermanagement/v1/orders/'.self::TRANSACTION_REF.'/captures',
                 ['Content-Type' => 'application/json'],
                 json_encode($inputData),
-                ['auth' => ['merchant-32', 'very-secret-stuff']]
+                ['auth' => [self::MERCHANT_ID, self::SECRET]]
             )->andReturn($request);
 
-        $this->httpClient->shouldReceive('createRequest')
-            ->with(
-                RequestInterface::GET,
-                'localhost/ordermanagement/v1/orders/'.self::TRANSACTION_REF.'/captures/'.self::CAPTURE_ID,
-                null,
-                null,
-                ['auth' => ['merchant-32', 'very-secret-stuff']]
-            )->andReturn($request);
+        $this->setExpectedGetRequest(
+            $expectedData,
+            self::BASE_URL.'/ordermanagement/v1/orders/'.self::TRANSACTION_REF.'/captures/'.self::CAPTURE_ID
+        );
 
         $this->captureRequest->initialize([
-            'base_url' => 'localhost',
-            'merchant_id' => 'merchant-32',
-            'secret' => 'very-secret-stuff',
+            'base_url' => self::BASE_URL,
+            'merchant_id' => self::MERCHANT_ID,
+            'secret' => self::SECRET,
             'transactionReference' => self::TRANSACTION_REF,
         ]);
 
-        $response = $this->captureRequest->sendData($inputData);
+        $captureResponse = $this->captureRequest->sendData($inputData);
 
-        self::assertInstanceOf(CaptureResponse::class, $response);
-        self::assertSame($expectedData, $response->getData());
+        self::assertInstanceOf(CaptureResponse::class, $captureResponse);
+        self::assertSame($expectedData, $captureResponse->getData());
     }
 }
