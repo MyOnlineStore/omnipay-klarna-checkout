@@ -37,10 +37,10 @@ class FetchTransactionRequestTest extends RequestTestCase
         $this->fetchTransactionRequest->getData();
     }
 
-    public function testSendData()
+    public function testSendDataWillReturnResponseFromCheckoutApiForUnknownOrder()
     {
-        $expectedData = ['response-data' => 'yey!'];
-        $this->setExpectedGetRequest($expectedData, self::BASE_URL.'/ordermanagement/v1/orders/foo');
+        $expectedData = ['response-data' => 'nay!'];
+        $this->setExpectedGetRequest($expectedData, self::BASE_URL.'/checkout/v3/orders/foo');
 
         $this->fetchTransactionRequest->initialize([
             'base_url' => self::BASE_URL,
@@ -53,5 +53,44 @@ class FetchTransactionRequestTest extends RequestTestCase
 
         self::assertInstanceOf(FetchTransactionResponse::class, $fetchResponse);
         self::assertSame($expectedData, $fetchResponse->getData());
+    }
+
+    public function testSendDataWillReturnResponseFromCheckoutApiForIncompleteOrder()
+    {
+        $expectedData = ['status' => 'checkout_incomplete'];
+        $this->setExpectedGetRequest($expectedData, self::BASE_URL.'/checkout/v3/orders/foo');
+
+        $this->fetchTransactionRequest->initialize([
+            'base_url' => self::BASE_URL,
+            'merchant_id' => self::MERCHANT_ID,
+            'secret' => self::SECRET,
+            'transactionReference' => 'foo',
+        ]);
+
+        $fetchResponse = $this->fetchTransactionRequest->sendData([]);
+
+        self::assertInstanceOf(FetchTransactionResponse::class, $fetchResponse);
+        self::assertSame($expectedData, $fetchResponse->getData());
+    }
+
+    public function testSendDataWillReturnResponseFromManagementApiForCompleteOrder()
+    {
+        $expectedCheckoutData = ['status' => 'checkout_complete'];
+        $expectedManagementData = ['response-data' => 'yay!'];
+
+        $this->setExpectedGetRequest($expectedCheckoutData, self::BASE_URL.'/checkout/v3/orders/foo');
+        $this->setExpectedGetRequest($expectedManagementData, self::BASE_URL.'/ordermanagement/v1/orders/foo');
+
+        $this->fetchTransactionRequest->initialize([
+            'base_url' => self::BASE_URL,
+            'merchant_id' => self::MERCHANT_ID,
+            'secret' => self::SECRET,
+            'transactionReference' => 'foo',
+        ]);
+
+        $fetchResponse = $this->fetchTransactionRequest->sendData([]);
+
+        self::assertInstanceOf(FetchTransactionResponse::class, $fetchResponse);
+        self::assertSame($expectedManagementData, $fetchResponse->getData());
     }
 }
