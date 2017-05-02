@@ -2,17 +2,14 @@
 
 namespace MyOnlineStore\Tests\Omnipay\KlarnaCheckout\Message;
 
-use GuzzleHttp\Message\RequestInterface;
-use GuzzleHttp\Message\ResponseInterface;
-use Klarna\Rest\OrderManagement\Capture;
-use Klarna\Rest\Transport\Connector;
 use MyOnlineStore\Omnipay\KlarnaCheckout\Message\VoidRequest;
 use MyOnlineStore\Omnipay\KlarnaCheckout\Message\VoidResponse;
 use Omnipay\Common\Exception\InvalidRequestException;
-use Omnipay\Tests\TestCase;
 
-class VoidRequestTest extends TestCase
+class VoidRequestTest extends RequestTestCase
 {
+    const TRANSACTION_REF = 'foo';
+
     /**
      * @var VoidRequest
      */
@@ -23,7 +20,8 @@ class VoidRequestTest extends TestCase
      */
     protected function setUp()
     {
-        $this->voidRequest = new VoidRequest($this->getHttpClient(), $this->getHttpRequest());
+        parent::setUp();
+        $this->voidRequest = new VoidRequest($this->httpClient, $this->getHttpRequest());
     }
 
     public function testGetDataWillThrowExceptionForInvalidRequest()
@@ -47,44 +45,43 @@ class VoidRequestTest extends TestCase
     public function voidRequestCaptureDataProvider()
     {
         return [
-            [[], '/cancel$/'],
-            [[[Capture::ID_FIELD => 1]], '/release-remaining-authorization$/']
+            [[], '/cancel'],
+            [[['capture-id' => 1]], '/release-remaining-authorization']
         ];
-
     }
 
     /**
      * @dataProvider voidRequestCaptureDataProvider
      *
      * @param array  $captures
-     * @param string$expectedPostRoute
+     * @param string $expectedPostRoute
      */
     public function testSendDataWillVoidOrderAndReturnResponse(array $captures, $expectedPostRoute)
     {
-        $request = \Mockery::mock(RequestInterface::class);
+        $inputData = ['request-data' => 'yey?'];
+        $expectedData = [];
 
-        $response = \Mockery::spy(ResponseInterface::class);
-        $response->shouldReceive('getStatusCode')->twice()->andReturn('200', '204');
-        $response->shouldReceive('hasHeader')->with(\Mockery::type('string'))->andReturn(true);
-        $response->shouldReceive('getHeader')->with('Location')->andReturn('Over there!');
-        $response->shouldReceive('getHeader')->with('Content-Type')->andReturn('application/json');
-        $response->shouldReceive('json')->andReturn(['captures' => $captures]);
+        $this->setExpectedGetRequest(
+            ['captures' => $captures],
+            self::BASE_URL.'/ordermanagement/v1/orders/'.self::TRANSACTION_REF
+        );
 
-        $connector = \Mockery::spy(Connector::class);
-        $connector->shouldReceive('createRequest')
-            ->with(\Mockery::type('string'), 'GET', [])
-            ->once()
-            ->andReturn($request);
-        $connector->shouldReceive('createRequest')
-            ->with($expectedPostRoute, 'POST', [])
-            ->once()
-            ->andReturn($request);
-        $connector->shouldReceive('send')->andReturn($response);
+        $this->setExpectedPostRequest(
+            $inputData,
+            $expectedData,
+            self::BASE_URL.'/ordermanagement/v1/orders/'.self::TRANSACTION_REF.$expectedPostRoute
+        );
 
-        $this->voidRequest->initialize(['connector' => $connector]);
+        $this->voidRequest->initialize([
+            'base_url' => self::BASE_URL,
+            'merchant_id' => self::MERCHANT_ID,
+            'secret' => self::SECRET,
+            'transactionReference' => self::TRANSACTION_REF,
+        ]);
 
-        $response = $this->voidRequest->sendData([]);
+        $voidResponse = $this->voidRequest->sendData($inputData);
 
-        self::assertInstanceOf(VoidResponse::class, $response);
+        self::assertInstanceOf(VoidResponse::class, $voidResponse);
+        self::assertSame($expectedData, $voidResponse->getData());
     }
 }

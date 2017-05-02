@@ -2,9 +2,13 @@
 
 namespace MyOnlineStore\Omnipay\KlarnaCheckout\Message;
 
-use Klarna\Rest\Transport\ConnectorInterface;
+use Guzzle\Common\Event;
+use Guzzle\Http\ClientInterface;
+use Guzzle\Http\Message\RequestInterface;
+use Guzzle\Http\Message\Response;
 use MyOnlineStore\Omnipay\KlarnaCheckout\CurrencyAwareTrait;
 use MyOnlineStore\Omnipay\KlarnaCheckout\ItemBag;
+use Symfony\Component\HttpFoundation\Request as HttpRequest;
 
 /**
  * @method ItemBag|null getItems()
@@ -14,11 +18,21 @@ abstract class AbstractRequest extends \Omnipay\Common\Message\AbstractRequest
     use CurrencyAwareTrait;
 
     /**
-     * @return ConnectorInterface
+     * @inheritdoc
      */
-    public function getConnector()
+    public function __construct(ClientInterface $httpClient, HttpRequest $httpRequest)
     {
-        return $this->getParameter('connector');
+        parent::__construct($httpClient, $httpRequest);
+
+        // don't throw exceptions for 4xx errors
+        $this->httpClient->getEventDispatcher()->addListener(
+            'request.error',
+            function (Event $event) {
+                if ($event['response']->isClientError()) {
+                    $event->stopPropagation();
+                }
+            }
+        );
     }
 
     /**
@@ -39,14 +53,6 @@ abstract class AbstractRequest extends \Omnipay\Common\Message\AbstractRequest
     public function getTaxAmount()
     {
         return $this->getParameter('tax_amount');
-    }
-
-    /**
-     * @param ConnectorInterface $connector
-     */
-    public function setConnector(ConnectorInterface $connector)
-    {
-        $this->setParameter('connector', $connector);
     }
 
     /**
@@ -71,6 +77,14 @@ abstract class AbstractRequest extends \Omnipay\Common\Message\AbstractRequest
     public function getSecret()
     {
         return $this->getParameter('secret');
+    }
+
+    /**
+     * @return string
+     */
+    public function getBaseUrl()
+    {
+        return $this->getParameter('base_url');
     }
 
     /**
@@ -135,5 +149,63 @@ abstract class AbstractRequest extends \Omnipay\Common\Message\AbstractRequest
         $this->setParameter('secret', $secret);
 
         return $this;
+    }
+
+    /**
+     * @param string $baseUrl
+     *
+     * @return $this
+     */
+    public function setBaseUrl($baseUrl)
+    {
+        $this->setParameter('base_url', $baseUrl);
+
+        return $this;
+    }
+
+    /**
+     * @param string $method
+     * @param string $url
+     * @param mixed  $data
+     *
+     * @return Response
+     */
+    protected function sendRequest($method, $url, $data)
+    {
+        if (RequestInterface::GET === $method) {
+            return $this->httpClient->createRequest(
+                $method,
+                $this->getBaseUrl().$url,
+                null,
+                null,
+                $this->getRequestOptions()
+            )->send();
+        }
+
+        return $this->httpClient->createRequest(
+            $method,
+            $this->getBaseUrl().$url,
+            ['Content-Type' => 'application/json'],
+            json_encode($data),
+            $this->getRequestOptions()
+        )->send();
+    }
+
+    /**
+     * @return array
+     */
+    protected function getRequestOptions()
+    {
+        return ['auth' => [$this->getMerchantId(), $this->getSecret()]];
+    }
+
+    /**
+     * @param Response $response
+     *
+     * @return array
+     */
+    protected function getResponseBody(Response $response)
+    {
+        return $response->json();
     }
 }

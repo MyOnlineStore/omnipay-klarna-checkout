@@ -2,7 +2,7 @@
 
 namespace MyOnlineStore\Omnipay\KlarnaCheckout\Message;
 
-use Klarna\Rest\OrderManagement\Order;
+use Guzzle\Http\Message\RequestInterface;
 
 final class VoidRequest extends AbstractRequest
 {
@@ -21,15 +21,15 @@ final class VoidRequest extends AbstractRequest
      */
     public function sendData($data)
     {
-        $order = new Order($this->getConnector(), $this->getTransactionReference());
-        $order->fetch();
+        $baseUrl = '/ordermanagement/v1/orders/'.$this->getTransactionReference();
 
-        if (empty($order['captures'])) {
-            $order->cancel();
-        } else {
-            $order->releaseRemainingAuthorization();
-        }
+        $order = $this->getResponseBody($this->sendRequest(RequestInterface::GET, $baseUrl, []));
 
-        return new VoidResponse($this, $order);
+        $voidUrl = $baseUrl.(empty($order['captures']) ? '/cancel' : '/release-remaining-authorization');
+
+        return new VoidResponse(
+            $this,
+            $this->getResponseBody($this->sendRequest(RequestInterface::POST, $voidUrl, $data))
+        );
     }
 }

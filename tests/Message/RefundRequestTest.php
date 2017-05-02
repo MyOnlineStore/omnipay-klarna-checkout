@@ -2,15 +2,11 @@
 
 namespace MyOnlineStore\Tests\Omnipay\KlarnaCheckout\Message;
 
-use GuzzleHttp\Message\RequestInterface;
-use GuzzleHttp\Message\ResponseInterface;
-use Klarna\Rest\Transport\Connector;
 use MyOnlineStore\Omnipay\KlarnaCheckout\Message\RefundRequest;
 use MyOnlineStore\Omnipay\KlarnaCheckout\Message\RefundResponse;
 use Omnipay\Common\Exception\InvalidRequestException;
-use Omnipay\Tests\TestCase;
 
-class RefundRequestTest extends TestCase
+class RefundRequestTest extends RequestTestCase
 {
     use ItemDataTestTrait;
 
@@ -24,7 +20,8 @@ class RefundRequestTest extends TestCase
      */
     protected function setUp()
     {
-        $this->refundRequest = new RefundRequest($this->getHttpClient(), $this->getHttpRequest());
+        parent::setUp();
+        $this->refundRequest = new RefundRequest($this->httpClient, $this->getHttpRequest());
     }
 
     /**
@@ -81,20 +78,25 @@ class RefundRequestTest extends TestCase
 
     public function testSendDataWillCreateRefundAndReturnResponse()
     {
-        $request = \Mockery::mock(RequestInterface::class);
+        $inputData = ['request-data' => 'yey?'];
+        $expectedData = [];
 
-        $response = \Mockery::spy(ResponseInterface::class);
-        $response->shouldReceive('getStatusCode')->once()->andReturn('201');
+        $this->setExpectedPostRequest(
+            $inputData,
+            $expectedData,
+            self::BASE_URL.'/ordermanagement/v1/orders/foo/refunds'
+        );
 
-        $connector = \Mockery::spy(Connector::class);
-        $connector->shouldReceive('createRequest')
-            ->with(\Mockery::type('string'), 'POST', ['json' => ['request-data' => 'yey?']])
-            ->once()
-            ->andReturn($request);
-        $connector->shouldReceive('send')->andReturn($response);
+        $this->refundRequest->initialize([
+            'base_url' => self::BASE_URL,
+            'merchant_id' => self::MERCHANT_ID,
+            'secret' => self::SECRET,
+            'transactionReference' => 'foo',
+        ]);
 
-        $this->refundRequest->initialize(['connector' => $connector]);
+        $refundResponse = $this->refundRequest->sendData($inputData);
 
-        self::assertInstanceOf(RefundResponse::class, $this->refundRequest->sendData(['request-data' => 'yey?']));
+        self::assertInstanceOf(RefundResponse::class, $refundResponse);
+        self::assertSame($expectedData, $refundResponse->getData());
     }
 }
