@@ -2,15 +2,11 @@
 
 namespace MyOnlineStore\Tests\Omnipay\KlarnaCheckout\Message;
 
-use GuzzleHttp\Message\RequestInterface;
-use GuzzleHttp\Message\ResponseInterface;
-use Klarna\Rest\Transport\Connector;
 use MyOnlineStore\Omnipay\KlarnaCheckout\Message\AuthorizeRequest;
 use MyOnlineStore\Omnipay\KlarnaCheckout\Message\AuthorizeResponse;
 use Omnipay\Common\Exception\InvalidRequestException;
-use Omnipay\Tests\TestCase;
 
-class AuthorizeRequestTest extends TestCase
+class AuthorizeRequestTest extends RequestTestCase
 {
     use ItemDataTestTrait;
 
@@ -24,12 +20,43 @@ class AuthorizeRequestTest extends TestCase
      */
     protected function setUp()
     {
-        $this->authorizeRequest = new AuthorizeRequest($this->getHttpClient(), $this->getHttpRequest());
+        parent::setUp();
+        $this->authorizeRequest = new AuthorizeRequest($this->httpClient, $this->getHttpRequest());
     }
 
-    public function testGetDataWillThrowExceptionForInvalidRequest()
+    /**
+     * @return array
+     */
+    public function invalidRequestDataProvider()
     {
-        $this->authorizeRequest->initialize([]);
+        $data = [
+            'amount' => true,
+            'currency' => true,
+            'items' => [],
+            'locale' => true,
+            'notifyUrl' => true,
+            'returnUrl' => true,
+            'tax_amount' => true,
+            'terms_url' => true,
+        ];
+
+        $cases = [];
+
+        foreach ($data as $key => $value) {
+            $cases[] = [array_diff_key($data, [$key => $value])];
+        }
+
+        return $cases;
+    }
+
+    /**
+     * @dataProvider invalidRequestDataProvider
+     *
+     * @param array $requestData
+     */
+    public function testGetDataWillThrowExceptionForInvalidRequest(array $requestData)
+    {
+        $this->authorizeRequest->initialize($requestData);
 
         $this->setExpectedException(InvalidRequestException::class);
         $this->authorizeRequest->getData();
@@ -69,61 +96,45 @@ class AuthorizeRequestTest extends TestCase
 
     public function testSendDataWillCreateOrderAndReturnResponse()
     {
-        $request = \Mockery::mock(RequestInterface::class);
+        $inputData = ['request-data' => 'yey?'];
+        $expectedData = ['response-data' => 'yey!'];
 
-        $response = \Mockery::spy(ResponseInterface::class);
-        $response->shouldReceive('getStatusCode')->twice()->andReturn('201', '200');
-        $response->shouldReceive('hasHeader')->with(\Mockery::type('string'))->andReturn(true);
-        $response->shouldReceive('getHeader')->with('Location')->andReturn('Over there!');
-        $response->shouldReceive('getHeader')->with('Content-Type')->andReturn('application/json');
-        $response->shouldReceive('json')->andReturn(['response-data' => 'yey!']);
-
-        $connector = \Mockery::spy(Connector::class);
-        $connector->shouldReceive('createRequest')
-            ->with(\Mockery::type('string'), 'POST', ['json' => ['request-data' => 'yey?']])
-            ->once()
-            ->andReturn($request);
-        $connector->shouldReceive('createRequest')
-            ->with(\Mockery::type('string'), 'GET', [])
-            ->once()
-            ->andReturn($request);
-        $connector->shouldReceive('send')->andReturn($response);
-
-        $this->authorizeRequest->initialize(['connector' => $connector]);
-
-        $response = $this->authorizeRequest->sendData(['request-data' => 'yey?']);
-
-        self::assertInstanceOf(AuthorizeResponse::class, $response);
-        self::assertEquals('yey!', $response->getData()['response-data']);
-    }
-
-    public function testSendDataWillReturnResponseIfTransactionIdAlreadySet()
-    {
-        $request = \Mockery::mock(RequestInterface::class);
-
-        $response = \Mockery::spy(ResponseInterface::class);
-        $response->shouldReceive('getStatusCode')->once()->andReturn('200');
-        $response->shouldReceive('hasHeader')->with(\Mockery::type('string'))->andReturn(true);
-        $response->shouldReceive('getHeader')->with('Location')->andReturn('Over there!');
-        $response->shouldReceive('getHeader')->with('Content-Type')->andReturn('application/json');
-        $response->shouldReceive('json')->andReturn(['response-data' => 'yey!']);
-
-        $connector = \Mockery::spy(Connector::class);
-        $connector->shouldReceive('createRequest')
-            ->with(\Mockery::type('string'), 'GET', [])
-            ->once()
-            ->andReturn($request);
-        $connector->shouldReceive('send')->andReturn($response);
+        $this->setExpectedPostRequest($inputData, $expectedData, self::BASE_URL.'/checkout/v3/orders');
 
         $this->authorizeRequest->initialize([
-            'connector' => $connector,
+            'base_url' => self::BASE_URL,
+            'merchant_id' => self::MERCHANT_ID,
+            'secret' => self::SECRET,
+        ]);
+        $this->authorizeRequest->setRenderUrl('localhost/render');
+
+        $authorizeResponse = $this->authorizeRequest->sendData($inputData);
+
+        self::assertInstanceOf(AuthorizeResponse::class, $authorizeResponse);
+        self::assertSame($expectedData, $authorizeResponse->getData());
+        self::assertEquals('localhost/render', $authorizeResponse->getRedirectUrl());
+    }
+
+    public function testSendDataWillFetchOrderAndReturnResponseIfTransactionIdAlreadySet()
+    {
+        $inputData = ['request-data' => 'yey?'];
+        $expectedData = ['response-data' => 'yey!'];
+
+        $this->setExpectedGetRequest(
+            $expectedData,
+            self::BASE_URL.'/checkout/v3/orders/f60e69e8-464a-48c0-a452-6fd562540f37'
+        );
+
+        $this->authorizeRequest->initialize([
+            'base_url' => self::BASE_URL,
+            'merchant_id' => self::MERCHANT_ID,
+            'secret' => self::SECRET,
             'transactionReference' => 'f60e69e8-464a-48c0-a452-6fd562540f37',
-            'render_url' => 'localhost/render',
         ]);
 
-        $response = $this->authorizeRequest->sendData(['request-data' => 'yey?']);
+        $response = $this->authorizeRequest->sendData($inputData);
 
         self::assertInstanceOf(AuthorizeResponse::class, $response);
-        self::assertEquals('yey!', $response->getData()['response-data']);
+        self::assertSame($expectedData, $response->getData());
     }
 }

@@ -2,7 +2,7 @@
 
 namespace MyOnlineStore\Omnipay\KlarnaCheckout\Message;
 
-use Klarna\Rest\Checkout\Order;
+use Guzzle\Http\Message\RequestInterface;
 
 final class FetchTransactionRequest extends AbstractRequest
 {
@@ -11,6 +11,8 @@ final class FetchTransactionRequest extends AbstractRequest
      */
     public function getData()
     {
+        $this->validate('transactionReference');
+
         return null;
     }
 
@@ -19,9 +21,11 @@ final class FetchTransactionRequest extends AbstractRequest
      */
     public function sendData($data)
     {
-        $order = new Order($this->getConnector(), $this->getTransactionReference());
-        $order->fetch();
+        $url = '/ordermanagement/v1/orders/'.$this->getTransactionReference();
 
-        return new FetchTransactionResponse($this, $order);
+        return new FetchTransactionResponse(
+            $this,
+            $this->getResponseBody($this->sendRequest(RequestInterface::GET, $url, $data))
+        );
     }
 }

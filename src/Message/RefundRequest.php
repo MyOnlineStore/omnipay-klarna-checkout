@@ -2,7 +2,7 @@
 
 namespace MyOnlineStore\Omnipay\KlarnaCheckout\Message;
 
-use Klarna\Rest\OrderManagement\Order;
+use Guzzle\Http\Message\RequestInterface;
 
 final class RefundRequest extends AbstractRequest
 {
@@ -29,9 +29,11 @@ final class RefundRequest extends AbstractRequest
      */
     public function sendData($data)
     {
-        $order = new Order($this->getConnector(), $this->getTransactionReference());
-        $order->refund($data);
+        $url = '/ordermanagement/v1/orders/'.$this->getTransactionReference().'/refunds';
 
-        return new RefundResponse($this, $order);
+        return new RefundResponse(
+            $this,
+            $this->getResponseBody($this->sendRequest(RequestInterface::POST, $url, $data))
+        );
     }
 }

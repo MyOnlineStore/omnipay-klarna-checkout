@@ -2,14 +2,10 @@
 
 namespace MyOnlineStore\Tests\Omnipay\KlarnaCheckout\Message;
 
-use GuzzleHttp\Message\RequestInterface;
-use GuzzleHttp\Message\ResponseInterface;
-use Klarna\Rest\Transport\Connector;
 use MyOnlineStore\Omnipay\KlarnaCheckout\Message\AcknowledgeRequest;
 use MyOnlineStore\Omnipay\KlarnaCheckout\Message\AcknowledgeResponse;
-use Omnipay\Tests\TestCase;
 
-class AcknowledgeRequestTest extends TestCase
+class AcknowledgeRequestTest extends RequestTestCase
 {
     /**
      * @var AcknowledgeRequest
@@ -21,7 +17,8 @@ class AcknowledgeRequestTest extends TestCase
      */
     protected function setUp()
     {
-        $this->acknowledgeRequest = new AcknowledgeRequest($this->getHttpClient(), $this->getHttpRequest());
+        parent::setUp();
+        $this->acknowledgeRequest = new AcknowledgeRequest($this->httpClient, $this->getHttpRequest());
     }
 
     public function testGetData()
@@ -33,21 +30,25 @@ class AcknowledgeRequestTest extends TestCase
 
     public function testSendData()
     {
-        $connector = \Mockery::spy(Connector::class);
-        $this->acknowledgeRequest->initialize(['connector' => $connector]);
+        $inputData = ['request-data' => 'yey?'];
+        $expectedData = [];
 
-        $request = \Mockery::mock(RequestInterface::class);
-        $connector->shouldReceive('createRequest')
-            ->with(\Mockery::type('string'), 'POST', [])
-            ->andReturn($request);
+        $this->setExpectedPostRequest(
+            $inputData,
+            $expectedData,
+            self::BASE_URL.'/ordermanagement/v1/orders/foo/acknowledge'
+        );
 
-        $response = \Mockery::spy(ResponseInterface::class);
-        $connector->shouldReceive('send')->with($request)->andReturn($response);
+        $this->acknowledgeRequest->initialize([
+            'base_url' => self::BASE_URL,
+            'merchant_id' => self::MERCHANT_ID,
+            'secret' => self::SECRET,
+            'transactionReference' => 'foo',
+        ]);
 
-        $response->shouldReceive('getStatusCode')->andReturn('204');
+        $acknowledgeResponse = $this->acknowledgeRequest->sendData($inputData);
 
-        $response = $this->acknowledgeRequest->sendData(['foo' => 'bar?']);
-
-        self::assertInstanceOf(AcknowledgeResponse::class, $response);
+        self::assertInstanceOf(AcknowledgeResponse::class, $acknowledgeResponse);
+        self::assertSame($expectedData, $acknowledgeResponse->getData());
     }
 }
