@@ -40,6 +40,7 @@ abstract class RequestTestCase extends TestCase
     protected function setExpectedGetRequest(array $responseData, $url)
     {
         $response = \Mockery::mock(Response::class);
+        $response->shouldReceive('getBody')->with(true)->once()->andReturn(json_encode($responseData));
         $response->shouldReceive('json')->once()->andReturn($responseData);
 
         $request = \Mockery::mock(RequestInterface::class);
@@ -63,6 +64,7 @@ abstract class RequestTestCase extends TestCase
     protected function setExpectedPostRequest(array $inputData, array $responseData, $url)
     {
         $response = \Mockery::mock(Response::class);
+        $response->shouldReceive('getBody')->with(true)->once()->andReturn(json_encode($responseData));
         $response->shouldReceive('json')->once()->andReturn($responseData);
 
         $request = \Mockery::mock(RequestInterface::class);
