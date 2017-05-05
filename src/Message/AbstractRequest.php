@@ -206,6 +206,6 @@ abstract class AbstractRequest extends \Omnipay\Common\Message\AbstractRequest
      */
     protected function getResponseBody(Response $response)
     {
-        return $response->json();
+        return empty($response->getBody(true)) ? [] : $response->json();
     }
 }
