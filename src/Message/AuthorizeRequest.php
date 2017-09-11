@@ -24,7 +24,8 @@ final class AuthorizeRequest extends AbstractRequest
             'notifyUrl',
             'returnUrl',
             'tax_amount',
-            'terms_url'
+            'terms_url',
+            'validation_url'
         );
 
         return [
@@ -37,6 +38,7 @@ final class AuthorizeRequest extends AbstractRequest
                 'confirmation' => $this->getReturnUrl(),
                 'push' => $this->getNotifyUrl(),
                 'terms' => $this->getTermsUrl(),
+                'validation' => $this->getValidationUrl(),
             ],
             'purchase_country' =>  explode('_', $this->getLocale())[1],
             'purchase_currency' => $this->getCurrency(),
@@ -57,6 +59,14 @@ final class AuthorizeRequest extends AbstractRequest
     public function getTermsUrl()
     {
         return $this->getParameter('terms_url');
+    }
+
+    /**
+     * @return string
+     */
+    public function getValidationUrl()
+    {
+        return $this->getParameter('validation_url');
     }
 
     /**
@@ -105,6 +115,18 @@ final class AuthorizeRequest extends AbstractRequest
     public function setTermsUrl($url)
     {
         $this->setParameter('terms_url', $url);
+
+        return $this;
+    }
+
+    /**
+     * @param string $url
+     *
+     * @return $this
+     */
+    public function setValidationUrl($url)
+    {
+        $this->setParameter('validation_url', $url);
 
         return $this;
     }
