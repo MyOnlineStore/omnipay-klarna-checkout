@@ -72,6 +72,7 @@ class AuthorizeRequestTest extends RequestTestCase
             'notifyUrl' => 'localhost/notify',
             'termsUrl' => 'localhost/terms',
             'currency' => 'EUR',
+            'validationUrl' => 'localhost/validate',
         ]);
         $this->authorizeRequest->setItems([$this->getItemMock()]);
 
@@ -86,6 +87,7 @@ class AuthorizeRequestTest extends RequestTestCase
                     'confirmation' => 'localhost/return',
                     'push' => 'localhost/notify',
                     'terms' => 'localhost/terms',
+                    'validation' => 'localhost/validate',
                 ],
                 'purchase_country' => 'NL',
                 'purchase_currency' => 'EUR',
