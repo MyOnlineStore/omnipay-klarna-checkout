@@ -19,4 +19,11 @@ interface GatewayInterface extends \Omnipay\Common\GatewayInterface
      * @return RequestInterface
      */
     public function fetchTransaction(array $options = []);
+
+    /**
+     * @param array $options
+     *
+     * @return RequestInterface
+     */
+    public function updateTransaction(array $options = []);
 }

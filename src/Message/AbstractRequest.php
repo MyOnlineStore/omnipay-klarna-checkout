@@ -36,6 +36,22 @@ abstract class AbstractRequest extends \Omnipay\Common\Message\AbstractRequest
     }
 
     /**
+     * @return string REGION_* constant value
+     */
+    public function getApiRegion()
+    {
+        return $this->getParameter('api_region');
+    }
+
+    /**
+     * @return string
+     */
+    public function getBaseUrl()
+    {
+        return $this->getParameter('base_url');
+    }
+
+    /**
      * RFC 1766 customer's locale.
      *
      * @return string
@@ -43,24 +59,6 @@ abstract class AbstractRequest extends \Omnipay\Common\Message\AbstractRequest
     public function getLocale()
     {
         return $this->getParameter('locale');
-    }
-
-    /**
-     * The total tax amount of the order
-     *
-     * @return int
-     */
-    public function getTaxAmount()
-    {
-        return $this->getParameter('tax_amount');
-    }
-
-    /**
-     * @return string REGION_* constant value
-     */
-    public function getApiRegion()
-    {
-        return $this->getParameter('api_region');
     }
 
     /**
@@ -80,11 +78,37 @@ abstract class AbstractRequest extends \Omnipay\Common\Message\AbstractRequest
     }
 
     /**
-     * @return string
+     * The total tax amount of the order
+     *
+     * @return int
      */
-    public function getBaseUrl()
+    public function getTaxAmount()
     {
-        return $this->getParameter('base_url');
+        return $this->getParameter('tax_amount');
+    }
+
+    /**
+     * @param string $region
+     *
+     * @return $this
+     */
+    public function setApiRegion($region)
+    {
+        $this->setParameter('api_region', $region);
+
+        return $this;
+    }
+
+    /**
+     * @param string $baseUrl
+     *
+     * @return $this
+     */
+    public function setBaseUrl($baseUrl)
+    {
+        $this->setParameter('base_url', $baseUrl);
+
+        return $this;
     }
 
     /**
@@ -108,14 +132,6 @@ abstract class AbstractRequest extends \Omnipay\Common\Message\AbstractRequest
     }
 
     /**
-     * @param int $value
-     */
-    public function setTaxAmount($value)
-    {
-        $this->setParameter('tax_amount', $value);
-    }
-
-    /**
      * @param string $merchantId
      *
      * @return $this
@@ -123,18 +139,6 @@ abstract class AbstractRequest extends \Omnipay\Common\Message\AbstractRequest
     public function setMerchantId($merchantId)
     {
         $this->setParameter('merchant_id', $merchantId);
-
-        return $this;
-    }
-
-    /**
-     * @param string $region
-     *
-     * @return $this
-     */
-    public function setApiRegion($region)
-    {
-        $this->setParameter('api_region', $region);
 
         return $this;
     }
@@ -152,15 +156,29 @@ abstract class AbstractRequest extends \Omnipay\Common\Message\AbstractRequest
     }
 
     /**
-     * @param string $baseUrl
-     *
-     * @return $this
+     * @param int $value
      */
-    public function setBaseUrl($baseUrl)
+    public function setTaxAmount($value)
     {
-        $this->setParameter('base_url', $baseUrl);
+        $this->setParameter('tax_amount', $value);
+    }
 
-        return $this;
+    /**
+     * @return array
+     */
+    protected function getRequestOptions()
+    {
+        return ['auth' => [$this->getMerchantId(), $this->getSecret()]];
+    }
+
+    /**
+     * @param Response $response
+     *
+     * @return array
+     */
+    protected function getResponseBody(Response $response)
+    {
+        return empty($response->getBody(true)) ? [] : $response->json();
     }
 
     /**
@@ -189,23 +207,5 @@ abstract class AbstractRequest extends \Omnipay\Common\Message\AbstractRequest
             json_encode($data),
             $this->getRequestOptions()
         )->send();
-    }
-
-    /**
-     * @return array
-     */
-    protected function getRequestOptions()
-    {
-        return ['auth' => [$this->getMerchantId(), $this->getSecret()]];
-    }
-
-    /**
-     * @param Response $response
-     *
-     * @return array
-     */
-    protected function getResponseBody(Response $response)
-    {
-        return empty($response->getBody(true)) ? [] : $response->json();
     }
 }
