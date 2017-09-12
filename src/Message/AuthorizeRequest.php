@@ -7,10 +7,8 @@ use Guzzle\Http\Message\RequestInterface;
 /**
  * Creates a Klarna Checkout order if it does not exist
  */
-final class AuthorizeRequest extends AbstractRequest
+final class AuthorizeRequest extends AbstractOrderRequest
 {
-    use ItemDataTrait;
-
     /**
      * @inheritDoc
      */
@@ -24,25 +22,20 @@ final class AuthorizeRequest extends AbstractRequest
             'notifyUrl',
             'returnUrl',
             'tax_amount',
-            'terms_url',
-            'validation_url'
+            'termsUrl',
+            'validationUrl'
         );
 
-        return [
-            'locale' => str_replace('_', '-', $this->getLocale()),
-            'order_amount' => $this->getAmountInteger(),
-            'order_tax_amount' => $this->toCurrencyMinorUnits($this->getTaxAmount()),
-            'order_lines' => $this->getItemData($this->getItems()),
-            'merchant_urls' => [
-                'checkout' => $this->getReturnUrl(),
-                'confirmation' => $this->getReturnUrl(),
-                'push' => $this->getNotifyUrl(),
-                'terms' => $this->getTermsUrl(),
-                'validation' => $this->getValidationUrl(),
-            ],
-            'purchase_country' =>  explode('_', $this->getLocale())[1],
-            'purchase_currency' => $this->getCurrency(),
+        $data = $this->getOrderData();
+        $data['merchant_urls'] = [
+            'checkout' => $this->getReturnUrl(),
+            'confirmation' => $this->getReturnUrl(),
+            'push' => $this->getNotifyUrl(),
+            'terms' => $this->getTermsUrl(),
+            'validation' => $this->getValidationUrl(),
         ];
+
+        return $data;
     }
 
     /**
@@ -58,7 +51,7 @@ final class AuthorizeRequest extends AbstractRequest
      */
     public function getTermsUrl()
     {
-        return $this->getParameter('terms_url');
+        return $this->getParameter('termsUrl');
     }
 
     /**
@@ -66,7 +59,7 @@ final class AuthorizeRequest extends AbstractRequest
      */
     public function getValidationUrl()
     {
-        return $this->getParameter('validation_url');
+        return $this->getParameter('validationUrl');
     }
 
     /**
@@ -114,7 +107,7 @@ final class AuthorizeRequest extends AbstractRequest
      */
     public function setTermsUrl($url)
     {
-        $this->setParameter('terms_url', $url);
+        $this->setParameter('termsUrl', $url);
 
         return $this;
     }
@@ -126,7 +119,7 @@ final class AuthorizeRequest extends AbstractRequest
      */
     public function setValidationUrl($url)
     {
-        $this->setParameter('validation_url', $url);
+        $this->setParameter('validationUrl', $url);
 
         return $this;
     }
