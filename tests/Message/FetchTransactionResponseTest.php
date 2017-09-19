@@ -13,10 +13,18 @@ class FetchTransactionResponseTest extends TestCase
     public function responseDataProvider()
     {
         return [
-            [['error_code' => 'oh_noes'], false],
+            [['checkout' => ['error_code' => 'oh_noes']], false],
             [[], false],
-            [['status' => 'all_is_well'], true],
+            [['checkout' => ['status' => 'all_is_well']], true],
         ];
+    }
+
+    public function testGetters()
+    {
+        $responseData = ['checkout' => ['order_id' => 'foo']];
+        $response = new FetchTransactionResponse($this->getMockRequest(), $responseData);
+
+        self::assertSame($responseData['checkout']['order_id'], $response->getTransactionReference());
     }
 
     /**

@@ -39,8 +39,8 @@ class FetchTransactionRequestTest extends RequestTestCase
 
     public function testSendDataWillReturnResponseFromCheckoutApiForUnknownOrder()
     {
-        $expectedData = ['response-data' => 'nay!'];
-        $this->setExpectedGetRequest($expectedData, self::BASE_URL.'/checkout/v3/orders/foo');
+        $expectedCheckoutData = ['response-data' => 'nay!'];
+        $this->setExpectedGetRequest($expectedCheckoutData, self::BASE_URL.'/checkout/v3/orders/foo');
 
         $this->fetchTransactionRequest->initialize([
             'base_url' => self::BASE_URL,
@@ -52,13 +52,13 @@ class FetchTransactionRequestTest extends RequestTestCase
         $fetchResponse = $this->fetchTransactionRequest->sendData([]);
 
         self::assertInstanceOf(FetchTransactionResponse::class, $fetchResponse);
-        self::assertSame($expectedData, $fetchResponse->getData());
+        self::assertSame(['checkout' => $expectedCheckoutData], $fetchResponse->getData());
     }
 
     public function testSendDataWillReturnResponseFromCheckoutApiForIncompleteOrder()
     {
-        $expectedData = ['status' => 'checkout_incomplete'];
-        $this->setExpectedGetRequest($expectedData, self::BASE_URL.'/checkout/v3/orders/foo');
+        $expectedCheckoutData = ['status' => 'checkout_incomplete'];
+        $this->setExpectedGetRequest($expectedCheckoutData, self::BASE_URL.'/checkout/v3/orders/foo');
 
         $this->fetchTransactionRequest->initialize([
             'base_url' => self::BASE_URL,
@@ -70,7 +70,7 @@ class FetchTransactionRequestTest extends RequestTestCase
         $fetchResponse = $this->fetchTransactionRequest->sendData([]);
 
         self::assertInstanceOf(FetchTransactionResponse::class, $fetchResponse);
-        self::assertSame($expectedData, $fetchResponse->getData());
+        self::assertSame(['checkout' => $expectedCheckoutData], $fetchResponse->getData());
     }
 
     public function testSendDataWillReturnResponseFromManagementApiForCompleteOrder()
@@ -91,6 +91,9 @@ class FetchTransactionRequestTest extends RequestTestCase
         $fetchResponse = $this->fetchTransactionRequest->sendData([]);
 
         self::assertInstanceOf(FetchTransactionResponse::class, $fetchResponse);
-        self::assertSame($expectedManagementData, $fetchResponse->getData());
+        self::assertSame(
+            ['checkout' => $expectedCheckoutData, 'management' => $expectedManagementData],
+            $fetchResponse->getData()
+        );
     }
 }
