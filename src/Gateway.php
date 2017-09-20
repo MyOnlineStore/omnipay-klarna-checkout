@@ -10,7 +10,6 @@ use MyOnlineStore\Omnipay\KlarnaCheckout\Message\RefundRequest;
 use MyOnlineStore\Omnipay\KlarnaCheckout\Message\UpdateTransactionRequest;
 use MyOnlineStore\Omnipay\KlarnaCheckout\Message\VoidRequest;
 use Omnipay\Common\AbstractGateway;
-use Omnipay\Common\Message\RequestInterface;
 
 final class Gateway extends AbstractGateway implements GatewayInterface
 {

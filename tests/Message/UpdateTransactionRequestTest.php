@@ -42,6 +42,10 @@ class UpdateTransactionRequestTest extends RequestTestCase
             'tax_amount' => 21,
             'currency' => 'EUR',
             'transactionReference' => self::TRANSACTION_REFERENCE,
+            'gui_minimal_confirmation' => true,
+            'gui_autofocus' => false,
+            'merchant_reference1' => '12345',
+            'merchant_reference2' => 678,
         ]);
         $this->updateTransactionRequest->setItems([$this->getItemMock()]);
 
@@ -53,6 +57,9 @@ class UpdateTransactionRequestTest extends RequestTestCase
                 'order_lines' => [$this->getExpectedOrderLine()],
                 'purchase_country' => 'NL',
                 'purchase_currency' => 'EUR',
+                'gui' => ['options' => ['disable_autofocus', 'minimal_confirmation']],
+                'merchant_reference1' => '12345',
+                'merchant_reference2' => 678,
             ],
             $this->updateTransactionRequest->getData()
         );
