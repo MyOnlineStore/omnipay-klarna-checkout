@@ -70,6 +70,22 @@ abstract class AbstractRequest extends \Omnipay\Common\Message\AbstractRequest
     }
 
     /**
+     * @return string|null
+     */
+    public function getMerchantReference1()
+    {
+        return $this->getParameter('merchant_reference1');
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getMerchantReference2()
+    {
+        return $this->getParameter('merchant_reference2');
+    }
+
+    /**
      * @return string
      */
     public function getSecret()
@@ -139,6 +155,30 @@ abstract class AbstractRequest extends \Omnipay\Common\Message\AbstractRequest
     public function setMerchantId($merchantId)
     {
         $this->setParameter('merchant_id', $merchantId);
+
+        return $this;
+    }
+
+    /**
+     * @param string $merchantReference
+     *
+     * @return $this
+     */
+    public function setMerchantReference1($merchantReference)
+    {
+        $this->setParameter('merchant_reference1', $merchantReference);
+
+        return $this;
+    }
+
+    /**
+     * @param string $merchantReference
+     *
+     * @return $this
+     */
+    public function setMerchantReference2($merchantReference)
+    {
+        $this->setParameter('merchant_reference2', $merchantReference);
 
         return $this;
     }

@@ -3,9 +3,8 @@
 namespace MyOnlineStore\Omnipay\KlarnaCheckout\Message;
 
 use Omnipay\Common\Message\RequestInterface;
-use Omnipay\Common\Message\ResponseInterface;
 
-final class CaptureResponse extends AbstractResponse implements ResponseInterface
+final class CaptureResponse extends AbstractResponse
 {
     /**
      * @var string

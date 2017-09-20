@@ -35,6 +35,6 @@ and render the iframe. Example:
 $response = $gateway->fetchTransaction(['transactionReference' => 'foobar'])
     ->send();
 
-echo $response->getData()['html_snippet'];
+echo $response->getData()['checkout']['html_snippet'];
 ```
 Note: when submitting the form within the iframe, Klarna will redirect the client to the provided `return_url`.
