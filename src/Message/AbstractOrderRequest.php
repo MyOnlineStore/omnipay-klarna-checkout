@@ -3,6 +3,7 @@
 namespace MyOnlineStore\Omnipay\KlarnaCheckout\Message;
 
 use MyOnlineStore\Omnipay\KlarnaCheckout\Address;
+use MyOnlineStore\Omnipay\KlarnaCheckout\WidgetOptions;
 
 abstract class AbstractOrderRequest extends AbstractRequest
 {
@@ -38,6 +39,14 @@ abstract class AbstractOrderRequest extends AbstractRequest
     public function getShippingAddress()
     {
         return $this->getParameter('shipping_address');
+    }
+
+    /**
+     * @return WidgetOptions
+     */
+    public function getWidgetOptions()
+    {
+        return $this->getParameter('widget_options');
     }
 
     /**
@@ -89,6 +98,18 @@ abstract class AbstractOrderRequest extends AbstractRequest
     }
 
     /**
+     * @param array $widgetOptions
+     *
+     * @return $this
+     */
+    public function setWidgetOptions($widgetOptions)
+    {
+        $this->setParameter('widget_options', WidgetOptions::fromArray($widgetOptions));
+
+        return $this;
+    }
+
+    /**
      * @return array
      */
     protected function getOrderData()
@@ -111,11 +132,15 @@ abstract class AbstractOrderRequest extends AbstractRequest
         }
 
         if (null !== $merchantReference1 = $this->getMerchantReference1()) {
-            $data['merchant_reference1'] = $this->getMerchantReference1();
+            $data['merchant_reference1'] = $merchantReference1;
         }
 
         if (null !== $merchantReference2 = $this->getMerchantReference2()) {
-            $data['merchant_reference2'] = $this->getMerchantReference2();
+            $data['merchant_reference2'] = $merchantReference2;
+        }
+
+        if (null !== $widgetOptions = $this->getWidgetOptions()) {
+            $data['options'] = $widgetOptions->getArrayCopy();
         }
 
         $guiOptions = [];
