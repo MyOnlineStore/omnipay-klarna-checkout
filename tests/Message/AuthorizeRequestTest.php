@@ -184,6 +184,66 @@ class AuthorizeRequestTest extends RequestTestCase
         );
     }
 
+    public function testGetDataWithOptionsWillReturnCorrectData()
+    {
+        $widgetOptions = [
+            'acquiring_channel' => 'foo',
+            'allow_separate_shipping_address' => true,
+            'color_button' => '#FFFFF',
+            'color_button_text' => '#FFFFF',
+            'color_checkbox' => '#FFFFF',
+            'color_checkbox_checkmark' => '#FFFFF',
+            'color_header' => '#FFFFF',
+            'color_link' => '#FFFFF',
+            'date_of_birth_mandatory' => true,
+            'shipping_details' => 'Delivered within 1-3 working days',
+            'title_mandatory' => true,
+            'additional_checkbox' => [
+                'text' => 'Please add me to the newsletter list',
+                'checked' => false,
+                'required' => false,
+            ],
+            'radius_border' => '5px',
+            'show_subtotal_detail' => true,
+            'require_validate_callback_success' => true,
+        ];
+
+        $this->authorizeRequest->initialize(
+            [
+                'locale' => 'nl_NL',
+                'amount' => '100.00',
+                'tax_amount' => 21,
+                'returnUrl' => 'localhost/return',
+                'notifyUrl' => 'localhost/notify',
+                'termsUrl' => 'localhost/terms',
+                'currency' => 'EUR',
+                'validationUrl' => 'localhost/validate',
+            ]
+        );
+        $this->authorizeRequest->setItems([$this->getItemMock()]);
+        $this->authorizeRequest->setWidgetOptions($widgetOptions);
+
+        self::assertEquals(
+            [
+                'locale' => 'nl-NL',
+                'order_amount' => 10000,
+                'order_tax_amount' => 2100,
+                'order_lines' => [$this->getExpectedOrderLine()],
+                'merchant_urls' => [
+                    'checkout' => 'localhost/return',
+                    'confirmation' => 'localhost/return',
+                    'push' => 'localhost/notify',
+                    'terms' => 'localhost/terms',
+                    'validation' => 'localhost/validate',
+                ],
+                'purchase_country' => 'NL',
+                'purchase_currency' => 'EUR',
+                'options' => $widgetOptions,
+            ],
+            $this->authorizeRequest->getData()
+        );
+    }
+
     public function testSendDataWillCreateOrderAndReturnResponse()
     {
         $inputData = ['request-data' => 'yey?'];
