@@ -7,153 +7,137 @@ use Omnipay\Tests\TestCase;
 
 final class AddressTest extends TestCase
 {
-    public function testFromArrayShoulReturnArrayWithCorrectKeys()
+    const FAMILY_NAME = 'foo';
+    const GIVEN_NAME = 'bar';
+    const EMAIL = 'foo@bar.com';
+    const TITLE = 'Mr.';
+    const STREET_ADDRESS_1 = 'Foo Street 1';
+    const STREET_ADDRESS_2 = 'App. 12A';
+    const STREET = 'Foo Street';
+    const HOUSE_EXTENSION = 'C';
+    const STREET_NUMBER = '1';
+    const POSTAL_CODE = '523354';
+    const CITY = 'Oss';
+    const REGION = 'NB';
+    const PHONE = '24234234';
+    const COUNTRY = 'NL';
+
+    /**
+     * @dataProvider dataProvider
+     *
+     * @param array $data
+     * @param array $expectedOutcome
+     */
+    public function testFromArrayShoulReturnArrayWithCorrectKeys($data, $expectedOutcome)
     {
-        $familyName = 'foo';
-        $givenName = 'bar';
-        $email = 'foo@bar.com';
-        $title = 'Mr.';
-        $streetAddress = 'Foo Street 1';
-        $streetAddress2 = 'App. 12A';
-        $streetName = 'Foo Street';
-        $houseExtension = 'C';
-        $streetNumber = '1';
-        $postalCode = '523354';
-        $city = 'Oss';
-        $region = 'NB';
-        $phone = '24234234';
-        $country = 'NL';
-
-        $address = Address::fromArray(
-            [
-                'family_name' => $familyName,
-                'given_name' => $givenName,
-                'email' => $email,
-                'title' => $title,
-                'street_address' => $streetAddress,
-                'street_address2' => $streetAddress2,
-                'street_name' => $streetName,
-                'house_extension' => $houseExtension,
-                'street_number' => $streetNumber,
-                'postal_code' => $postalCode,
-                'city' => $city,
-                'region' => $region,
-                'phone' => $phone,
-                'country' => $country,
-            ]
-        );
-
-        self::assertSame($givenName, $address['given_name']);
-        self::assertSame($familyName, $address['family_name']);
-        self::assertSame($email, $address['email']);
-        self::assertSame($title, $address['title']);
-        self::assertSame($streetAddress, $address['street_address']);
-        self::assertSame($streetAddress2, $address['street_address2']);
-        self::assertSame($streetName, $address['street_name']);
-        self::assertSame($streetNumber, $address['street_number']);
-        self::assertSame($houseExtension, $address['house_extension']);
-        self::assertSame($postalCode, $address['postal_code']);
-        self::assertSame($city, $address['city']);
-        self::assertSame($region, $address['region']);
-        self::assertSame($phone, $address['phone']);
-        self::assertSame($country, $address['country']);
+        self::assertEquals($expectedOutcome, Address::fromArray($data)->getArrayCopy());
     }
 
-    public function testFromArrayShoulReturnArrayWithCorrectKeysWithNullValuesForMissingKeys()
+    /**
+     * @return array
+     */
+    public function dataProvider()
     {
-        $familyName = 'foo';
-        $givenName = 'bar';
-        $email = 'foo@bar.com';
-        $title = 'Mr.';
-        $streetName = 'Foo Street';
-        $houseExtension = 'C';
-        $streetNumber = '1';
-        $postalCode = '523354';
-        $city = 'Oss';
-        $region = 'NB';
-        $phone = '24234234';
-        $country = 'NL';
-
-        $address = Address::fromArray(
+        return [
             [
-                'family_name' => $familyName,
-                'given_name' => $givenName,
-                'email' => $email,
-                'title' => $title,
-                'street_name' => $streetName,
-                'house_extension' => $houseExtension,
-                'street_number' => $streetNumber,
-                'postal_code' => $postalCode,
-                'city' => $city,
-                'region' => $region,
-                'phone' => $phone,
-                'country' => $country,
-            ]
-        );
-
-        self::assertSame($givenName, $address['given_name']);
-        self::assertSame($familyName, $address['family_name']);
-        self::assertSame($email, $address['email']);
-        self::assertSame($title, $address['title']);
-        self::assertNull($address['street_address']);
-        self::assertNull($address['street_address2']);
-        self::assertSame($streetName, $address['street_name']);
-        self::assertSame($streetNumber, $address['street_number']);
-        self::assertSame($houseExtension, $address['house_extension']);
-        self::assertSame($postalCode, $address['postal_code']);
-        self::assertSame($city, $address['city']);
-        self::assertSame($region, $address['region']);
-        self::assertSame($phone, $address['phone']);
-        self::assertSame($country, $address['country']);
-    }
-
-    public function testFromArrayShoulReturnArrayWithCorrectKeysAndNotAddNoneExistingKeys()
-    {
-        $familyName = 'foo';
-        $givenName = 'bar';
-        $email = 'foo@bar.com';
-        $title = 'Mr.';
-        $streetName = 'Foo Street';
-        $houseExtension = 'C';
-        $streetNumber = '1';
-        $postalCode = '523354';
-        $city = 'Oss';
-        $region = 'NB';
-        $phone = '24234234';
-        $country = 'NL';
-
-        $address = Address::fromArray(
+                [
+                    'family_name' => self::FAMILY_NAME,
+                    'given_name' => self::GIVEN_NAME,
+                    'email' => self::EMAIL,
+                    'title' => self::TITLE,
+                    'street_address' => self::STREET_ADDRESS_1,
+                    'street_address2' => self::STREET_ADDRESS_2,
+                    'street_name' => self::STREET,
+                    'house_extension' => self::HOUSE_EXTENSION,
+                    'street_number' => self::STREET_NUMBER,
+                    'postal_code' => self::POSTAL_CODE,
+                    'city' => self::CITY,
+                    'region' => self::REGION,
+                    'phone' => self::PHONE,
+                    'country' => self::COUNTRY,
+                ],
+                [
+                    'family_name' => self::FAMILY_NAME,
+                    'given_name' => self::GIVEN_NAME,
+                    'email' => self::EMAIL,
+                    'title' => self::TITLE,
+                    'street_address' => self::STREET_ADDRESS_1,
+                    'street_address2' => self::STREET_ADDRESS_2,
+                    'street_name' => self::STREET,
+                    'house_extension' => self::HOUSE_EXTENSION,
+                    'street_number' => self::STREET_NUMBER,
+                    'postal_code' => self::POSTAL_CODE,
+                    'city' => self::CITY,
+                    'region' => self::REGION,
+                    'phone' => self::PHONE,
+                    'country' => self::COUNTRY,
+                ],
+            ],
             [
-                'family_name' => $familyName,
-                'given_name' => $givenName,
-                'email' => $email,
-                'title' => $title,
-                'street_name' => $streetName,
-                'house_extension' => $houseExtension,
-                'street_number' => $streetNumber,
-                'postal_code' => $postalCode,
-                'city' => $city,
-                'region' => $region,
-                'phone' => $phone,
-                'country' => $country,
-                'foo' => 'bar',
-            ]
-        );
-
-        self::assertSame($givenName, $address['given_name']);
-        self::assertSame($familyName, $address['family_name']);
-        self::assertSame($email, $address['email']);
-        self::assertSame($title, $address['title']);
-        self::assertNull($address['street_address']);
-        self::assertNull($address['street_address2']);
-        self::assertSame($streetName, $address['street_name']);
-        self::assertSame($streetNumber, $address['street_number']);
-        self::assertSame($houseExtension, $address['house_extension']);
-        self::assertSame($postalCode, $address['postal_code']);
-        self::assertSame($city, $address['city']);
-        self::assertSame($region, $address['region']);
-        self::assertSame($phone, $address['phone']);
-        self::assertSame($country, $address['country']);
-        self::assertArrayNotHasKey('foo', $address);
+                [
+                    'family_name' => self::FAMILY_NAME,
+                    'given_name' => self::GIVEN_NAME,
+                    'email' => self::EMAIL,
+                    'title' => self::TITLE,
+                    'street_name' => self::STREET,
+                    'house_extension' => self::HOUSE_EXTENSION,
+                    'street_number' => self::STREET_NUMBER,
+                    'postal_code' => self::POSTAL_CODE,
+                    'city' => self::CITY,
+                    'region' => self::REGION,
+                    'phone' => self::PHONE,
+                    'country' => self::COUNTRY,
+                ],
+                [
+                    'family_name' => self::FAMILY_NAME,
+                    'given_name' => self::GIVEN_NAME,
+                    'email' => self::EMAIL,
+                    'title' => self::TITLE,
+                    'street_address' => null,
+                    'street_address2' => null,
+                    'street_name' => self::STREET,
+                    'house_extension' => self::HOUSE_EXTENSION,
+                    'street_number' => self::STREET_NUMBER,
+                    'postal_code' => self::POSTAL_CODE,
+                    'city' => self::CITY,
+                    'region' => self::REGION,
+                    'phone' => self::PHONE,
+                    'country' => 'NL',
+                ],
+            ],
+            [
+                [
+                    'family_name' => self::FAMILY_NAME,
+                    'given_name' => self::GIVEN_NAME,
+                    'email' => self::EMAIL,
+                    'title' => self::TITLE,
+                    'street_name' => self::STREET,
+                    'house_extension' => self::HOUSE_EXTENSION,
+                    'street_number' => self::STREET_NUMBER,
+                    'postal_code' => self::POSTAL_CODE,
+                    'city' => self::CITY,
+                    'region' => self::REGION,
+                    'phone' => self::PHONE,
+                    'country' => self::COUNTRY,
+                    self::FAMILY_NAME => self::GIVEN_NAME,
+                ],
+                [
+                    'family_name' => self::FAMILY_NAME,
+                    'given_name' => self::GIVEN_NAME,
+                    'email' => self::EMAIL,
+                    'title' => self::TITLE,
+                    'street_address' => null,
+                    'street_address2' => null,
+                    'street_name' => self::STREET,
+                    'house_extension' => self::HOUSE_EXTENSION,
+                    'street_number' => self::STREET_NUMBER,
+                    'postal_code' => self::POSTAL_CODE,
+                    'city' => self::CITY,
+                    'region' => self::REGION,
+                    'phone' => self::PHONE,
+                    'country' => self::COUNTRY,
+                ],
+            ],
+        ];
     }
 }
