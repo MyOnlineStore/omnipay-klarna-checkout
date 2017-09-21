@@ -4,6 +4,7 @@ namespace MyOnlineStore\Omnipay\KlarnaCheckout\Message;
 
 use MyOnlineStore\Omnipay\KlarnaCheckout\Address;
 use MyOnlineStore\Omnipay\KlarnaCheckout\WidgetOptions;
+use MyOnlineStore\Omnipay\KlarnaCheckout\Customer;
 
 abstract class AbstractOrderRequest extends AbstractRequest
 {
@@ -47,6 +48,26 @@ abstract class AbstractOrderRequest extends AbstractRequest
     public function getWidgetOptions()
     {
         return $this->getParameter('widget_options');
+    }
+
+    /**
+     * @return Customer
+     */
+    public function getCustomer()
+    {
+        return $this->getParameter('customer');
+    }
+
+    /**
+     * @param array $customer
+     *
+     * @return $this
+     */
+    public function setCustomer($customer)
+    {
+        $this->setParameter('customer', Customer::fromArray($customer));
+
+        return $this;
     }
 
     /**
@@ -141,6 +162,10 @@ abstract class AbstractOrderRequest extends AbstractRequest
 
         if (null !== $widgetOptions = $this->getWidgetOptions()) {
             $data['options'] = $widgetOptions->getArrayCopy();
+        }
+
+        if (null !== $customer = $this->getCustomer()) {
+            $data['customer'] = $customer->getArrayCopy();
         }
 
         $guiOptions = [];

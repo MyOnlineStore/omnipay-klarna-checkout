@@ -207,7 +207,40 @@ class UpdateTransactionRequestTest extends RequestTestCase
         );
     }
 
-    public function testSendDataWillUpdateCheckoutOrder()
+    public function testGetDataWithCustomerWillReturnCorrectData()
+    {
+        $customer = [
+            'date_of_birth' => '1995-10-20',
+            'type' => 'organization',
+        ];
+
+        $this->updateTransactionRequest->initialize(
+            [
+                'locale' => 'nl_NL',
+                'amount' => '100.00',
+                'tax_amount' => 21,
+                'currency' => 'EUR',
+                'transactionReference' => self::TRANSACTION_REFERENCE,
+            ]
+        );
+        $this->updateTransactionRequest->setItems([$this->getItemMock()]);
+        $this->updateTransactionRequest->setCustomer($customer);
+
+        self::assertEquals(
+            [
+                'locale' => 'nl-NL',
+                'order_amount' => 10000,
+                'order_tax_amount' => 2100,
+                'order_lines' => [$this->getExpectedOrderLine()],
+                'purchase_country' => 'NL',
+                'purchase_currency' => 'EUR',
+                'customer' => $customer,
+            ],
+            $this->updateTransactionRequest->getData()
+        );
+    }
+
+    public function testSendDataWillCreateOrderAndReturnResponse()
     {
         $inputData = ['request-data' => 'yey?'];
         $responseData = [];
