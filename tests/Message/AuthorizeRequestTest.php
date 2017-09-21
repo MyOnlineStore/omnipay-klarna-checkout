@@ -244,6 +244,49 @@ class AuthorizeRequestTest extends RequestTestCase
         );
     }
 
+    public function testGetDataWithCustomerWillReturnCorrectData()
+    {
+        $customer = [
+            'date_of_birth' => '1995-10-20',
+            'type' => 'organization',
+        ];
+
+        $this->authorizeRequest->initialize(
+            [
+                'locale' => 'nl_NL',
+                'amount' => '100.00',
+                'tax_amount' => 21,
+                'returnUrl' => 'localhost/return',
+                'notifyUrl' => 'localhost/notify',
+                'termsUrl' => 'localhost/terms',
+                'currency' => 'EUR',
+                'validationUrl' => 'localhost/validate',
+            ]
+        );
+        $this->authorizeRequest->setCustomer($customer);
+        $this->authorizeRequest->setItems([$this->getItemMock()]);
+
+        self::assertEquals(
+            [
+                'locale' => 'nl-NL',
+                'order_amount' => 10000,
+                'order_tax_amount' => 2100,
+                'order_lines' => [$this->getExpectedOrderLine()],
+                'merchant_urls' => [
+                    'checkout' => 'localhost/return',
+                    'confirmation' => 'localhost/return',
+                    'push' => 'localhost/notify',
+                    'terms' => 'localhost/terms',
+                    'validation' => 'localhost/validate',
+                ],
+                'purchase_country' => 'NL',
+                'purchase_currency' => 'EUR',
+                'customer' => $customer,
+            ],
+            $this->authorizeRequest->getData()
+        );
+    }
+
     public function testSendDataWillCreateOrderAndReturnResponse()
     {
         $inputData = ['request-data' => 'yey?'];
