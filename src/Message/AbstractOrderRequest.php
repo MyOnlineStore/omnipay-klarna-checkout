@@ -43,6 +43,14 @@ abstract class AbstractOrderRequest extends AbstractRequest
     }
 
     /**
+     * @return string[]|null ISO 3166 alpha-2 codes of shipping countries, or null if none are specified
+     */
+    public function getShippingCountries()
+    {
+        return $this->getParameter('shipping_countries');
+    }
+
+    /**
      * @return WidgetOptions
      */
     public function getWidgetOptions()
@@ -107,6 +115,18 @@ abstract class AbstractOrderRequest extends AbstractRequest
     }
 
     /**
+     * @param string[] $countries ISO 3166 alpha-2 codes of shipping countries
+     *
+     * @return $this
+     */
+    public function setShippingCountries(array $countries)
+    {
+        $this->setParameter('shipping_countries', $countries);
+
+        return $this;
+    }
+
+    /**
      * @param array $shippingAddress
      *
      * @return $this
@@ -143,6 +163,10 @@ abstract class AbstractOrderRequest extends AbstractRequest
             'purchase_country' => explode('_', $this->getLocale())[1],
             'purchase_currency' => $this->getCurrency(),
         ];
+
+        if (null !== $shippingCountries = $this->getShippingCountries()) {
+            $data['shipping_countries'] = $shippingCountries;
+        }
 
         if (null !== $shippingAddress = $this->getShippingAddress()) {
             $data['shipping_address'] = $shippingAddress->getArrayCopy();
