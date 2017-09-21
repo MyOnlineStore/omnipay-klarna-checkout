@@ -39,21 +39,23 @@ abstract class RequestTestCase extends TestCase
      */
     protected function setExpectedGetRequest(array $responseData, $url)
     {
-        $response = \Mockery::mock(Response::class);
-        $response->shouldReceive('getBody')->with(true)->once()->andReturn(json_encode($responseData));
-        $response->shouldReceive('json')->once()->andReturn($responseData);
+        $this->setExpectedRequest(RequestInterface::GET, $url, [], [], $responseData);
+    }
 
-        $request = \Mockery::mock(RequestInterface::class);
-        $request->shouldReceive('send')->once()->andReturn($response);
-
-        $this->httpClient->shouldReceive('createRequest')
-            ->with(
-                RequestInterface::GET,
-                $url,
-                null,
-                null,
-                ['auth' => [self::MERCHANT_ID, self::SECRET]]
-            )->andReturn($request);
+    /**
+     * @param array  $inputData
+     * @param array  $responseData
+     * @param string $url
+     */
+    protected function setExpectedPatchRequest(array $inputData, array $responseData, $url)
+    {
+        $this->setExpectedRequest(
+            RequestInterface::PATCH,
+            $url,
+            ['Content-Type' => 'application/json'],
+            $inputData,
+            $responseData
+        );
     }
 
     /**
@@ -62,6 +64,24 @@ abstract class RequestTestCase extends TestCase
      * @param string $url
      */
     protected function setExpectedPostRequest(array $inputData, array $responseData, $url)
+    {
+        $this->setExpectedRequest(
+            RequestInterface::POST,
+            $url,
+            ['Content-Type' => 'application/json'],
+            $inputData,
+            $responseData
+        );
+    }
+
+    /**
+     * @param string $requestMethod
+     * @param string $url
+     * @param array  $headers
+     * @param array  $inputData
+     * @param array  $responseData
+     */
+    private function setExpectedRequest($requestMethod, $url, array $headers, array $inputData, array $responseData)
     {
         $response = \Mockery::mock(Response::class);
         $response->shouldReceive('getBody')->with(true)->once()->andReturn(json_encode($responseData));
@@ -72,9 +92,9 @@ abstract class RequestTestCase extends TestCase
 
         $this->httpClient->shouldReceive('createRequest')
             ->with(
-                RequestInterface::POST,
+                $requestMethod,
                 $url,
-                ['Content-Type' => 'application/json'],
+                $headers,
                 json_encode($inputData),
                 ['auth' => [self::MERCHANT_ID, self::SECRET]]
             )->andReturn($request);
