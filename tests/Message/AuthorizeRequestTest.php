@@ -218,6 +218,7 @@ class AuthorizeRequestTest extends RequestTestCase
                 'termsUrl' => 'localhost/terms',
                 'currency' => 'EUR',
                 'validationUrl' => 'localhost/validate',
+                'shipping_countries' => ['NL', 'DE'],
             ]
         );
         $this->authorizeRequest->setItems([$this->getItemMock()]);
@@ -239,6 +240,7 @@ class AuthorizeRequestTest extends RequestTestCase
                 'purchase_country' => 'NL',
                 'purchase_currency' => 'EUR',
                 'options' => $widgetOptions,
+                'shipping_countries' => ['NL', 'DE'],
             ],
             $this->authorizeRequest->getData()
         );
