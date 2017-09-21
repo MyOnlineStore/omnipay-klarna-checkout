@@ -207,14 +207,14 @@ class UpdateTransactionRequestTest extends RequestTestCase
         );
     }
 
-    public function testSendDataWillCreateOrderAndReturnResponse()
+    public function testSendDataWillUpdateCheckoutOrder()
     {
         $inputData = ['request-data' => 'yey?'];
-        $expectedData = [];
+        $responseData = [];
 
         $this->setExpectedPostRequest(
             $inputData,
-            $expectedData,
+            $responseData,
             sprintf('%s/checkout/v3/orders/%s', self::BASE_URL, self::TRANSACTION_REFERENCE)
         );
 
@@ -230,6 +230,68 @@ class UpdateTransactionRequestTest extends RequestTestCase
         $updateTransactionResponse = $this->updateTransactionRequest->sendData($inputData);
 
         self::assertInstanceOf(UpdateTransactionResponse::class, $updateTransactionResponse);
-        self::assertSame($expectedData, $updateTransactionResponse->getData());
+        self::assertSame($responseData, $updateTransactionResponse->getData());
+    }
+
+    public function testSendDataWillUpdateManagementOrder()
+    {
+        $customerDetailsData = ['shipping_address' => 'foo', 'billing_address' => 'bar'];
+        $merchantReferencesData = ['merchant_reference1' => 'baz', 'merchant_reference2' => 'quz'];
+        $inputData = array_merge($customerDetailsData, $merchantReferencesData);
+
+        $this->setExpectedPostRequest(
+            $inputData,
+            ['error_code' => 'READ_ONLY_ORDER'],
+            sprintf('%s/checkout/v3/orders/%s', self::BASE_URL, self::TRANSACTION_REFERENCE)
+        );
+
+        $this->setExpectedPatchRequest(
+            $customerDetailsData,
+            [],
+            sprintf('%s/ordermanagement/v1/orders/%s/customer-details', self::BASE_URL, self::TRANSACTION_REFERENCE)
+        );
+
+        $this->setExpectedPatchRequest(
+            $merchantReferencesData,
+            [],
+            sprintf('%s/ordermanagement/v1/orders/%s/merchant-references', self::BASE_URL, self::TRANSACTION_REFERENCE)
+        );
+
+        $this->updateTransactionRequest->initialize([
+            'base_url' => self::BASE_URL,
+            'merchant_id' => self::MERCHANT_ID,
+            'secret' => self::SECRET,
+            'transactionReference' => self::TRANSACTION_REFERENCE,
+        ]);
+
+        $updateTransactionResponse = $this->updateTransactionRequest->sendData($inputData);
+        self::assertEmpty($updateTransactionResponse->getData());
+        self::assertTrue($updateTransactionResponse->isSuccessful());
+    }
+
+    public function testSendDataWillUpdateManagementCustomerDetailsAndFailUpdatingMerchantReferences()
+    {
+        $inputData = ['merchant_reference1' => 'foo'];
+
+        $this->setExpectedPostRequest(
+            $inputData,
+            ['error_code' => 'READ_ONLY_ORDER'],
+            sprintf('%s/checkout/v3/orders/%s', self::BASE_URL, self::TRANSACTION_REFERENCE)
+        );
+
+        $this->setExpectedPatchRequest(
+            $inputData,
+            ['error_code' => 'doomsday'],
+            sprintf('%s/ordermanagement/v1/orders/%s/merchant-references', self::BASE_URL, self::TRANSACTION_REFERENCE)
+        );
+
+        $this->updateTransactionRequest->initialize([
+            'base_url' => self::BASE_URL,
+            'merchant_id' => self::MERCHANT_ID,
+            'secret' => self::SECRET,
+            'transactionReference' => self::TRANSACTION_REFERENCE,
+        ]);
+
+        self::assertFalse($this->updateTransactionRequest->sendData($inputData)->isSuccessful());
     }
 }
