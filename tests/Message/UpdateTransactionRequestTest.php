@@ -38,7 +38,6 @@ class UpdateTransactionRequestTest extends RequestTestCase
     {
         $this->updateTransactionRequest->initialize(
             [
-                'locale' => 'nl_NL',
                 'amount' => '100.00',
                 'tax_amount' => 21,
                 'currency' => 'EUR',
@@ -53,11 +52,9 @@ class UpdateTransactionRequestTest extends RequestTestCase
 
         self::assertEquals(
             [
-                'locale' => 'nl-NL',
                 'order_amount' => 10000,
                 'order_tax_amount' => 2100,
                 'order_lines' => [$this->getExpectedOrderLine()],
-                'purchase_country' => 'NL',
                 'purchase_currency' => 'EUR',
                 'gui' => ['options' => ['disable_autofocus', 'minimal_confirmation']],
                 'merchant_reference1' => '12345',

@@ -156,13 +156,16 @@ abstract class AbstractOrderRequest extends AbstractRequest
     protected function getOrderData()
     {
         $data = [
-            'locale' => str_replace('_', '-', $this->getLocale()),
             'order_amount' => $this->getAmountInteger(),
             'order_tax_amount' => $this->toCurrencyMinorUnits($this->getTaxAmount()),
             'order_lines' => $this->getItemData($this->getItems()),
-            'purchase_country' => explode('_', $this->getLocale())[1],
             'purchase_currency' => $this->getCurrency(),
         ];
+
+        if (null !== $locale = $this->getLocale()) {
+            $data['locale'] = str_replace('_', '-', $locale);
+            $data['purchase_country'] = explode('_', $locale)[1];
+        }
 
         if (null !== $shippingCountries = $this->getShippingCountries()) {
             $data['shipping_countries'] = $shippingCountries;
