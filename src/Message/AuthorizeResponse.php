@@ -58,6 +58,7 @@ final class AuthorizeResponse extends AbstractResponse implements RedirectRespon
      */
     public function isSuccessful()
     {
-        return parent::isSuccessful() && 'checkout_incomplete' !== $this->data['status'];
+        // Authorize is only successful once it has been acknowledged
+        return false;
     }
 }
