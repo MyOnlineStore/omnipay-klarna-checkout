@@ -36,10 +36,12 @@ abstract class RequestTestCase extends TestCase
     /**
      * @param array  $responseData
      * @param string $url
+     *
+     * @return \Mockery\MockInterface
      */
     protected function setExpectedGetRequest(array $responseData, $url)
     {
-        $this->setExpectedRequest(RequestInterface::GET, $url, [], [], $responseData);
+        return $this->setExpectedRequest(RequestInterface::GET, $url, [], [], $responseData);
     }
 
     /**
@@ -62,10 +64,12 @@ abstract class RequestTestCase extends TestCase
      * @param array  $inputData
      * @param array  $responseData
      * @param string $url
+     *
+     * @return \Mockery\MockInterface
      */
     protected function setExpectedPostRequest(array $inputData, array $responseData, $url)
     {
-        $this->setExpectedRequest(
+        return $this->setExpectedRequest(
             RequestInterface::POST,
             $url,
             ['Content-Type' => 'application/json'],
@@ -80,6 +84,8 @@ abstract class RequestTestCase extends TestCase
      * @param array  $headers
      * @param array  $inputData
      * @param array  $responseData
+     *
+     * @return \Mockery\MockInterface
      */
     private function setExpectedRequest($requestMethod, $url, array $headers, array $inputData, array $responseData)
     {
@@ -98,5 +104,7 @@ abstract class RequestTestCase extends TestCase
                 json_encode($inputData),
                 ['auth' => [self::MERCHANT_ID, self::SECRET]]
             )->andReturn($request);
+
+        return $response;
     }
 }

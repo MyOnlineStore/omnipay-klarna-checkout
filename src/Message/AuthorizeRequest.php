@@ -3,6 +3,7 @@
 namespace MyOnlineStore\Omnipay\KlarnaCheckout\Message;
 
 use Guzzle\Http\Message\RequestInterface;
+use Omnipay\Common\Exception\InvalidResponseException;
 
 /**
  * Creates a Klarna Checkout order if it does not exist
@@ -67,25 +68,15 @@ final class AuthorizeRequest extends AbstractOrderRequest
      */
     public function sendData($data)
     {
-        if (!$this->getTransactionReference()) {
-            return new AuthorizeResponse(
-                $this,
-                $this->getResponseBody($this->sendRequest(RequestInterface::POST, '/checkout/v3/orders', $data)),
-                $this->getRenderUrl()
-            );
+        $response = $this->getTransactionReference() ?
+            $this->sendRequest(RequestInterface::GET, '/checkout/v3/orders/'.$this->getTransactionReference(), $data) :
+            $this->sendRequest(RequestInterface::POST, '/checkout/v3/orders', $data);
+
+        if ($response->getStatusCode() >= 400) {
+            throw new InvalidResponseException($response->getMessage());
         }
 
-        return new AuthorizeResponse(
-            $this,
-            $this->getResponseBody(
-                $this->sendRequest(
-                    RequestInterface::GET,
-                    '/checkout/v3/orders/'.$this->getTransactionReference(),
-                    $data
-                )
-            ),
-            $this->getRenderUrl()
-        );
+        return new AuthorizeResponse($this, $this->getResponseBody($response), $this->getRenderUrl());
     }
 
     /**
