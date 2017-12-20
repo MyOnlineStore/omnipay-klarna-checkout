@@ -2,9 +2,12 @@
 
 namespace MyOnlineStore\Tests\Omnipay\KlarnaCheckout\Message;
 
+use Guzzle\Http\Message\RequestInterface;
+use Guzzle\Http\Message\Response;
 use MyOnlineStore\Omnipay\KlarnaCheckout\Message\AuthorizeRequest;
 use MyOnlineStore\Omnipay\KlarnaCheckout\Message\AuthorizeResponse;
 use Omnipay\Common\Exception\InvalidRequestException;
+use Omnipay\Common\Exception\InvalidResponseException;
 
 class AuthorizeRequestTest extends RequestTestCase
 {
@@ -294,7 +297,9 @@ class AuthorizeRequestTest extends RequestTestCase
         $inputData = ['request-data' => 'yey?'];
         $expectedData = ['response-data' => 'yey!'];
 
-        $this->setExpectedPostRequest($inputData, $expectedData, self::BASE_URL.'/checkout/v3/orders');
+        $response = $this->setExpectedPostRequest($inputData, $expectedData, self::BASE_URL.'/checkout/v3/orders');
+
+        $response->shouldReceive('getStatusCode')->once()->andReturn(200);
 
         $this->authorizeRequest->initialize(
             [
@@ -317,10 +322,12 @@ class AuthorizeRequestTest extends RequestTestCase
         $inputData = ['request-data' => 'yey?'];
         $expectedData = ['response-data' => 'yey!'];
 
-        $this->setExpectedGetRequest(
+        $response = $this->setExpectedGetRequest(
             $expectedData,
             self::BASE_URL.'/checkout/v3/orders/f60e69e8-464a-48c0-a452-6fd562540f37'
         );
+
+        $response->shouldReceive('getStatusCode')->once()->andReturn(200);
 
         $this->authorizeRequest->initialize(
             [
@@ -335,5 +342,23 @@ class AuthorizeRequestTest extends RequestTestCase
 
         self::assertInstanceOf(AuthorizeResponse::class, $response);
         self::assertSame($expectedData, $response->getData());
+    }
+
+    public function testSendDataWillRaiseExceptionOnErrorResponses()
+    {
+        $request = \Mockery::mock(RequestInterface::class);
+        $this->httpClient->shouldReceive('createRequest')->andReturn($request);
+
+        $response = \Mockery::mock(Response::class);
+        $request->shouldReceive('send')->once()->andReturn($response);
+
+        $response->shouldReceive('getStatusCode')->once()->andReturn(401);
+
+        $responseMessage = 'FooBar';
+        $response->shouldReceive('getMessage')->once()->andReturn($responseMessage);
+
+        $this->setExpectedException(InvalidResponseException::class, $responseMessage);
+
+        $this->authorizeRequest->sendData([]);
     }
 }
