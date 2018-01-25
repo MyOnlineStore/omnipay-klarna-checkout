@@ -5,6 +5,7 @@ namespace MyOnlineStore\Omnipay\KlarnaCheckout;
 use MyOnlineStore\Omnipay\KlarnaCheckout\Message\AcknowledgeRequest;
 use MyOnlineStore\Omnipay\KlarnaCheckout\Message\AuthorizeRequest;
 use MyOnlineStore\Omnipay\KlarnaCheckout\Message\CaptureRequest;
+use MyOnlineStore\Omnipay\KlarnaCheckout\Message\ExtendAuthorizationRequest;
 use MyOnlineStore\Omnipay\KlarnaCheckout\Message\FetchTransactionRequest;
 use MyOnlineStore\Omnipay\KlarnaCheckout\Message\RefundRequest;
 use MyOnlineStore\Omnipay\KlarnaCheckout\Message\UpdateTransactionRequest;
@@ -43,6 +44,14 @@ final class Gateway extends AbstractGateway implements GatewayInterface
     public function capture(array $options = [])
     {
         return $this->createRequest(CaptureRequest::class, $options);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function extendAuthorization(array $options = [])
+    {
+        return $this->createRequest(ExtendAuthorizationRequest::class, $options);
     }
 
     /**
@@ -101,7 +110,7 @@ final class Gateway extends AbstractGateway implements GatewayInterface
     /**
      * @inheritDoc
      */
-    public function initialize(array $parameters = array())
+    public function initialize(array $parameters = [])
     {
         parent::initialize($parameters);
 
@@ -110,6 +119,26 @@ final class Gateway extends AbstractGateway implements GatewayInterface
         } else {
             $this->parameters->set('base_url', $this->getTestMode() ? self::NA_TEST_BASE_URL : self::NA_BASE_URL);
         }
+
+        return $this;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function refund(array $options = [])
+    {
+        return $this->createRequest(RefundRequest::class, $options);
+    }
+
+    /**
+     * @param string $region
+     *
+     * @return $this
+     */
+    public function setApiRegion($region)
+    {
+        $this->setParameter('api_region', $region);
 
         return $this;
     }
@@ -127,18 +156,6 @@ final class Gateway extends AbstractGateway implements GatewayInterface
     }
 
     /**
-     * @param string $region
-     *
-     * @return $this
-     */
-    public function setApiRegion($region)
-    {
-        $this->setParameter('api_region', $region);
-
-        return $this;
-    }
-
-    /**
      * @param string $secret
      *
      * @return $this
@@ -148,14 +165,6 @@ final class Gateway extends AbstractGateway implements GatewayInterface
         $this->setParameter('secret', $secret);
 
         return $this;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function refund(array $options = [])
-    {
-        return $this->createRequest(RefundRequest::class, $options);
     }
 
     /**
