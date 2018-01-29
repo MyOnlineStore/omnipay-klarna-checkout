@@ -98,7 +98,7 @@ class CaptureRequestTest extends RequestTestCase
                 self::BASE_URL.'/ordermanagement/v1/orders/'.self::TRANSACTION_REF.'/captures',
                 ['Content-Type' => 'application/json'],
                 json_encode($inputData),
-                ['auth' => [self::MERCHANT_ID, self::SECRET]]
+                ['auth' => [self::USERNAME, self::SECRET]]
             )->andReturn($request);
 
         $this->setExpectedGetRequest(
@@ -108,7 +108,7 @@ class CaptureRequestTest extends RequestTestCase
 
         $this->captureRequest->initialize([
             'base_url' => self::BASE_URL,
-            'merchant_id' => self::MERCHANT_ID,
+            'username' => self::USERNAME,
             'secret' => self::SECRET,
             'transactionReference' => self::TRANSACTION_REF,
         ]);

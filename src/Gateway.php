@@ -71,15 +71,8 @@ final class Gateway extends AbstractGateway implements GatewayInterface
             'merchant_id' => '',
             'secret' => '',
             'testMode' => true,
+            'username' => '',
         ];
-    }
-
-    /**
-     * @return string
-     */
-    public function getMerchantId()
-    {
-        return $this->getParameter('merchant_id');
     }
 
     /**
@@ -99,9 +92,17 @@ final class Gateway extends AbstractGateway implements GatewayInterface
     }
 
     /**
+     * @return string
+     */
+    public function getUsername()
+    {
+        return $this->getParameter('username');
+    }
+
+    /**
      * @inheritDoc
      */
-    public function initialize(array $parameters = array())
+    public function initialize(array $parameters = [])
     {
         parent::initialize($parameters);
 
@@ -115,15 +116,11 @@ final class Gateway extends AbstractGateway implements GatewayInterface
     }
 
     /**
-     * @param string $merchantId
-     *
-     * @return $this
+     * @inheritdoc
      */
-    public function setMerchantId($merchantId)
+    public function refund(array $options = [])
     {
-        $this->setParameter('merchant_id', $merchantId);
-
-        return $this;
+        return $this->createRequest(RefundRequest::class, $options);
     }
 
     /**
@@ -134,6 +131,20 @@ final class Gateway extends AbstractGateway implements GatewayInterface
     public function setApiRegion($region)
     {
         $this->setParameter('api_region', $region);
+
+        return $this;
+    }
+
+    /**
+     * @deprecated use setUsername instead
+     *
+     * @param string $merchantId
+     *
+     * @return $this
+     */
+    public function setMerchantId($merchantId)
+    {
+        $this->setParameter('merchant_id', $merchantId);
 
         return $this;
     }
@@ -151,11 +162,15 @@ final class Gateway extends AbstractGateway implements GatewayInterface
     }
 
     /**
-     * @inheritdoc
+     * @param string $username
+     *
+     * @return $this
      */
-    public function refund(array $options = [])
+    public function setUsername($username)
     {
-        return $this->createRequest(RefundRequest::class, $options);
+        $this->setParameter('username', $username);
+
+        return $this;
     }
 
     /**

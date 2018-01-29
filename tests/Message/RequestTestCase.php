@@ -11,7 +11,7 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 abstract class RequestTestCase extends TestCase
 {
     const BASE_URL = 'http://localhost';
-    const MERCHANT_ID = 'merchant-32';
+    const USERNAME = 'merchant-32';
     const SECRET = 'very-secret-stuff';
 
     /**
@@ -102,7 +102,7 @@ abstract class RequestTestCase extends TestCase
                 $url,
                 $headers,
                 json_encode($inputData),
-                ['auth' => [self::MERCHANT_ID, self::SECRET]]
+                ['auth' => [self::USERNAME, self::SECRET]]
             )->andReturn($request);
 
         return $response;

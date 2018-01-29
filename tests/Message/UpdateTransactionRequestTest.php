@@ -251,7 +251,7 @@ class UpdateTransactionRequestTest extends RequestTestCase
         $this->updateTransactionRequest->initialize(
             [
                 'base_url' => self::BASE_URL,
-                'merchant_id' => self::MERCHANT_ID,
+                'username' => self::USERNAME,
                 'secret' => self::SECRET,
                 'transactionReference' => self::TRANSACTION_REFERENCE,
             ]
@@ -289,7 +289,7 @@ class UpdateTransactionRequestTest extends RequestTestCase
 
         $this->updateTransactionRequest->initialize([
             'base_url' => self::BASE_URL,
-            'merchant_id' => self::MERCHANT_ID,
+            'username' => self::USERNAME,
             'secret' => self::SECRET,
             'transactionReference' => self::TRANSACTION_REFERENCE,
         ]);
@@ -317,7 +317,7 @@ class UpdateTransactionRequestTest extends RequestTestCase
 
         $this->updateTransactionRequest->initialize([
             'base_url' => self::BASE_URL,
-            'merchant_id' => self::MERCHANT_ID,
+            'username' => self::USERNAME,
             'secret' => self::SECRET,
             'transactionReference' => self::TRANSACTION_REFERENCE,
         ]);
