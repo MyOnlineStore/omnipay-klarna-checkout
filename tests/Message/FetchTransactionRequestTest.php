@@ -44,7 +44,7 @@ class FetchTransactionRequestTest extends RequestTestCase
 
         $this->fetchTransactionRequest->initialize([
             'base_url' => self::BASE_URL,
-            'merchant_id' => self::MERCHANT_ID,
+            'username' => self::USERNAME,
             'secret' => self::SECRET,
             'transactionReference' => 'foo',
         ]);
@@ -62,7 +62,7 @@ class FetchTransactionRequestTest extends RequestTestCase
 
         $this->fetchTransactionRequest->initialize([
             'base_url' => self::BASE_URL,
-            'merchant_id' => self::MERCHANT_ID,
+            'username' => self::USERNAME,
             'secret' => self::SECRET,
             'transactionReference' => 'foo',
         ]);
@@ -83,7 +83,7 @@ class FetchTransactionRequestTest extends RequestTestCase
 
         $this->fetchTransactionRequest->initialize([
             'base_url' => self::BASE_URL,
-            'merchant_id' => self::MERCHANT_ID,
+            'username' => self::USERNAME,
             'secret' => self::SECRET,
             'transactionReference' => 'foo',
         ]);

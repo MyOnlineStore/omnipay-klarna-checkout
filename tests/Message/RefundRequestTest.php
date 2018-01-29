@@ -89,7 +89,7 @@ class RefundRequestTest extends RequestTestCase
 
         $this->refundRequest->initialize([
             'base_url' => self::BASE_URL,
-            'merchant_id' => self::MERCHANT_ID,
+            'username' => self::USERNAME,
             'secret' => self::SECRET,
             'transactionReference' => 'foo',
         ]);
