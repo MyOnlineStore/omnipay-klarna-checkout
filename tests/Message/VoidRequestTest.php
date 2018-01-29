@@ -74,7 +74,7 @@ class VoidRequestTest extends RequestTestCase
 
         $this->voidRequest->initialize([
             'base_url' => self::BASE_URL,
-            'merchant_id' => self::MERCHANT_ID,
+            'username' => self::USERNAME,
             'secret' => self::SECRET,
             'transactionReference' => self::TRANSACTION_REF,
         ]);

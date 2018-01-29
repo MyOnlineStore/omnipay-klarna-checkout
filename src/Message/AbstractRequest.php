@@ -3,9 +3,12 @@
 namespace MyOnlineStore\Omnipay\KlarnaCheckout\Message;
 
 use Guzzle\Common\Event;
+use Guzzle\Common\Exception\InvalidArgumentException;
 use Guzzle\Http\ClientInterface;
+use Guzzle\Http\Exception\RequestException;
 use Guzzle\Http\Message\RequestInterface;
 use Guzzle\Http\Message\Response;
+use MyOnlineStore\Omnipay\KlarnaCheckout\AuthenticationRequestOptionProvider;
 use MyOnlineStore\Omnipay\KlarnaCheckout\CurrencyAwareTrait;
 use MyOnlineStore\Omnipay\KlarnaCheckout\ItemBag;
 use Symfony\Component\HttpFoundation\Request as HttpRequest;
@@ -62,6 +65,8 @@ abstract class AbstractRequest extends \Omnipay\Common\Message\AbstractRequest
     }
 
     /**
+     * @deprecated use getUsername instead
+     *
      * @return string
      */
     public function getMerchantId()
@@ -101,6 +106,14 @@ abstract class AbstractRequest extends \Omnipay\Common\Message\AbstractRequest
     public function getTaxAmount()
     {
         return $this->getParameter('tax_amount');
+    }
+
+    /**
+     * @return string
+     */
+    public function getUsername()
+    {
+        return $this->getParameter('username');
     }
 
     /**
@@ -148,6 +161,8 @@ abstract class AbstractRequest extends \Omnipay\Common\Message\AbstractRequest
     }
 
     /**
+     * @deprecated use setUsername instead
+     *
      * @param string $merchantId
      *
      * @return $this
@@ -204,11 +219,15 @@ abstract class AbstractRequest extends \Omnipay\Common\Message\AbstractRequest
     }
 
     /**
-     * @return array
+     * @param string $username
+     *
+     * @return $this
      */
-    protected function getRequestOptions()
+    public function setUsername($username)
     {
-        return ['auth' => [$this->getMerchantId(), $this->getSecret()]];
+        $this->setParameter('username', $username);
+
+        return $this;
     }
 
     /**
@@ -227,16 +246,21 @@ abstract class AbstractRequest extends \Omnipay\Common\Message\AbstractRequest
      * @param mixed  $data
      *
      * @return Response
+     *
+     * @throws RequestException
+     * @throws InvalidArgumentException
      */
     protected function sendRequest($method, $url, $data)
     {
+        $options = (new AuthenticationRequestOptionProvider())->getOptions($this);
+
         if (RequestInterface::GET === $method) {
             return $this->httpClient->createRequest(
                 $method,
                 $this->getBaseUrl().$url,
                 null,
                 null,
-                $this->getRequestOptions()
+                $options
             )->send();
         }
 
@@ -245,7 +269,7 @@ abstract class AbstractRequest extends \Omnipay\Common\Message\AbstractRequest
             $this->getBaseUrl().$url,
             ['Content-Type' => 'application/json'],
             json_encode($data),
-            $this->getRequestOptions()
+            $options
         )->send();
     }
 }

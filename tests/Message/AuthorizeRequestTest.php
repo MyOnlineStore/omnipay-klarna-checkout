@@ -304,7 +304,7 @@ class AuthorizeRequestTest extends RequestTestCase
         $this->authorizeRequest->initialize(
             [
                 'base_url' => self::BASE_URL,
-                'merchant_id' => self::MERCHANT_ID,
+                'username' => self::USERNAME,
                 'secret' => self::SECRET,
             ]
         );
@@ -332,7 +332,7 @@ class AuthorizeRequestTest extends RequestTestCase
         $this->authorizeRequest->initialize(
             [
                 'base_url' => self::BASE_URL,
-                'merchant_id' => self::MERCHANT_ID,
+                'username' => self::USERNAME,
                 'secret' => self::SECRET,
                 'transactionReference' => 'f60e69e8-464a-48c0-a452-6fd562540f37',
             ]
