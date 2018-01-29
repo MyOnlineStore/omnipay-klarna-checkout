@@ -76,6 +76,16 @@ final class Gateway extends AbstractGateway implements GatewayInterface
     }
 
     /**
+     * @deprecated use getUsername instead
+     *
+     * @return string
+     */
+    public function getMerchantId()
+    {
+        return $this->getParameter('merchant_id');
+    }
+
+    /**
      * @inheritDoc
      */
     public function getName()
