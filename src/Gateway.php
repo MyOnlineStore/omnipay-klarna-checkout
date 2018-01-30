@@ -5,6 +5,7 @@ namespace MyOnlineStore\Omnipay\KlarnaCheckout;
 use MyOnlineStore\Omnipay\KlarnaCheckout\Message\AcknowledgeRequest;
 use MyOnlineStore\Omnipay\KlarnaCheckout\Message\AuthorizeRequest;
 use MyOnlineStore\Omnipay\KlarnaCheckout\Message\CaptureRequest;
+use MyOnlineStore\Omnipay\KlarnaCheckout\Message\ExtendAuthorizationRequest;
 use MyOnlineStore\Omnipay\KlarnaCheckout\Message\FetchTransactionRequest;
 use MyOnlineStore\Omnipay\KlarnaCheckout\Message\RefundRequest;
 use MyOnlineStore\Omnipay\KlarnaCheckout\Message\UpdateTransactionRequest;
@@ -43,6 +44,14 @@ final class Gateway extends AbstractGateway implements GatewayInterface
     public function capture(array $options = [])
     {
         return $this->createRequest(CaptureRequest::class, $options);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function extendAuthorization(array $options = [])
+    {
+        return $this->createRequest(ExtendAuthorizationRequest::class, $options);
     }
 
     /**
