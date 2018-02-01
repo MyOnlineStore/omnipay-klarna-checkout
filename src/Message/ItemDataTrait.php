@@ -20,6 +20,7 @@ trait ItemDataTrait
 
         foreach ($items as $item) {
             $orderLines[] = [
+                'type' => $item->getType(),
                 'name' => $item->getName(),
                 'quantity' => $item->getQuantity(),
                 'tax_rate' => (int) $item->getTaxRate() * 100,

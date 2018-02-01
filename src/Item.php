@@ -21,6 +21,14 @@ final class Item extends \Omnipay\Common\Item implements ItemInterface
     }
 
     /**
+     * @inheritDoc
+     */
+    public function getType()
+    {
+        return $this->getParameter('type');
+    }
+
+    /**
      * @param int $taxRate
      */
     public function setTaxRate($taxRate)
@@ -34,5 +42,13 @@ final class Item extends \Omnipay\Common\Item implements ItemInterface
     public function setTotalTaxAmount($amount)
     {
         $this->setParameter('total_tax_amount', $amount);
+    }
+
+    /**
+     * @param string $type
+     */
+    public function setType($type)
+    {
+        $this->setParameter('type', $type);
     }
 }
