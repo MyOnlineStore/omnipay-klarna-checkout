@@ -12,6 +12,7 @@ trait ItemDataTestTrait
     protected function getItemMock()
     {
         $item = \Mockery::mock(ItemInterface::class);
+        $item->shouldReceive('getType')->andReturn('shipping_fee');
         $item->shouldReceive('getName')->andReturn('item-name');
         $item->shouldReceive('getQuantity')->andReturn(1);
         $item->shouldReceive('getTaxRate')->andReturn(20.0);
@@ -28,6 +29,7 @@ trait ItemDataTestTrait
     protected function getExpectedOrderLine()
     {
         return [
+            'type' => 'shipping_fee',
             'name' => 'item-name',
             'quantity' => 1,
             'tax_rate' => 2000,
