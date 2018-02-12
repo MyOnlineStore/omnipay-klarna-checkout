@@ -11,6 +11,14 @@ use Omnipay\Common\Exception\InvalidResponseException;
 final class AuthorizeRequest extends AbstractOrderRequest
 {
     /**
+     * @return string
+     */
+    public function getCancellationTermsUrl()
+    {
+        return $this->getParameter('cancellationTermsUrl');
+    }
+
+    /**
      * @inheritDoc
      */
     public function getData()
@@ -27,14 +35,20 @@ final class AuthorizeRequest extends AbstractOrderRequest
             'validationUrl'
         );
 
-        $data = $this->getOrderData();
-        $data['merchant_urls'] = [
+        $merchantUrls = [
             'checkout' => $this->getReturnUrl(),
             'confirmation' => $this->getReturnUrl(),
             'push' => $this->getNotifyUrl(),
             'terms' => $this->getTermsUrl(),
             'validation' => $this->getValidationUrl(),
         ];
+
+        if (null !== ($cancellationTermsUrl = $this->getCancellationTermsUrl())) {
+            $merchantUrls['cancellation_terms'] = $cancellationTermsUrl;
+        }
+
+        $data = $this->getOrderData();
+        $data['merchant_urls'] = $merchantUrls;
 
         return $data;
     }
@@ -77,6 +91,18 @@ final class AuthorizeRequest extends AbstractOrderRequest
         }
 
         return new AuthorizeResponse($this, $this->getResponseBody($response), $this->getRenderUrl());
+    }
+
+    /**
+     * @param string $url
+     *
+     * @return $this
+     */
+    public function setCancellationTermsUrl($url)
+    {
+        $this->setParameter('cancellationTermsUrl', $url);
+
+        return $this;
     }
 
     /**

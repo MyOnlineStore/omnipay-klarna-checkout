@@ -71,6 +71,7 @@ class AuthorizeRequestTest extends RequestTestCase
             [
                 'locale' => 'nl_NL',
                 'amount' => '100.00',
+                'cancellationTermsUrl' => 'localhost/cancellation-terms',
                 'tax_amount' => 21,
                 'returnUrl' => 'localhost/return',
                 'notifyUrl' => 'localhost/notify',
@@ -88,6 +89,7 @@ class AuthorizeRequestTest extends RequestTestCase
                 'order_tax_amount' => 2100,
                 'order_lines' => [$this->getExpectedOrderLine()],
                 'merchant_urls' => [
+                    'cancellation_terms' => 'localhost/cancellation-terms',
                     'checkout' => 'localhost/return',
                     'confirmation' => 'localhost/return',
                     'push' => 'localhost/notify',
@@ -151,6 +153,7 @@ class AuthorizeRequestTest extends RequestTestCase
 
         $this->authorizeRequest->initialize(
             [
+                'cancellationTermsUrl' => 'localhost/cancellation-terms',
                 'locale' => 'nl_NL',
                 'amount' => '100.00',
                 'tax_amount' => 21,
@@ -172,6 +175,7 @@ class AuthorizeRequestTest extends RequestTestCase
                 'order_tax_amount' => 2100,
                 'order_lines' => [$this->getExpectedOrderLine()],
                 'merchant_urls' => [
+                    'cancellation_terms' => 'localhost/cancellation-terms',
                     'checkout' => 'localhost/return',
                     'confirmation' => 'localhost/return',
                     'push' => 'localhost/notify',
@@ -258,6 +262,7 @@ class AuthorizeRequestTest extends RequestTestCase
 
         $this->authorizeRequest->initialize(
             [
+                'cancellationTermsUrl' => 'localhost/cancellation-terms',
                 'locale' => 'nl_NL',
                 'amount' => '100.00',
                 'tax_amount' => 21,
@@ -278,6 +283,7 @@ class AuthorizeRequestTest extends RequestTestCase
                 'order_tax_amount' => 2100,
                 'order_lines' => [$this->getExpectedOrderLine()],
                 'merchant_urls' => [
+                    'cancellation_terms' => 'localhost/cancellation-terms',
                     'checkout' => 'localhost/return',
                     'confirmation' => 'localhost/return',
                     'push' => 'localhost/notify',
