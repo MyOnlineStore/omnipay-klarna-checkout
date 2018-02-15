@@ -13,6 +13,14 @@ final class AuthorizeRequest extends AbstractOrderRequest
     /**
      * @return string
      */
+    public function getAddressUpdateUrl()
+    {
+        return $this->getParameter('addressUpdateUrl');
+    }
+
+    /**
+     * @return string
+     */
     public function getCancellationTermsUrl()
     {
         return $this->getParameter('cancellationTermsUrl');
@@ -45,6 +53,10 @@ final class AuthorizeRequest extends AbstractOrderRequest
 
         if (null !== ($cancellationTermsUrl = $this->getCancellationTermsUrl())) {
             $merchantUrls['cancellation_terms'] = $cancellationTermsUrl;
+        }
+
+        if (null !== ($addressUpdateUrl = $this->getAddressUpdateUrl())) {
+            $merchantUrls['address_update'] = $addressUpdateUrl;
         }
 
         $data = $this->getOrderData();
@@ -91,6 +103,18 @@ final class AuthorizeRequest extends AbstractOrderRequest
         }
 
         return new AuthorizeResponse($this, $this->getResponseBody($response), $this->getRenderUrl());
+    }
+
+    /**
+     * @param $url
+     *
+     * @return $this
+     */
+    public function setAddressUpdateUrl($url)
+    {
+        $this->setParameter('addressUpdateUrl', $url);
+
+        return $this;
     }
 
     /**

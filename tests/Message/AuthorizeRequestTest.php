@@ -70,6 +70,7 @@ class AuthorizeRequestTest extends RequestTestCase
         $this->authorizeRequest->initialize(
             [
                 'locale' => 'nl_NL',
+                'addressUpdateUrl' => 'localhost/address-update',
                 'amount' => '100.00',
                 'cancellationTermsUrl' => 'localhost/cancellation-terms',
                 'tax_amount' => 21,
@@ -89,6 +90,7 @@ class AuthorizeRequestTest extends RequestTestCase
                 'order_tax_amount' => 2100,
                 'order_lines' => [$this->getExpectedOrderLine()],
                 'merchant_urls' => [
+                    'address_update' => 'localhost/address-update',
                     'cancellation_terms' => 'localhost/cancellation-terms',
                     'checkout' => 'localhost/return',
                     'confirmation' => 'localhost/return',
