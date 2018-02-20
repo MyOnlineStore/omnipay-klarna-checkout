@@ -38,6 +38,7 @@ class AuthorizeRequestTest extends RequestTestCase
             'items' => [],
             'locale' => true,
             'notifyUrl' => true,
+            'purchase_country' => true,
             'returnUrl' => true,
             'tax_amount' => true,
             'terms_url' => true,
@@ -79,6 +80,7 @@ class AuthorizeRequestTest extends RequestTestCase
                 'termsUrl' => 'localhost/terms',
                 'currency' => 'EUR',
                 'validationUrl' => 'localhost/validate',
+                'purchase_country' => 'NL',
             ]
         );
         $this->authorizeRequest->setItems([$this->getItemMock()]);
@@ -164,6 +166,7 @@ class AuthorizeRequestTest extends RequestTestCase
                 'termsUrl' => 'localhost/terms',
                 'currency' => 'EUR',
                 'validationUrl' => 'localhost/validate',
+                'purchase_country' => 'DE',
             ]
         );
         $this->authorizeRequest->setItems([$this->getItemMock()]);
@@ -184,7 +187,7 @@ class AuthorizeRequestTest extends RequestTestCase
                     'terms' => 'localhost/terms',
                     'validation' => 'localhost/validate',
                 ],
-                'purchase_country' => 'NL',
+                'purchase_country' => 'DE',
                 'purchase_currency' => 'EUR',
                 'shipping_address' => $shippingAddress,
                 'billing_address' => $billingAddress,
@@ -228,6 +231,7 @@ class AuthorizeRequestTest extends RequestTestCase
                 'currency' => 'EUR',
                 'validationUrl' => 'localhost/validate',
                 'shipping_countries' => ['NL', 'DE'],
+                'purchase_country' => 'BE',
             ]
         );
         $this->authorizeRequest->setItems([$this->getItemMock()]);
@@ -246,7 +250,7 @@ class AuthorizeRequestTest extends RequestTestCase
                     'terms' => 'localhost/terms',
                     'validation' => 'localhost/validate',
                 ],
-                'purchase_country' => 'NL',
+                'purchase_country' => 'BE',
                 'purchase_currency' => 'EUR',
                 'options' => $widgetOptions,
                 'shipping_countries' => ['NL', 'DE'],
@@ -273,6 +277,7 @@ class AuthorizeRequestTest extends RequestTestCase
                 'termsUrl' => 'localhost/terms',
                 'currency' => 'EUR',
                 'validationUrl' => 'localhost/validate',
+                'purchase_country' => 'FR',
             ]
         );
         $this->authorizeRequest->setCustomer($customer);
@@ -292,7 +297,7 @@ class AuthorizeRequestTest extends RequestTestCase
                     'terms' => 'localhost/terms',
                     'validation' => 'localhost/validate',
                 ],
-                'purchase_country' => 'NL',
+                'purchase_country' => 'FR',
                 'purchase_currency' => 'EUR',
                 'customer' => $customer,
             ],

@@ -46,6 +46,7 @@ class UpdateTransactionRequestTest extends RequestTestCase
                 'gui_autofocus' => false,
                 'merchant_reference1' => '12345',
                 'merchant_reference2' => 678,
+                'purchase_country' => 'FR',
             ]
         );
         $this->updateTransactionRequest->setItems([$this->getItemMock()]);
@@ -59,6 +60,7 @@ class UpdateTransactionRequestTest extends RequestTestCase
                 'gui' => ['options' => ['disable_autofocus', 'minimal_confirmation']],
                 'merchant_reference1' => '12345',
                 'merchant_reference2' => 678,
+                'purchase_country' => 'FR',
             ],
             $this->updateTransactionRequest->getData()
         );
@@ -123,6 +125,7 @@ class UpdateTransactionRequestTest extends RequestTestCase
                 'gui_autofocus' => false,
                 'merchant_reference1' => '12345',
                 'merchant_reference2' => 678,
+                'purchase_country' => 'NL',
             ]
         );
         $this->updateTransactionRequest->setItems([$this->getItemMock()]);
@@ -182,6 +185,7 @@ class UpdateTransactionRequestTest extends RequestTestCase
                 'gui_autofocus' => false,
                 'merchant_reference1' => '12345',
                 'merchant_reference2' => 678,
+                'purchase_country' => 'DE',
             ]
         );
         $this->updateTransactionRequest->setItems([$this->getItemMock()]);
@@ -193,7 +197,7 @@ class UpdateTransactionRequestTest extends RequestTestCase
                 'order_amount' => 10000,
                 'order_tax_amount' => 2100,
                 'order_lines' => [$this->getExpectedOrderLine()],
-                'purchase_country' => 'NL',
+                'purchase_country' => 'DE',
                 'purchase_currency' => 'EUR',
                 'gui' => ['options' => ['disable_autofocus', 'minimal_confirmation']],
                 'merchant_reference1' => '12345',
@@ -218,6 +222,7 @@ class UpdateTransactionRequestTest extends RequestTestCase
                 'tax_amount' => 21,
                 'currency' => 'EUR',
                 'transactionReference' => self::TRANSACTION_REFERENCE,
+                'purchase_country' => 'FR',
             ]
         );
         $this->updateTransactionRequest->setItems([$this->getItemMock()]);
@@ -229,7 +234,7 @@ class UpdateTransactionRequestTest extends RequestTestCase
                 'order_amount' => 10000,
                 'order_tax_amount' => 2100,
                 'order_lines' => [$this->getExpectedOrderLine()],
-                'purchase_country' => 'NL',
+                'purchase_country' => 'FR',
                 'purchase_currency' => 'EUR',
                 'customer' => $customer,
             ],
