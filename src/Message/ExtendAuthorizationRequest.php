@@ -27,7 +27,7 @@ final class ExtendAuthorizationRequest extends AbstractRequest
      */
     public function sendData($data)
     {
-        $this->getResponseBody(
+        $responseBody = $this->getResponseBody(
             $this->sendRequest(
                 RequestInterface::POST,
                 sprintf('/ordermanagement/v1/orders/%s/extend-authorization-time', $this->getTransactionReference()),
@@ -35,6 +35,12 @@ final class ExtendAuthorizationRequest extends AbstractRequest
             )
         );
 
-        return new ExtendAuthorizationResponse($this, ['order_id' => $this->getTransactionReference()]);
+        return new ExtendAuthorizationResponse(
+            $this,
+            \array_merge(
+                $responseBody,
+                ['order_id' => $this->getTransactionReference()]
+            )
+        );
     }
 }

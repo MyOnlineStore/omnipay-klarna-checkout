@@ -41,7 +41,7 @@ final class ExtendAuthorizationRequestTest extends RequestTestCase
     {
         $this->setExpectedPostRequest(
             [],
-            [],
+            ['hello' => 'world'],
             sprintf(
                 '%s/ordermanagement/v1/orders/%s/extend-authorization-time',
                 self::BASE_URL,
@@ -62,5 +62,12 @@ final class ExtendAuthorizationRequestTest extends RequestTestCase
 
         self::assertInstanceOf(ExtendAuthorizationResponse::class, $extendAuthorizationResponse);
         self::assertSame('foo', $extendAuthorizationResponse->getTransactionReference());
+        self::assertSame(
+            [
+                'hello' => 'world',
+                'order_id' => 'foo',
+            ],
+            $extendAuthorizationResponse->getData()
+        );
     }
 }
