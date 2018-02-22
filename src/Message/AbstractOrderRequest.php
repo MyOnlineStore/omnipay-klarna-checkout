@@ -35,6 +35,14 @@ abstract class AbstractOrderRequest extends AbstractRequest
     }
 
     /**
+     * @return bool
+     */
+    public function getPurchaseCountry()
+    {
+        return $this->getParameter('purchase_country');
+    }
+
+    /**
      * @return Address
      */
     public function getShippingAddress()
@@ -115,6 +123,18 @@ abstract class AbstractOrderRequest extends AbstractRequest
     }
 
     /**
+     * @param bool $value
+     *
+     * @return $this
+     */
+    public function setPurchaseCountry($value)
+    {
+        $this->setParameter('purchase_country', $value);
+
+        return $this;
+    }
+
+    /**
      * @param string[] $countries ISO 3166 alpha-2 codes of shipping countries
      *
      * @return $this
@@ -160,11 +180,11 @@ abstract class AbstractOrderRequest extends AbstractRequest
             'order_tax_amount' => $this->toCurrencyMinorUnits($this->getTaxAmount()),
             'order_lines' => $this->getItemData($this->getItems()),
             'purchase_currency' => $this->getCurrency(),
+            'purchase_country' => $this->getPurchaseCountry(),
         ];
 
         if (null !== $locale = $this->getLocale()) {
             $data['locale'] = str_replace('_', '-', $locale);
-            $data['purchase_country'] = explode('_', $locale)[1];
         }
 
         if (null !== $shippingCountries = $this->getShippingCountries()) {

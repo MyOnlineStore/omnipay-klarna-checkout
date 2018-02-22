@@ -37,6 +37,7 @@ final class AuthorizeRequest extends AbstractOrderRequest
             'items',
             'locale',
             'notifyUrl',
+            'purchase_country',
             'returnUrl',
             'tax_amount',
             'termsUrl',
