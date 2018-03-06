@@ -29,16 +29,11 @@ final class CaptureRequest extends AbstractRequest
      */
     public function sendData($data)
     {
-        $createResponse = $this->sendRequest(RequestInterface::POST, $this->getEndpoint(), $data);
-        $getResponse = $this->sendRequest(
-            RequestInterface::GET,
-            $this->getEndpoint().'/'.$createResponse->getHeader('capture-id'),
-            []
-        );
+        $response = $this->sendRequest(RequestInterface::POST, $this->getEndpoint(), $data);
 
         return new CaptureResponse(
             $this,
-            $this->getResponseBody($getResponse),
+            $this->getResponseBody($response),
             $this->getTransactionReference()
         );
     }
