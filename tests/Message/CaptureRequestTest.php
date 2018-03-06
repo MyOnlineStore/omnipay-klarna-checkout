@@ -83,27 +83,13 @@ class CaptureRequestTest extends RequestTestCase
 
     public function testSendDataWillCreateCaptureAndReturnResponseWithCaptureData()
     {
-        $inputData = ['request-data' => 'yey?'];
-        $expectedData = ['response-data' => 'yey!'];
+        $requestdata = ['request-data' => 'yey?'];
+        $responseData = ['response-data' => 'yey!'];
 
-        $response = \Mockery::mock(Response::class);
-        $response->shouldReceive('getHeader')->with('capture-id')->once()->andReturn(self::CAPTURE_ID);
-
-        $request = \Mockery::mock(RequestInterface::class);
-        $request->shouldReceive('send')->once()->andReturn($response);
-
-        $this->httpClient->shouldReceive('createRequest')
-            ->with(
-                RequestInterface::POST,
-                self::BASE_URL.'/ordermanagement/v1/orders/'.self::TRANSACTION_REF.'/captures',
-                ['Content-Type' => 'application/json'],
-                json_encode($inputData),
-                ['auth' => [self::USERNAME, self::SECRET]]
-            )->andReturn($request);
-
-        $this->setExpectedGetRequest(
-            $expectedData,
-            self::BASE_URL.'/ordermanagement/v1/orders/'.self::TRANSACTION_REF.'/captures/'.self::CAPTURE_ID
+        $this->setExpectedPostRequest(
+            $requestdata,
+            $responseData,
+            self::BASE_URL.'/ordermanagement/v1/orders/'.self::TRANSACTION_REF.'/captures'
         );
 
         $this->captureRequest->initialize([
@@ -113,9 +99,9 @@ class CaptureRequestTest extends RequestTestCase
             'transactionReference' => self::TRANSACTION_REF,
         ]);
 
-        $captureResponse = $this->captureRequest->sendData($inputData);
+        $captureResponse = $this->captureRequest->sendData($requestdata);
 
         self::assertInstanceOf(CaptureResponse::class, $captureResponse);
-        self::assertSame($expectedData, $captureResponse->getData());
+        self::assertSame($responseData, $captureResponse->getData());
     }
 }
