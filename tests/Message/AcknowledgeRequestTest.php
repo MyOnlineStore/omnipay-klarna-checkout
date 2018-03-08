@@ -33,11 +33,13 @@ class AcknowledgeRequestTest extends RequestTestCase
         $inputData = ['request-data' => 'yey?'];
         $expectedData = [];
 
-        $this->setExpectedPostRequest(
+        $response = $this->setExpectedPostRequest(
             $inputData,
             $expectedData,
             self::BASE_URL.'/ordermanagement/v1/orders/foo/acknowledge'
         );
+
+        $response->shouldReceive('getStatusCode')->andReturn(204);
 
         $this->acknowledgeRequest->initialize([
             'base_url' => self::BASE_URL,
