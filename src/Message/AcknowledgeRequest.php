@@ -21,11 +21,19 @@ final class AcknowledgeRequest extends AbstractRequest
      */
     public function sendData($data)
     {
-        $url = '/ordermanagement/v1/orders/'.$this->getTransactionReference().'/acknowledge';
+        $response = $this->sendRequest(
+            RequestInterface::POST,
+            sprintf(
+                '/ordermanagement/v1/orders/%s/acknowledge',
+                $this->getTransactionReference()
+            ),
+            $data
+        );
 
         return new AcknowledgeResponse(
             $this,
-            $this->getResponseBody($this->sendRequest(RequestInterface::POST, $url, $data))
+            $this->getResponseBody($response),
+            $response->getStatusCode()
         );
     }
 }
