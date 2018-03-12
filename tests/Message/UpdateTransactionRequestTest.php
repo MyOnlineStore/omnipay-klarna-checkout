@@ -268,22 +268,14 @@ class UpdateTransactionRequestTest extends RequestTestCase
         self::assertSame($responseData, $updateTransactionResponse->getData());
     }
 
-    public function testSendDataWillUpdateManagementOrder()
+    public function testSendDataWillUpdateOrderManagementMerchantReferences()
     {
-        $customerDetailsData = ['shipping_address' => 'foo', 'billing_address' => 'bar'];
         $merchantReferencesData = ['merchant_reference1' => 'baz', 'merchant_reference2' => 'quz'];
-        $inputData = array_merge($customerDetailsData, $merchantReferencesData);
 
         $this->setExpectedPostRequest(
-            $inputData,
+            $merchantReferencesData,
             ['error_code' => 'READ_ONLY_ORDER'],
             sprintf('%s/checkout/v3/orders/%s', self::BASE_URL, self::TRANSACTION_REFERENCE)
-        );
-
-        $this->setExpectedPatchRequest(
-            $customerDetailsData,
-            [],
-            sprintf('%s/ordermanagement/v1/orders/%s/customer-details', self::BASE_URL, self::TRANSACTION_REFERENCE)
         );
 
         $this->setExpectedPatchRequest(
@@ -299,7 +291,7 @@ class UpdateTransactionRequestTest extends RequestTestCase
             'transactionReference' => self::TRANSACTION_REFERENCE,
         ]);
 
-        $updateTransactionResponse = $this->updateTransactionRequest->sendData($inputData);
+        $updateTransactionResponse = $this->updateTransactionRequest->sendData($merchantReferencesData);
         self::assertEmpty($updateTransactionResponse->getData());
         self::assertTrue($updateTransactionResponse->isSuccessful());
     }
