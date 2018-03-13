@@ -33,34 +33,18 @@ final class UpdateTransactionRequest extends AbstractOrderRequest
 
         // Once the checkout order has reached it's end-state it cannot be changed; update the management order instead
         if (isset($responseData['error_code']) && 'READ_ONLY_ORDER' === $responseData['error_code']) {
-            $dataKeysByManagementEndpoint = [
-                'customer-details' =>  ['shipping_address', 'billing_address'],
-                'merchant-references' => ['merchant_reference1', 'merchant_reference2'],
-            ];
+            // Attempt to update the merchant references at the order management endpoint
+            $requestData = array_intersect_key($data, ['merchant_reference1' => true, 'merchant_reference2' => true]);
 
-            foreach ($dataKeysByManagementEndpoint as $endpoint => $dataKeys) {
-                // Extract the data relevant to the current management endpoint
-                $requestData = array_intersect_key($data, array_flip($dataKeys));
-
-                // Don't perform an unnessasary request if there is no data to be updated for this management endpoint
-                if (empty($requestData)) {
-                    continue;
-                }
-
-                // Send the relevant data to the management endpoint
-                $responseData = $this->getResponseBody(
+            $responseData = !empty($requestData) ?
+                $this->getResponseBody(
                     $this->sendRequest(
                         RequestInterface::PATCH,
-                        sprintf('/ordermanagement/v1/orders/%s/%s', $this->getTransactionReference(), $endpoint),
+                        sprintf('/ordermanagement/v1/orders/%s/merchant-references', $this->getTransactionReference()),
                         $requestData
                     )
-                );
-
-                // Stop following updates if any error occurs
-                if (isset($responseData['error_code'])) {
-                    break;
-                }
-            }
+                ) :
+                []; // no merchant references to be updated
         }
 
         return new UpdateTransactionResponse($this, $responseData);
