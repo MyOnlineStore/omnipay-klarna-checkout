@@ -21,11 +21,17 @@ final class FetchTransactionRequest extends AbstractRequest
      */
     public function sendData($data)
     {
-        $responseData['checkout'] = $this->getResponseBody(
-            $this->sendRequest(RequestInterface::GET, '/checkout/v3/orders/'.$this->getTransactionReference(), $data)
+        $response = $this->sendRequest(
+            RequestInterface::GET,
+            '/checkout/v3/orders/'.$this->getTransactionReference(),
+            $data
         );
 
-        if (isset($responseData['checkout']['status']) && 'checkout_complete' === $responseData['checkout']['status']) {
+        $responseData['checkout'] = $this->getResponseBody($response);
+
+        if (404 === $response->getStatusCode() ||
+            (isset($responseData['checkout']['status']) && 'checkout_complete' === $responseData['checkout']['status'])
+        ) {
             $responseData['management'] = $this->getResponseBody(
                 $this->sendRequest(
                     RequestInterface::GET,

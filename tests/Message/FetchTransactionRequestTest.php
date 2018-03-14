@@ -37,10 +37,44 @@ class FetchTransactionRequestTest extends RequestTestCase
         $this->fetchTransactionRequest->getData();
     }
 
+    public function testSendDataWillReturnResponseFromManagementApiForDeletedCheckoutOrder()
+    {
+        $expectedCheckoutData = [];
+        $expectedManagementData = ['response-data' => 'yay!'];
+
+        $checkoutRequest = $this->setExpectedGetRequest(
+            $expectedCheckoutData,
+            self::BASE_URL.'/checkout/v3/orders/foo'
+        );
+        $checkoutRequest->shouldReceive('getStatusCode')->once()->andReturn(404);
+
+        $this->setExpectedGetRequest($expectedManagementData, self::BASE_URL.'/ordermanagement/v1/orders/foo');
+
+        $this->fetchTransactionRequest->initialize([
+            'base_url' => self::BASE_URL,
+            'username' => self::USERNAME,
+            'secret' => self::SECRET,
+            'transactionReference' => 'foo',
+        ]);
+
+        $fetchResponse = $this->fetchTransactionRequest->sendData([]);
+
+        self::assertInstanceOf(FetchTransactionResponse::class, $fetchResponse);
+        self::assertSame(
+            ['checkout' => $expectedCheckoutData, 'management' => $expectedManagementData],
+            $fetchResponse->getData()
+        );
+    }
+
     public function testSendDataWillReturnResponseFromCheckoutApiForUnknownOrder()
     {
         $expectedCheckoutData = ['response-data' => 'nay!'];
-        $this->setExpectedGetRequest($expectedCheckoutData, self::BASE_URL.'/checkout/v3/orders/foo');
+
+        $checkoutRequest = $this->setExpectedGetRequest(
+            $expectedCheckoutData,
+            self::BASE_URL.'/checkout/v3/orders/foo'
+        );
+        $checkoutRequest->shouldReceive('getStatusCode')->once()->andReturn(200);
 
         $this->fetchTransactionRequest->initialize([
             'base_url' => self::BASE_URL,
@@ -58,7 +92,12 @@ class FetchTransactionRequestTest extends RequestTestCase
     public function testSendDataWillReturnResponseFromCheckoutApiForIncompleteOrder()
     {
         $expectedCheckoutData = ['status' => 'checkout_incomplete'];
-        $this->setExpectedGetRequest($expectedCheckoutData, self::BASE_URL.'/checkout/v3/orders/foo');
+
+        $checkoutRequest = $this->setExpectedGetRequest(
+            $expectedCheckoutData,
+            self::BASE_URL.'/checkout/v3/orders/foo'
+        );
+        $checkoutRequest->shouldReceive('getStatusCode')->once()->andReturn(200);
 
         $this->fetchTransactionRequest->initialize([
             'base_url' => self::BASE_URL,
@@ -78,7 +117,12 @@ class FetchTransactionRequestTest extends RequestTestCase
         $expectedCheckoutData = ['status' => 'checkout_complete'];
         $expectedManagementData = ['response-data' => 'yay!'];
 
-        $this->setExpectedGetRequest($expectedCheckoutData, self::BASE_URL.'/checkout/v3/orders/foo');
+        $checkoutRequest = $this->setExpectedGetRequest(
+            $expectedCheckoutData,
+            self::BASE_URL.'/checkout/v3/orders/foo'
+        );
+        $checkoutRequest->shouldReceive('getStatusCode')->once()->andReturn(200);
+
         $this->setExpectedGetRequest($expectedManagementData, self::BASE_URL.'/ordermanagement/v1/orders/foo');
 
         $this->fetchTransactionRequest->initialize([
