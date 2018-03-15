@@ -16,6 +16,8 @@ class FetchTransactionResponseTest extends TestCase
             [['checkout' => ['error_code' => 'oh_noes']], false],
             [[], false],
             [['checkout' => ['status' => 'all_is_well']], true],
+            [['management' => ['error_code' => 'oh_noes']], false],
+            [['management' => ['status' => 'all_is_well']], true],
         ];
     }
 
