@@ -21,12 +21,20 @@ class FetchTransactionResponseTest extends TestCase
         ];
     }
 
-    public function testGetters()
+    public function testGetTransactionReferenceForCheckoutTransaction()
     {
         $responseData = ['checkout' => ['order_id' => 'foo']];
         $response = new FetchTransactionResponse($this->getMockRequest(), $responseData);
 
         self::assertSame($responseData['checkout']['order_id'], $response->getTransactionReference());
+    }
+
+    public function testGetTransactionReferenceForManagementTransaction()
+    {
+        $responseData = ['management' => ['order_id' => 'foo']];
+        $response = new FetchTransactionResponse($this->getMockRequest(), $responseData);
+
+        self::assertSame($responseData['management']['order_id'], $response->getTransactionReference());
     }
 
     /**
