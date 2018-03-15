@@ -17,6 +17,7 @@ final class FetchTransactionResponse extends AbstractResponse
      */
     public function isSuccessful()
     {
-        return parent::isSuccessful() && !empty($this->data['checkout']['status']);
+        return parent::isSuccessful() &&
+            (!empty($this->data['checkout']['status']) || !empty($this->data['management']['status']));
     }
 }
