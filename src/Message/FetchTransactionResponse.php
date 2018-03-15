@@ -9,7 +9,9 @@ final class FetchTransactionResponse extends AbstractResponse
      */
     public function getTransactionReference()
     {
-        return $this->data['checkout']['order_id'];
+        return isset($this->data['checkout']['order_id']) ?
+            $this->data['checkout']['order_id'] :
+            $this->data['management']['order_id'];
     }
 
     /**
