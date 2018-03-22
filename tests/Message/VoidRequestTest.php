@@ -29,6 +29,7 @@ class VoidRequestTest extends RequestTestCase
         $this->voidRequest->initialize([]);
 
         $this->setExpectedException(InvalidRequestException::class);
+        /** @noinspection PhpUnhandledExceptionInspection */
         $this->voidRequest->getData();
     }
 
@@ -36,6 +37,7 @@ class VoidRequestTest extends RequestTestCase
     {
         $this->voidRequest->initialize(['transactionReference' => 'foo']);
 
+        /** @noinspection PhpUnhandledExceptionInspection */
         self::assertEquals([], $this->voidRequest->getData());
     }
 
@@ -66,11 +68,12 @@ class VoidRequestTest extends RequestTestCase
             self::BASE_URL.'/ordermanagement/v1/orders/'.self::TRANSACTION_REF
         );
 
-        $this->setExpectedPostRequest(
+        $response = $this->setExpectedPostRequest(
             $inputData,
             $expectedData,
             self::BASE_URL.'/ordermanagement/v1/orders/'.self::TRANSACTION_REF.$expectedPostRoute
         );
+        $response->shouldReceive('getStatusCode')->andReturn(204);
 
         $this->voidRequest->initialize([
             'base_url' => self::BASE_URL,
