@@ -2,7 +2,10 @@
 
 namespace MyOnlineStore\Omnipay\KlarnaCheckout\Message;
 
+use Guzzle\Common\Exception\InvalidArgumentException;
+use Guzzle\Http\Exception\RequestException;
 use Guzzle\Http\Message\RequestInterface;
+use Omnipay\Common\Exception\InvalidRequestException;
 
 final class RefundRequest extends AbstractRequest
 {
@@ -10,6 +13,8 @@ final class RefundRequest extends AbstractRequest
 
     /**
      * @inheritDoc
+     *
+     * @throws InvalidRequestException
      */
     public function getData()
     {
@@ -25,15 +30,23 @@ final class RefundRequest extends AbstractRequest
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
+     *
+     * @throws RequestException
+     * @throws InvalidArgumentException
      */
     public function sendData($data)
     {
-        $url = '/ordermanagement/v1/orders/'.$this->getTransactionReference().'/refunds';
+        $response = $this->sendRequest(
+            RequestInterface::POST,
+            sprintf('/ordermanagement/v1/orders/%s/refunds', $this->getTransactionReference()),
+            $data
+        );
 
         return new RefundResponse(
             $this,
-            $this->getResponseBody($this->sendRequest(RequestInterface::POST, $url, $data))
+            $this->getResponseBody($response),
+            $response->getStatusCode()
         );
     }
 }

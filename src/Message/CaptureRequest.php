@@ -2,14 +2,19 @@
 
 namespace MyOnlineStore\Omnipay\KlarnaCheckout\Message;
 
+use Guzzle\Common\Exception\InvalidArgumentException;
+use Guzzle\Http\Exception\RequestException;
 use Guzzle\Http\Message\RequestInterface;
+use Omnipay\Common\Exception\InvalidRequestException;
 
 final class CaptureRequest extends AbstractRequest
 {
     use ItemDataTrait;
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
+     *
+     * @throws InvalidRequestException
      */
     public function getData()
     {
@@ -25,24 +30,27 @@ final class CaptureRequest extends AbstractRequest
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
+     *
+     * @throws RequestException
+     * @throws InvalidArgumentException
      */
     public function sendData($data)
     {
-        $response = $this->sendRequest(RequestInterface::POST, $this->getEndpoint(), $data);
+        $response = $this->sendRequest(
+            RequestInterface::POST,
+            sprintf(
+                '/ordermanagement/v1/orders/%s/captures',
+                $this->getTransactionReference()
+            ),
+            $data
+        );
 
         return new CaptureResponse(
             $this,
             $this->getResponseBody($response),
-            $this->getTransactionReference()
+            $this->getTransactionReference(),
+            $response->getStatusCode()
         );
-    }
-
-    /**
-     * @inheritdoc
-     */
-    private function getEndpoint()
-    {
-        return '/ordermanagement/v1/orders/'.$this->getTransactionReference().'/captures';
     }
 }

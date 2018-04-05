@@ -45,6 +45,8 @@ class RefundRequestTest extends RequestTestCase
         $this->refundRequest->initialize($requestData);
 
         $this->setExpectedException(InvalidRequestException::class);
+
+        /** @noinspection PhpUnhandledExceptionInspection */
         $this->refundRequest->getData();
     }
 
@@ -70,6 +72,7 @@ class RefundRequestTest extends RequestTestCase
         $this->refundRequest->initialize(['transactionReference' => 'foo', 'amount' => '10.00']);
         $this->refundRequest->setItems($items);
 
+        /** @noinspection PhpUnhandledExceptionInspection */
         self::assertEquals(
             ['refunded_amount' => 1000] + $expectedItemData,
             $this->refundRequest->getData()
@@ -81,11 +84,13 @@ class RefundRequestTest extends RequestTestCase
         $inputData = ['request-data' => 'yey?'];
         $expectedData = [];
 
-        $this->setExpectedPostRequest(
+        $response = $this->setExpectedPostRequest(
             $inputData,
             $expectedData,
             self::BASE_URL.'/ordermanagement/v1/orders/foo/refunds'
         );
+
+        $response->shouldReceive('getStatusCode')->andReturn(204);
 
         $this->refundRequest->initialize([
             'base_url' => self::BASE_URL,

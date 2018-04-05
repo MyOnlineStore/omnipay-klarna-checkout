@@ -2,8 +2,6 @@
 
 namespace MyOnlineStore\Tests\Omnipay\KlarnaCheckout\Message;
 
-use Guzzle\Http\Message\RequestInterface;
-use Guzzle\Http\Message\Response;
 use MyOnlineStore\Omnipay\KlarnaCheckout\Message\CaptureRequest;
 use MyOnlineStore\Omnipay\KlarnaCheckout\Message\CaptureResponse;
 use Omnipay\Common\Exception\InvalidRequestException;
@@ -50,6 +48,8 @@ class CaptureRequestTest extends RequestTestCase
         $this->captureRequest->initialize($requestData);
 
         $this->setExpectedException(InvalidRequestException::class);
+
+        /** @noinspection PhpUnhandledExceptionInspection */
         $this->captureRequest->getData();
     }
 
@@ -75,6 +75,7 @@ class CaptureRequestTest extends RequestTestCase
         $this->captureRequest->initialize(['transactionReference' => self::TRANSACTION_REF, 'amount' => '10.00']);
         $this->captureRequest->setItems($items);
 
+        /** @noinspection PhpUnhandledExceptionInspection */
         self::assertEquals(
             ['captured_amount' => 1000] + $expectedItemData,
             $this->captureRequest->getData()
@@ -86,11 +87,12 @@ class CaptureRequestTest extends RequestTestCase
         $requestdata = ['request-data' => 'yey?'];
         $responseData = ['response-data' => 'yey!'];
 
-        $this->setExpectedPostRequest(
+        $response = $this->setExpectedPostRequest(
             $requestdata,
             $responseData,
             self::BASE_URL.'/ordermanagement/v1/orders/'.self::TRANSACTION_REF.'/captures'
         );
+        $response->shouldReceive('getStatusCode')->andReturn(204);
 
         $this->captureRequest->initialize([
             'base_url' => self::BASE_URL,

@@ -2,16 +2,16 @@
 
 namespace MyOnlineStore\Tests\Omnipay\KlarnaCheckout\Message;
 
-use MyOnlineStore\Omnipay\KlarnaCheckout\Message\CaptureResponse;
+use MyOnlineStore\Omnipay\KlarnaCheckout\Message\RefundResponse;
 use Omnipay\Common\Message\RequestInterface;
 use Omnipay\Tests\TestCase;
 
-final class CaptureResponseTest extends TestCase
+final class RefundResponseTest extends TestCase
 {
     /**
      * All possible Klarna response codes for this class
      *
-     * @see https://developers.klarna.com/api/#order-management-api-create-capture
+     * @see https://developers.klarna.com/api/#order-management-api-refund
      *
      * @return array
      */
@@ -20,13 +20,12 @@ final class CaptureResponseTest extends TestCase
         return [[201, true], [403, false], [404, false]];
     }
 
-    public function testGetTransactionReferenceReturnsIdFromOrder()
+    public function testGetCommonValuesReturnCorrectValues()
     {
         $request = $this->getMock(RequestInterface::class);
 
-        $response = new CaptureResponse($request, [], 'foo', 201);
+        $response = new RefundResponse($request, [], 201);
 
-        self::assertSame('foo', $response->getTransactionReference());
         self::assertSame(201, $response->getStatusCode());
     }
 
@@ -40,7 +39,7 @@ final class CaptureResponseTest extends TestCase
     {
         $request = $this->getMock(RequestInterface::class);
 
-        $captureResponse = new CaptureResponse($request, [], '123', $responseCode);
+        $captureResponse = new RefundResponse($request, [], $responseCode);
 
         self::assertEquals($expectedResult, $captureResponse->isSuccessful());
     }
