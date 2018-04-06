@@ -9,6 +9,7 @@ use Omnipay\Common\Exception\InvalidRequestException;
 class UpdateTransactionRequestTest extends RequestTestCase
 {
     use ItemDataTestTrait;
+    use MerchantUrlsDataTestTrait;
 
     const TRANSACTION_REFERENCE = 1234;
 
@@ -24,6 +25,17 @@ class UpdateTransactionRequestTest extends RequestTestCase
     {
         parent::setUp();
         $this->updateTransactionRequest = new UpdateTransactionRequest($this->httpClient, $this->getHttpRequest());
+    }
+
+    /**
+     * @return array
+     */
+    public function merchantUrlDataProvider()
+    {
+        return [
+            [$this->getMinimalValidMerchantUrlData(), $this->getMinimalExpectedMerchantUrlData()],
+            [$this->getCompleteValidMerchantUrlData(), $this->getCompleteExpectedMerchantUrlData()],
+        ];
     }
 
     public function testGetDataWillThrowExceptionForInvalidRequest()
@@ -237,6 +249,53 @@ class UpdateTransactionRequestTest extends RequestTestCase
                 'purchase_country' => 'FR',
                 'purchase_currency' => 'EUR',
                 'customer' => $customer,
+            ],
+            $this->updateTransactionRequest->getData()
+        );
+    }
+
+    /**
+     * @dataProvider merchantUrlDataProvider
+     *
+     * @param array $merchantUrlData
+     * @param array $expectedMerchantUrls
+     */
+    public function testGetDataWithMerchantUrlsWillReturnCorrectData(
+        $merchantUrlData,
+        $expectedMerchantUrls
+    ) {
+        $this->updateTransactionRequest->initialize(
+            array_merge(
+                [
+                    'amount' => '100.00',
+                    'tax_amount' => 21,
+                    'currency' => 'EUR',
+                    'transactionReference' => self::TRANSACTION_REFERENCE,
+                    'gui_minimal_confirmation' => true,
+                    'gui_autofocus' => false,
+                    'merchant_reference1' => '12345',
+                    'merchant_reference2' => 678,
+                    'purchase_country' => 'FR',
+                    'returnUrl' => 'localhost/return',
+                    'notifyUrl' => 'localhost/notify',
+                    'termsUrl' => 'localhost/terms',
+                ],
+                $merchantUrlData
+            )
+        );
+        $this->updateTransactionRequest->setItems([$this->getItemMock()]);
+
+        self::assertEquals(
+            [
+                'order_amount' => 10000,
+                'order_tax_amount' => 2100,
+                'order_lines' => [$this->getExpectedOrderLine()],
+                'purchase_currency' => 'EUR',
+                'gui' => ['options' => ['disable_autofocus', 'minimal_confirmation']],
+                'merchant_reference1' => '12345',
+                'merchant_reference2' => 678,
+                'purchase_country' => 'FR',
+                'merchant_urls' => $expectedMerchantUrls,
             ],
             $this->updateTransactionRequest->getData()
         );

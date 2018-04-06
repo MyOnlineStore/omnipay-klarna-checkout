@@ -12,6 +12,7 @@ use Omnipay\Common\Exception\InvalidResponseException;
 class AuthorizeRequestTest extends RequestTestCase
 {
     use ItemDataTestTrait;
+    use MerchantUrlsDataTestTrait;
 
     /**
      * @var AuthorizeRequest
@@ -32,17 +33,17 @@ class AuthorizeRequestTest extends RequestTestCase
      */
     public function invalidRequestDataProvider()
     {
-        $data = [
-            'amount' => true,
-            'currency' => true,
-            'items' => [],
-            'locale' => true,
-            'notifyUrl' => true,
-            'purchase_country' => true,
-            'returnUrl' => true,
-            'tax_amount' => true,
-            'terms_url' => true,
-        ];
+        $data = array_merge(
+            [
+                'amount' => true,
+                'currency' => true,
+                'items' => [],
+                'locale' => true,
+                'purchase_country' => true,
+                'tax_amount' => true,
+            ],
+            array_fill_keys(array_keys($this->getMinimalValidMerchantUrlData()), true)
+        );
 
         $cases = [];
 
@@ -69,20 +70,18 @@ class AuthorizeRequestTest extends RequestTestCase
     public function testGetDataWillReturnCorrectData()
     {
         $this->authorizeRequest->initialize(
-            [
-                'locale' => 'nl_NL',
-                'addressUpdateUrl' => 'localhost/address-update',
-                'amount' => '100.00',
-                'cancellationTermsUrl' => 'localhost/cancellation-terms',
-                'tax_amount' => 21,
-                'returnUrl' => 'localhost/return',
-                'notifyUrl' => 'localhost/notify',
-                'termsUrl' => 'localhost/terms',
-                'currency' => 'EUR',
-                'validationUrl' => 'localhost/validate',
-                'purchase_country' => 'NL',
-            ]
+            array_merge(
+                [
+                    'locale' => 'nl_NL',
+                    'amount' => '100.00',
+                    'tax_amount' => 21,
+                    'currency' => 'EUR',
+                    'purchase_country' => 'NL',
+                ],
+                $this->getCompleteValidMerchantUrlData()
+            )
         );
+
         $this->authorizeRequest->setItems([$this->getItemMock()]);
 
         self::assertEquals(
@@ -91,15 +90,7 @@ class AuthorizeRequestTest extends RequestTestCase
                 'order_amount' => 10000,
                 'order_tax_amount' => 2100,
                 'order_lines' => [$this->getExpectedOrderLine()],
-                'merchant_urls' => [
-                    'address_update' => 'localhost/address-update',
-                    'cancellation_terms' => 'localhost/cancellation-terms',
-                    'checkout' => 'localhost/return',
-                    'confirmation' => 'localhost/return',
-                    'push' => 'localhost/notify',
-                    'terms' => 'localhost/terms',
-                    'validation' => 'localhost/validate',
-                ],
+                'merchant_urls' => $this->getCompleteExpectedMerchantUrlData(),
                 'purchase_country' => 'NL',
                 'purchase_currency' => 'EUR',
             ],
@@ -156,18 +147,16 @@ class AuthorizeRequestTest extends RequestTestCase
         ];
 
         $this->authorizeRequest->initialize(
-            [
-                'cancellationTermsUrl' => 'localhost/cancellation-terms',
-                'locale' => 'nl_NL',
-                'amount' => '100.00',
-                'tax_amount' => 21,
-                'returnUrl' => 'localhost/return',
-                'notifyUrl' => 'localhost/notify',
-                'termsUrl' => 'localhost/terms',
-                'currency' => 'EUR',
-                'validationUrl' => 'localhost/validate',
-                'purchase_country' => 'DE',
-            ]
+            array_merge(
+                [
+                    'locale' => 'nl_NL',
+                    'amount' => '100.00',
+                    'tax_amount' => 21,
+                    'currency' => 'EUR',
+                    'purchase_country' => 'DE',
+                ],
+                $this->getMinimalValidMerchantUrlData()
+            )
         );
         $this->authorizeRequest->setItems([$this->getItemMock()]);
         $this->authorizeRequest->setBillingAddress($billingAddress);
@@ -179,14 +168,7 @@ class AuthorizeRequestTest extends RequestTestCase
                 'order_amount' => 10000,
                 'order_tax_amount' => 2100,
                 'order_lines' => [$this->getExpectedOrderLine()],
-                'merchant_urls' => [
-                    'cancellation_terms' => 'localhost/cancellation-terms',
-                    'checkout' => 'localhost/return',
-                    'confirmation' => 'localhost/return',
-                    'push' => 'localhost/notify',
-                    'terms' => 'localhost/terms',
-                    'validation' => 'localhost/validate',
-                ],
+                'merchant_urls' => $this->getMinimalExpectedMerchantUrlData(),
                 'purchase_country' => 'DE',
                 'purchase_currency' => 'EUR',
                 'shipping_address' => $shippingAddress,
@@ -221,18 +203,17 @@ class AuthorizeRequestTest extends RequestTestCase
         ];
 
         $this->authorizeRequest->initialize(
-            [
-                'locale' => 'nl_NL',
-                'amount' => '100.00',
-                'tax_amount' => 21,
-                'returnUrl' => 'localhost/return',
-                'notifyUrl' => 'localhost/notify',
-                'termsUrl' => 'localhost/terms',
-                'currency' => 'EUR',
-                'validationUrl' => 'localhost/validate',
-                'shipping_countries' => ['NL', 'DE'],
-                'purchase_country' => 'BE',
-            ]
+            array_merge(
+                [
+                    'locale' => 'nl_NL',
+                    'amount' => '100.00',
+                    'tax_amount' => 21,
+                    'currency' => 'EUR',
+                    'shipping_countries' => ['NL', 'DE'],
+                    'purchase_country' => 'BE',
+                ],
+                $this->getMinimalValidMerchantUrlData()
+            )
         );
         $this->authorizeRequest->setItems([$this->getItemMock()]);
         $this->authorizeRequest->setWidgetOptions($widgetOptions);
@@ -243,13 +224,7 @@ class AuthorizeRequestTest extends RequestTestCase
                 'order_amount' => 10000,
                 'order_tax_amount' => 2100,
                 'order_lines' => [$this->getExpectedOrderLine()],
-                'merchant_urls' => [
-                    'checkout' => 'localhost/return',
-                    'confirmation' => 'localhost/return',
-                    'push' => 'localhost/notify',
-                    'terms' => 'localhost/terms',
-                    'validation' => 'localhost/validate',
-                ],
+                'merchant_urls' => $this->getMinimalExpectedMerchantUrlData(),
                 'purchase_country' => 'BE',
                 'purchase_currency' => 'EUR',
                 'options' => $widgetOptions,
@@ -267,18 +242,16 @@ class AuthorizeRequestTest extends RequestTestCase
         ];
 
         $this->authorizeRequest->initialize(
-            [
-                'cancellationTermsUrl' => 'localhost/cancellation-terms',
-                'locale' => 'nl_NL',
-                'amount' => '100.00',
-                'tax_amount' => 21,
-                'returnUrl' => 'localhost/return',
-                'notifyUrl' => 'localhost/notify',
-                'termsUrl' => 'localhost/terms',
-                'currency' => 'EUR',
-                'validationUrl' => 'localhost/validate',
-                'purchase_country' => 'FR',
-            ]
+            array_merge(
+                [
+                    'locale' => 'nl_NL',
+                    'amount' => '100.00',
+                    'tax_amount' => 21,
+                    'currency' => 'EUR',
+                    'purchase_country' => 'FR',
+                ],
+                $this->getCompleteValidMerchantUrlData()
+            )
         );
         $this->authorizeRequest->setCustomer($customer);
         $this->authorizeRequest->setItems([$this->getItemMock()]);
@@ -289,14 +262,7 @@ class AuthorizeRequestTest extends RequestTestCase
                 'order_amount' => 10000,
                 'order_tax_amount' => 2100,
                 'order_lines' => [$this->getExpectedOrderLine()],
-                'merchant_urls' => [
-                    'cancellation_terms' => 'localhost/cancellation-terms',
-                    'checkout' => 'localhost/return',
-                    'confirmation' => 'localhost/return',
-                    'push' => 'localhost/notify',
-                    'terms' => 'localhost/terms',
-                    'validation' => 'localhost/validate',
-                ],
+                'merchant_urls' => $this->getCompleteExpectedMerchantUrlData(),
                 'purchase_country' => 'FR',
                 'purchase_currency' => 'EUR',
                 'customer' => $customer,
