@@ -3,23 +3,32 @@
 namespace MyOnlineStore\Omnipay\KlarnaCheckout\Message;
 
 use Guzzle\Http\Message\RequestInterface;
+use Omnipay\Common\Exception\InvalidRequestException;
 
 final class UpdateTransactionRequest extends AbstractOrderRequest
 {
     use ItemDataTrait;
+    use MerchantUrlsDataTrait;
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function getData()
     {
         $this->validate('transactionReference');
+        $data = $this->getOrderData();
 
-        return $this->getOrderData();
+        try {
+            $data['merchant_urls'] = $this->getMerchantUrls();
+        } catch (InvalidRequestException $exception) {
+            // Insufficient data for merchant urls
+        }
+
+        return $data;
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function sendData($data)
     {

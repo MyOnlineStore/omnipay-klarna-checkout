@@ -10,21 +10,7 @@ use Omnipay\Common\Exception\InvalidResponseException;
  */
 final class AuthorizeRequest extends AbstractOrderRequest
 {
-    /**
-     * @return string
-     */
-    public function getAddressUpdateUrl()
-    {
-        return $this->getParameter('addressUpdateUrl');
-    }
-
-    /**
-     * @return string
-     */
-    public function getCancellationTermsUrl()
-    {
-        return $this->getParameter('cancellationTermsUrl');
-    }
+    use MerchantUrlsDataTrait;
 
     /**
      * @inheritDoc
@@ -36,32 +22,12 @@ final class AuthorizeRequest extends AbstractOrderRequest
             'currency',
             'items',
             'locale',
-            'notifyUrl',
             'purchase_country',
-            'returnUrl',
-            'tax_amount',
-            'termsUrl',
-            'validationUrl'
+            'tax_amount'
         );
 
-        $merchantUrls = [
-            'checkout' => $this->getReturnUrl(),
-            'confirmation' => $this->getReturnUrl(),
-            'push' => $this->getNotifyUrl(),
-            'terms' => $this->getTermsUrl(),
-            'validation' => $this->getValidationUrl(),
-        ];
-
-        if (null !== ($cancellationTermsUrl = $this->getCancellationTermsUrl())) {
-            $merchantUrls['cancellation_terms'] = $cancellationTermsUrl;
-        }
-
-        if (null !== ($addressUpdateUrl = $this->getAddressUpdateUrl())) {
-            $merchantUrls['address_update'] = $addressUpdateUrl;
-        }
-
         $data = $this->getOrderData();
-        $data['merchant_urls'] = $merchantUrls;
+        $data['merchant_urls'] = $this->getMerchantUrls();
 
         return $data;
     }
@@ -72,22 +38,6 @@ final class AuthorizeRequest extends AbstractOrderRequest
     public function getRenderUrl()
     {
         return $this->getParameter('render_url');
-    }
-
-    /**
-     * @return string
-     */
-    public function getTermsUrl()
-    {
-        return $this->getParameter('termsUrl');
-    }
-
-    /**
-     * @return string
-     */
-    public function getValidationUrl()
-    {
-        return $this->getParameter('validationUrl');
     }
 
     /**
@@ -107,30 +57,6 @@ final class AuthorizeRequest extends AbstractOrderRequest
     }
 
     /**
-     * @param $url
-     *
-     * @return $this
-     */
-    public function setAddressUpdateUrl($url)
-    {
-        $this->setParameter('addressUpdateUrl', $url);
-
-        return $this;
-    }
-
-    /**
-     * @param string $url
-     *
-     * @return $this
-     */
-    public function setCancellationTermsUrl($url)
-    {
-        $this->setParameter('cancellationTermsUrl', $url);
-
-        return $this;
-    }
-
-    /**
      * @param string $url
      *
      * @return $this
@@ -138,30 +64,6 @@ final class AuthorizeRequest extends AbstractOrderRequest
     public function setRenderUrl($url)
     {
         $this->setParameter('render_url', $url);
-
-        return $this;
-    }
-
-    /**
-     * @param string $url
-     *
-     * @return $this
-     */
-    public function setTermsUrl($url)
-    {
-        $this->setParameter('termsUrl', $url);
-
-        return $this;
-    }
-
-    /**
-     * @param string $url
-     *
-     * @return $this
-     */
-    public function setValidationUrl($url)
-    {
-        $this->setParameter('validationUrl', $url);
 
         return $this;
     }
