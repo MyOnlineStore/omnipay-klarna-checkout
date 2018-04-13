@@ -12,6 +12,9 @@ final class Address extends \ArrayObject
     public static function fromArray(array $data)
     {
         $defaults = [
+            'organization_name' => null,
+            "reference" => null,
+            "attention" => null,
             'family_name' => null,
             'given_name' => null,
             'email' => null,

@@ -100,6 +100,9 @@ class AuthorizeRequestTest extends RequestTestCase
 
     public function testGetDataWithAddressesWillReturnCorrectData()
     {
+        $organization = 'Foo inc';
+        $reference = 'ref';
+        $attention = 'quz';
         $email = 'foo@bar.com';
         $title = 'Mr.';
         $streetAddress = 'Foo Street 1';
@@ -114,6 +117,9 @@ class AuthorizeRequestTest extends RequestTestCase
         $country = 'NL';
 
         $shippingAddress = [
+            'organization_name' => $organization,
+            "reference" => $reference,
+            "attention" => $attention,
             'given_name' => 'foo',
             'family_name' => 'bar',
             'email' => $email,
@@ -130,6 +136,9 @@ class AuthorizeRequestTest extends RequestTestCase
             'country' => $country,
         ];
         $billingAddress = [
+            'organization_name' => $organization,
+            "reference" => $reference,
+            "attention" => $attention,
             'given_name' => 'bar',
             'family_name' => 'foo',
             'email' => $email,

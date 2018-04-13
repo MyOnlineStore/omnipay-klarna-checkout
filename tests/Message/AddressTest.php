@@ -7,6 +7,9 @@ use Omnipay\Tests\TestCase;
 
 final class AddressTest extends TestCase
 {
+    const ORGANIZATION_NAME = 'Foo Inc.';
+    const REFERENCE = 'ref';
+    const ATTENTION = 'quz';
     const FAMILY_NAME = 'foo';
     const GIVEN_NAME = 'bar';
     const EMAIL = 'foo@bar.com';
@@ -41,6 +44,9 @@ final class AddressTest extends TestCase
         return [
             [
                 [
+                    "organization_name" => self::ORGANIZATION_NAME,
+                    "reference" => self::REFERENCE,
+                    "attention" => self::ATTENTION,
                     'family_name' => self::FAMILY_NAME,
                     'given_name' => self::GIVEN_NAME,
                     'email' => self::EMAIL,
@@ -57,6 +63,9 @@ final class AddressTest extends TestCase
                     'country' => self::COUNTRY,
                 ],
                 [
+                    "organization_name" => self::ORGANIZATION_NAME,
+                    "reference" => self::REFERENCE,
+                    "attention" => self::ATTENTION,
                     'family_name' => self::FAMILY_NAME,
                     'given_name' => self::GIVEN_NAME,
                     'email' => self::EMAIL,
@@ -75,6 +84,9 @@ final class AddressTest extends TestCase
             ],
             [
                 [
+                    "organization_name" => self::ORGANIZATION_NAME,
+                    "reference" => self::REFERENCE,
+                    "attention" => self::ATTENTION,
                     'family_name' => self::FAMILY_NAME,
                     'given_name' => self::GIVEN_NAME,
                     'email' => self::EMAIL,
@@ -89,6 +101,9 @@ final class AddressTest extends TestCase
                     'country' => self::COUNTRY,
                 ],
                 [
+                    "organization_name" => self::ORGANIZATION_NAME,
+                    "reference" => self::REFERENCE,
+                    "attention" => self::ATTENTION,
                     'family_name' => self::FAMILY_NAME,
                     'given_name' => self::GIVEN_NAME,
                     'email' => self::EMAIL,
@@ -107,6 +122,9 @@ final class AddressTest extends TestCase
             ],
             [
                 [
+                    "organization_name" => self::ORGANIZATION_NAME,
+                    "reference" => self::REFERENCE,
+                    "attention" => self::ATTENTION,
                     'family_name' => self::FAMILY_NAME,
                     'given_name' => self::GIVEN_NAME,
                     'email' => self::EMAIL,
@@ -122,6 +140,9 @@ final class AddressTest extends TestCase
                     self::FAMILY_NAME => self::GIVEN_NAME,
                 ],
                 [
+                    "organization_name" => self::ORGANIZATION_NAME,
+                    "reference" => self::REFERENCE,
+                    "attention" => self::ATTENTION,
                     'family_name' => self::FAMILY_NAME,
                     'given_name' => self::GIVEN_NAME,
                     'email' => self::EMAIL,
