@@ -7,6 +7,14 @@ final class Item extends \Omnipay\Common\Item implements ItemInterface
     /**
      * @inheritDoc
      */
+    public function getMerchantData()
+    {
+        return $this->getParameter('merchant_data');
+    }
+
+    /**
+     * @inheritDoc
+     */
     public function getTaxRate()
     {
         return $this->getParameter('tax_rate');
@@ -26,6 +34,14 @@ final class Item extends \Omnipay\Common\Item implements ItemInterface
     public function getType()
     {
         return $this->getParameter('type');
+    }
+
+    /**
+     * @param string $data
+     */
+    public function setMerchantData($data)
+    {
+        $this->setParameter('merchant_data', $data);
     }
 
     /**

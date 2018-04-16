@@ -5,6 +5,11 @@ namespace MyOnlineStore\Omnipay\KlarnaCheckout;
 interface ItemInterface extends \Omnipay\Common\ItemInterface
 {
     /**
+     * @return string
+     */
+    public function getMerchantData();
+
+    /**
      * Non-negative percentage (i.e. 25 = 25%)
      *
      * @return float
