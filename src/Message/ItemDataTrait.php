@@ -27,7 +27,6 @@ trait ItemDataTrait
                 'total_amount' => $this->toCurrencyMinorUnits($item->getQuantity() * $item->getPrice()),
                 'total_tax_amount' => $this->toCurrencyMinorUnits($item->getTotalTaxAmount()),
                 'unit_price' => $this->toCurrencyMinorUnits($item->getPrice()),
-                'merchant_data' => $item->getMerchantData(),
             ];
         }
 
