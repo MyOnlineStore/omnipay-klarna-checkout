@@ -33,4 +33,11 @@ interface GatewayInterface extends \Omnipay\Common\GatewayInterface
      * @return RequestInterface
      */
     public function updateTransaction(array $options = []);
+
+    /**
+     * @param array $options
+     *
+     * @return RequestInterface
+     */
+    public function updateCustomerAddress(array $options = []);
 }
