@@ -4,6 +4,7 @@ namespace MyOnlineStore\Omnipay\KlarnaCheckout\Message;
 
 use Guzzle\Common\Event;
 use Guzzle\Common\Exception\InvalidArgumentException;
+use Guzzle\Common\Exception\RuntimeException;
 use Guzzle\Http\ClientInterface;
 use Guzzle\Http\Exception\RequestException;
 use Guzzle\Http\Message\RequestInterface;
@@ -234,6 +235,8 @@ abstract class AbstractRequest extends \Omnipay\Common\Message\AbstractRequest
      * @param Response $response
      *
      * @return array
+     *
+     * @throws RuntimeException
      */
     protected function getResponseBody(Response $response)
     {

@@ -8,6 +8,7 @@ use MyOnlineStore\Omnipay\KlarnaCheckout\Message\CaptureRequest;
 use MyOnlineStore\Omnipay\KlarnaCheckout\Message\ExtendAuthorizationRequest;
 use MyOnlineStore\Omnipay\KlarnaCheckout\Message\FetchTransactionRequest;
 use MyOnlineStore\Omnipay\KlarnaCheckout\Message\RefundRequest;
+use MyOnlineStore\Omnipay\KlarnaCheckout\Message\UpdateCustomerAddressRequest;
 use MyOnlineStore\Omnipay\KlarnaCheckout\Message\UpdateTransactionRequest;
 use MyOnlineStore\Omnipay\KlarnaCheckout\Message\VoidRequest;
 use Omnipay\Common\AbstractGateway;
@@ -190,6 +191,14 @@ final class Gateway extends AbstractGateway implements GatewayInterface
         $this->setParameter('username', $username);
 
         return $this;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function updateCustomerAddress(array $options = [])
+    {
+        return $this->createRequest(UpdateCustomerAddressRequest::class, $options);
     }
 
     /**

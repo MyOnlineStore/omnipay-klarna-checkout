@@ -48,10 +48,12 @@ abstract class RequestTestCase extends TestCase
      * @param array  $inputData
      * @param array  $responseData
      * @param string $url
+     *
+     * @return \Mockery\MockInterface
      */
     protected function setExpectedPatchRequest(array $inputData, array $responseData, $url)
     {
-        $this->setExpectedRequest(
+        return $this->setExpectedRequest(
             RequestInterface::PATCH,
             $url,
             ['Content-Type' => 'application/json'],
