@@ -13,8 +13,8 @@ final class Address extends \ArrayObject
     {
         $defaults = [
             'organization_name' => null,
-            "reference" => null,
-            "attention" => null,
+            'reference' => null,
+            'attention' => null,
             'family_name' => null,
             'given_name' => null,
             'email' => null,
@@ -31,6 +31,28 @@ final class Address extends \ArrayObject
             'country' => null,
         ];
 
-        return new self(array_merge($defaults, array_intersect_key($data, $defaults)));
+        return new self(\array_merge($defaults, \array_intersect_key($data, $defaults)));
+    }
+
+    /**
+     * @param string[] $excludeKeyWithEmptyValue
+     *
+     * @return array
+     */
+    public function toArray(array $excludeKeyWithEmptyValue = [])
+    {
+        $excludeKeyWithEmptyValue = array_flip($excludeKeyWithEmptyValue);
+
+        return array_filter(
+            $this->getArrayCopy(),
+            function ($value, $key) use ($excludeKeyWithEmptyValue) {
+                if (!isset($excludeKeyWithEmptyValue[$key])) {
+                    return true;
+                }
+
+                return !empty($value);
+            },
+            ARRAY_FILTER_USE_BOTH
+        );
     }
 }
