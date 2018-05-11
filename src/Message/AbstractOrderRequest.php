@@ -180,7 +180,7 @@ abstract class AbstractOrderRequest extends AbstractRequest
             'order_tax_amount' => $this->toCurrencyMinorUnits($this->getTaxAmount()),
             'order_lines' => $this->getItemData($this->getItems()),
             'purchase_currency' => $this->getCurrency(),
-            'purchase_country' => $this->getPurchaseCountry(),
+            'purchase_country' => (string) $this->getPurchaseCountry(),
         ];
 
         if (null !== $locale = $this->getLocale()) {
