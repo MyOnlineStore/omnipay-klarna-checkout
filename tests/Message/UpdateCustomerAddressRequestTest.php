@@ -26,83 +26,125 @@ final class UpdateCustomerAddressRequestTest extends RequestTestCase
         );
     }
 
+    /**
+     * @return array
+     */
+    public function addressDataProvider()
+    {
+        return [
+            [
+                [
+                    'organization_name' => null,
+                    'reference' => 'ref',
+                    'attention' => 'quz',
+                    'given_name' => 'foo',
+                    'family_name' => 'bar',
+                    'email' => 'foo@bar.com',
+                    'title' => 'Mr.',
+                    'street_address' => 'Foo Street 1',
+                    'street_address2' => 'App. 12A',
+                    'street_name' => 'Foo Street',
+                    'street_number' => '1',
+                    'house_extension' => 'C',
+                    'postal_code' => '523354',
+                    'city' => 'Oss',
+                    'region' => 'NB',
+                    'phone' => '24234234',
+                    'country' => 'NL',
+                ],
+                [
+                    'reference' => 'ref',
+                    'attention' => 'quz',
+                    'given_name' => 'foo',
+                    'family_name' => 'bar',
+                    'email' => 'foo@bar.com',
+                    'title' => 'Mr.',
+                    'street_address' => 'Foo Street 1',
+                    'street_address2' => 'App. 12A',
+                    'street_name' => 'Foo Street',
+                    'street_number' => '1',
+                    'house_extension' => 'C',
+                    'postal_code' => '523354',
+                    'city' => 'Oss',
+                    'region' => 'NB',
+                    'phone' => '24234234',
+                    'country' => 'NL',
+                ],
+            ],
+            [
+                [
+                    'organization_name' => 'Foobar BV',
+                    'reference' => 'ref',
+                    'attention' => 'quz',
+                    'given_name' => 'foo',
+                    'family_name' => 'bar',
+                    'email' => 'foo@bar.com',
+                    'title' => 'Mr.',
+                    'street_address' => 'Foo Street 1',
+                    'street_address2' => 'App. 12A',
+                    'street_name' => 'Foo Street',
+                    'street_number' => '1',
+                    'house_extension' => 'C',
+                    'postal_code' => '523354',
+                    'city' => 'Oss',
+                    'region' => 'NB',
+                    'phone' => '24234234',
+                    'country' => 'NL',
+                ],
+                [
+                    'organization_name' => 'Foobar BV',
+                    'reference' => 'ref',
+                    'attention' => 'quz',
+                    'given_name' => 'foo',
+                    'family_name' => 'bar',
+                    'email' => 'foo@bar.com',
+                    'title' => 'Mr.',
+                    'street_address' => 'Foo Street 1',
+                    'street_address2' => 'App. 12A',
+                    'street_name' => 'Foo Street',
+                    'street_number' => '1',
+                    'house_extension' => 'C',
+                    'postal_code' => '523354',
+                    'city' => 'Oss',
+                    'region' => 'NB',
+                    'phone' => '24234234',
+                    'country' => 'NL',
+                ],
+            ],
+        ];
+    }
+
+    /**
+     * @dataProvider addressDataProvider
+     *
+     * @param array $addressData
+     * @param array $expectedOutcome
+     */
+    public function testGetDataWillReturnCorrectData(array $addressData, array $expectedOutcome)
+    {
+        $this->updateCustomerAddressRequest->initialize(
+            [
+                'transactionReference' => 123,
+                'billing_address' => $addressData,
+                'shipping_address' => $addressData,
+            ]
+        );
+
+        /** @noinspection PhpUnhandledExceptionInspection */
+        self::assertEquals(
+            [
+                'shipping_address' => $expectedOutcome,
+                'billing_address' => $expectedOutcome,
+            ],
+            $this->updateCustomerAddressRequest->getData()
+        );
+    }
+
     public function testGetDataWillThrowExceptionOnMissingData()
     {
         $this->setExpectedException(InvalidRequestException::class);
 
         $this->updateCustomerAddressRequest->getData();
-    }
-
-    public function testGetDataWillReturnCorrectData()
-    {
-        $organization = 'Foo inc';
-        $reference = 'ref';
-        $attention = 'quz';
-        $email = 'foo@bar.com';
-        $title = 'Mr.';
-        $streetAddress = 'Foo Street 1';
-        $streetAddress2 = 'App. 12A';
-        $streetName = 'Foo Street';
-        $houseExtension = 'C';
-        $streetNumber = '1';
-        $postalCode = '523354';
-        $city = 'Oss';
-        $region = 'NB';
-        $phone = '24234234';
-        $country = 'NL';
-
-        $shippingAddress = [
-            'organization_name' => $organization,
-            "reference" => $reference,
-            "attention" => $attention,
-            'given_name' => 'foo',
-            'family_name' => 'bar',
-            'email' => $email,
-            'title' => $title,
-            'street_address' => $streetAddress,
-            'street_address2' => $streetAddress2,
-            'street_name' => $streetName,
-            'street_number' => $streetNumber,
-            'house_extension' => $houseExtension,
-            'postal_code' => $postalCode,
-            'city' => $city,
-            'region' => $region,
-            'phone' => $phone,
-            'country' => $country,
-        ];
-        $billingAddress = [
-            'organization_name' => $organization,
-            "reference" => $reference,
-            "attention" => $attention,
-            'given_name' => 'bar',
-            'family_name' => 'foo',
-            'email' => $email,
-            'title' => $title,
-            'street_address' => $streetAddress,
-            'street_address2' => $streetAddress2,
-            'street_name' => $streetName,
-            'street_number' => $streetNumber,
-            'house_extension' => $houseExtension,
-            'postal_code' => $postalCode,
-            'city' => $city,
-            'region' => $region,
-            'phone' => $phone,
-            'country' => $country,
-        ];
-
-        $this->updateCustomerAddressRequest->initialize([
-            'transactionReference' => 123,
-            'billing_address' => $billingAddress,
-            'shipping_address' => $shippingAddress,
-        ]);
-
-        self::assertEquals(
-            [
-                'shipping_address' => $shippingAddress,
-                'billing_address' => $billingAddress,
-            ],
-            $this->updateCustomerAddressRequest->getData()
-        );
     }
 
     public function testSendDataWillWillSendDataToKlarnaEndPointAndReturnCorrectResponse()

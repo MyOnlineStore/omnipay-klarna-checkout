@@ -17,8 +17,8 @@ final class UpdateCustomerAddressRequest extends AbstractOrderRequest
         $this->validate('transactionReference', 'billing_address', 'shipping_address');
 
         return [
-            'shipping_address' => $this->getShippingAddress()->getArrayCopy(),
-            'billing_address' => $this->getBillingAddress()->getArrayCopy(),
+            'shipping_address' => $this->getShippingAddress()->toArray(['organization_name']),
+            'billing_address' => $this->getBillingAddress()->toArray(['organization_name']),
         ];
     }
 
