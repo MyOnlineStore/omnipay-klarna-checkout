@@ -8,7 +8,7 @@ use Omnipay\Common\Exception\InvalidRequestException;
 final class UpdateCustomerAddressRequest extends AbstractOrderRequest
 {
     /**
-     * @return null
+     * @return array
      *
      * @throws InvalidRequestException
      */
@@ -17,9 +17,19 @@ final class UpdateCustomerAddressRequest extends AbstractOrderRequest
         $this->validate('transactionReference', 'billing_address', 'shipping_address');
 
         return [
-            'shipping_address' => $this->getShippingAddress()->toArray(['organization_name']),
-            'billing_address' => $this->getBillingAddress()->toArray(['organization_name']),
+            'shipping_address' => $this->getShippingAddress()->toArray($this->getExcludeKeysWithEmptyValues()),
+            'billing_address' => $this->getBillingAddress()->toArray($this->getExcludeKeysWithEmptyValues()),
         ];
+    }
+
+    /**
+     * @return array
+     */
+    public function getExcludeKeysWithEmptyValues()
+    {
+        $exludedKeys = $this->getParameter('exclude_empty_values');
+
+        return is_array($exludedKeys) ? $exludedKeys : [];
     }
 
     /**
@@ -41,5 +51,17 @@ final class UpdateCustomerAddressRequest extends AbstractOrderRequest
             ),
             $response->getStatusCode()
         );
+    }
+
+    /**
+     * @param array $exludedKeys
+     *
+     * @return $this
+     */
+    public function setExcludeKeysWithEmptyValues(array $exludedKeys)
+    {
+        $this->setParameter('exclude_empty_values', $exludedKeys);
+
+        return $this;
     }
 }

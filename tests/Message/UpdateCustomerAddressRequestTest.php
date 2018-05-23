@@ -9,7 +9,7 @@ use Omnipay\Common\Exception\InvalidRequestException;
 final class UpdateCustomerAddressRequestTest extends RequestTestCase
 {
     /**
-     * @var UpdateCustomerAddressRequest(
+     * @var UpdateCustomerAddressRequest
      */
     private $updateCustomerAddressRequest;
 
@@ -127,6 +127,7 @@ final class UpdateCustomerAddressRequestTest extends RequestTestCase
                 'transactionReference' => 123,
                 'billing_address' => $addressData,
                 'shipping_address' => $addressData,
+                'exclude_keys_with_empty_values' => ['organization_name'],
             ]
         );
 
@@ -179,5 +180,13 @@ final class UpdateCustomerAddressRequestTest extends RequestTestCase
             $updateCustomerAddressResponse->getData()
         );
         self::assertTrue($updateCustomerAddressResponse->isSuccessful());
+    }
+
+    public function testSetAndGetExcludeKeysWithEmptyValues()
+    {
+        $parameters = ['foo'];
+        $this->updateCustomerAddressRequest->setExcludeKeysWithEmptyValues($parameters);
+
+        self::assertSame($parameters, $this->updateCustomerAddressRequest->getExcludeKeysWithEmptyValues());
     }
 }
