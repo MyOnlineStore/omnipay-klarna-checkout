@@ -17,15 +17,15 @@ final class UpdateCustomerAddressRequest extends AbstractOrderRequest
         $this->validate('transactionReference', 'billing_address', 'shipping_address');
 
         return [
-            'shipping_address' => $this->getShippingAddress()->toArray($this->getExcludeKeysWithEmptyValues()),
-            'billing_address' => $this->getBillingAddress()->toArray($this->getExcludeKeysWithEmptyValues()),
+            'shipping_address' => $this->getShippingAddress()->toArray($this->getExcludeEmptyValues()),
+            'billing_address' => $this->getBillingAddress()->toArray($this->getExcludeEmptyValues()),
         ];
     }
 
     /**
      * @return array
      */
-    public function getExcludeKeysWithEmptyValues()
+    public function getExcludeEmptyValues()
     {
         $exludedKeys = $this->getParameter('exclude_empty_values');
 
@@ -58,7 +58,7 @@ final class UpdateCustomerAddressRequest extends AbstractOrderRequest
      *
      * @return $this
      */
-    public function setExcludeKeysWithEmptyValues(array $exludedKeys)
+    public function setExcludeEmptyValues(array $exludedKeys)
     {
         $this->setParameter('exclude_empty_values', $exludedKeys);
 
