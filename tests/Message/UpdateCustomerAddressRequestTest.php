@@ -127,7 +127,7 @@ final class UpdateCustomerAddressRequestTest extends RequestTestCase
                 'transactionReference' => 123,
                 'billing_address' => $addressData,
                 'shipping_address' => $addressData,
-                'exclude_keys_with_empty_values' => ['organization_name'],
+                'exclude_empty_values' => ['organization_name'],
             ]
         );
 
@@ -182,11 +182,11 @@ final class UpdateCustomerAddressRequestTest extends RequestTestCase
         self::assertTrue($updateCustomerAddressResponse->isSuccessful());
     }
 
-    public function testSetAndGetExcludeKeysWithEmptyValues()
+    public function testSetAndGetExcludeEmptyValues()
     {
         $parameters = ['foo'];
-        $this->updateCustomerAddressRequest->setExcludeKeysWithEmptyValues($parameters);
+        $this->updateCustomerAddressRequest->setExcludeEmptyValues($parameters);
 
-        self::assertSame($parameters, $this->updateCustomerAddressRequest->getExcludeKeysWithEmptyValues());
+        self::assertSame($parameters, $this->updateCustomerAddressRequest->getExcludeEmptyValues());
     }
 }
