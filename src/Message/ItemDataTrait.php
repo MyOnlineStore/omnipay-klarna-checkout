@@ -23,7 +23,7 @@ trait ItemDataTrait
                 'type' => $item->getType(),
                 'name' => $item->getName(),
                 'quantity' => $item->getQuantity(),
-                'tax_rate' => (int) ($item->getTaxRate() * 100),
+                'tax_rate' => \bcmul((string) $item->getTaxRate(),  100),
                 'total_amount' => $this->toCurrencyMinorUnits($item->getQuantity() * $item->getPrice()),
                 'total_tax_amount' => $this->toCurrencyMinorUnits($item->getTotalTaxAmount()),
                 'unit_price' => $this->toCurrencyMinorUnits($item->getPrice()),
