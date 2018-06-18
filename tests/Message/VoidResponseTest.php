@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace MyOnlineStore\Tests\Omnipay\KlarnaCheckout\Message;
 
@@ -15,14 +16,14 @@ final class VoidResponseTest extends TestCase
      *
      * @return array
      */
-    public function responseCodeProvider()
+    public function responseCodeProvider(): array
     {
         return [[204, true], [403, false],];
     }
 
     public function testGetCommonValuesReturnCorrectValues()
     {
-        $request = $this->getMock(RequestInterface::class);
+        $request = $this->createMock(RequestInterface::class);
 
         $response = new VoidResponse($request, [], 201);
 
@@ -37,7 +38,7 @@ final class VoidResponseTest extends TestCase
      */
     public function testIsSuccessfulWillReturnCorrectStateWithResponseCode($responseCode, $expectedResult)
     {
-        $request = $this->getMock(RequestInterface::class);
+        $request = $this->createMock(RequestInterface::class);
 
         $captureResponse = new VoidResponse($request, [], $responseCode);
 

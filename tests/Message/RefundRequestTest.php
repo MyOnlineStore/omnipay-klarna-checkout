@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace MyOnlineStore\Tests\Omnipay\KlarnaCheckout\Message;
 
@@ -27,37 +28,11 @@ class RefundRequestTest extends RequestTestCase
     /**
      * @return array
      */
-    public function invalidRequestDataProvider()
+    public function invalidRequestDataProvider(): array
     {
         return [
             [['transactionReference' => 'foo']],
             [['amount' => '10.00']],
-        ];
-    }
-
-    /**
-     * @dataProvider invalidRequestDataProvider
-     *
-     * @param array $requestData
-     */
-    public function testGetDataWillThrowExceptionForInvalidRequest(array $requestData)
-    {
-        $this->refundRequest->initialize($requestData);
-
-        $this->setExpectedException(InvalidRequestException::class);
-
-        /** @noinspection PhpUnhandledExceptionInspection */
-        $this->refundRequest->getData();
-    }
-
-    /**
-     * @return array
-     */
-    public function validRequestDataProvider()
-    {
-        return [
-            [null, []],   // No item data should return result without order_line entry
-            [[$this->getItemMock()], ['order_lines' => [$this->getExpectedOrderLine()]]],
         ];
     }
 
@@ -69,7 +44,7 @@ class RefundRequestTest extends RequestTestCase
      */
     public function testGetDataWillReturnCorrectData($items, array $expectedItemData)
     {
-        $this->refundRequest->initialize(['transactionReference' => 'foo', 'amount' => '10.00']);
+        $this->refundRequest->initialize(['transactionReference' => 'foo', 'amount' => '10.00', 'currency' => 'USD']);
         $this->refundRequest->setItems($items);
 
         /** @noinspection PhpUnhandledExceptionInspection */
@@ -77,6 +52,21 @@ class RefundRequestTest extends RequestTestCase
             ['refunded_amount' => 1000] + $expectedItemData,
             $this->refundRequest->getData()
         );
+    }
+
+    /**
+     * @dataProvider invalidRequestDataProvider
+     *
+     * @param array $requestData
+     */
+    public function testGetDataWillThrowExceptionForInvalidRequest(array $requestData)
+    {
+        $this->refundRequest->initialize($requestData);
+
+        $this->expectException(InvalidRequestException::class);
+
+        /** @noinspection PhpUnhandledExceptionInspection */
+        $this->refundRequest->getData();
     }
 
     public function testSendDataWillCreateRefundAndReturnResponse()
@@ -90,18 +80,31 @@ class RefundRequestTest extends RequestTestCase
             self::BASE_URL.'/ordermanagement/v1/orders/foo/refunds'
         );
 
-        $response->shouldReceive('getStatusCode')->andReturn(204);
+        $response->expects(self::once())->method('getStatusCode')->willReturn(204);
 
-        $this->refundRequest->initialize([
-            'base_url' => self::BASE_URL,
-            'username' => self::USERNAME,
-            'secret' => self::SECRET,
-            'transactionReference' => 'foo',
-        ]);
+        $this->refundRequest->initialize(
+            [
+                'base_url' => self::BASE_URL,
+                'username' => self::USERNAME,
+                'secret' => self::SECRET,
+                'transactionReference' => 'foo',
+            ]
+        );
 
         $refundResponse = $this->refundRequest->sendData($inputData);
 
         self::assertInstanceOf(RefundResponse::class, $refundResponse);
         self::assertSame($expectedData, $refundResponse->getData());
+    }
+
+    /**
+     * @return array
+     */
+    public function validRequestDataProvider(): array
+    {
+        return [
+            [null, []],   // No item data should return result without order_line entry
+            [[$this->getItemMock()], ['order_lines' => [$this->getExpectedOrderLine()]]],
+        ];
     }
 }

@@ -1,13 +1,16 @@
 <?php
+declare(strict_types=1);
 
 namespace MyOnlineStore\Tests\Omnipay\KlarnaCheckout\Message;
 
-use Guzzle\Http\Message\RequestInterface;
-use Guzzle\Http\Message\Response;
+use Money\Currency;
+use Money\Money;
+use MyOnlineStore\Omnipay\KlarnaCheckout\ItemBag;
 use MyOnlineStore\Omnipay\KlarnaCheckout\Message\AuthorizeRequest;
 use MyOnlineStore\Omnipay\KlarnaCheckout\Message\AuthorizeResponse;
 use Omnipay\Common\Exception\InvalidRequestException;
 use Omnipay\Common\Exception\InvalidResponseException;
+use Psr\Http\Message\ResponseInterface;
 
 class AuthorizeRequestTest extends RequestTestCase
 {
@@ -31,16 +34,19 @@ class AuthorizeRequestTest extends RequestTestCase
     /**
      * @return array
      */
-    public function invalidRequestDataProvider()
+    public function invalidRequestDataProvider(): array
     {
+        $itemBag = $this->createMock(ItemBag::class);
+        $itemBag->method('getIterator')->willReturn(new \ArrayIterator([]));
+
         $data = array_merge(
             [
+                'currency' => 'EUR',
                 'amount' => true,
-                'currency' => true,
-                'items' => [],
+                'items' => $itemBag,
                 'locale' => true,
                 'purchase_country' => true,
-                'tax_amount' => true,
+                'tax_amount' => new Money(1, new Currency('EUR')),
             ],
             array_fill_keys(array_keys($this->getMinimalValidMerchantUrlData()), true)
         );
@@ -54,28 +60,15 @@ class AuthorizeRequestTest extends RequestTestCase
         return $cases;
     }
 
-    /**
-     * @dataProvider invalidRequestDataProvider
-     *
-     * @param array $requestData
-     */
-    public function testGetDataWillThrowExceptionForInvalidRequest(array $requestData)
-    {
-        $this->authorizeRequest->initialize($requestData);
-
-        $this->setExpectedException(InvalidRequestException::class);
-        $this->authorizeRequest->getData();
-    }
-
     public function testGetDataWillReturnCorrectData()
     {
         $this->authorizeRequest->initialize(
             array_merge(
                 [
+                    'currency' => 'EUR',
                     'locale' => 'nl_NL',
                     'amount' => '100.00',
-                    'tax_amount' => 21,
-                    'currency' => 'EUR',
+                    'tax_amount' => new Money(2100, new Currency('EUR')),
                     'purchase_country' => 'NL',
                 ],
                 $this->getCompleteValidMerchantUrlData()
@@ -98,6 +91,21 @@ class AuthorizeRequestTest extends RequestTestCase
         );
     }
 
+    /**
+     * @dataProvider invalidRequestDataProvider
+     *
+     * @param array $requestData
+     *
+     * @throws InvalidRequestException
+     */
+    public function testGetDataWillThrowExceptionForInvalidRequest(array $requestData)
+    {
+        $this->authorizeRequest->initialize($requestData);
+
+        $this->expectException(InvalidRequestException::class);
+        $this->authorizeRequest->getData();
+    }
+
     public function testGetDataWithAddressesWillReturnCorrectData()
     {
         $organization = 'Foo inc';
@@ -118,8 +126,8 @@ class AuthorizeRequestTest extends RequestTestCase
 
         $shippingAddress = [
             'organization_name' => $organization,
-            "reference" => $reference,
-            "attention" => $attention,
+            'reference' => $reference,
+            'attention' => $attention,
             'given_name' => 'foo',
             'family_name' => 'bar',
             'email' => $email,
@@ -137,8 +145,8 @@ class AuthorizeRequestTest extends RequestTestCase
         ];
         $billingAddress = [
             'organization_name' => $organization,
-            "reference" => $reference,
-            "attention" => $attention,
+            'reference' => $reference,
+            'attention' => $attention,
             'given_name' => 'bar',
             'family_name' => 'foo',
             'email' => $email,
@@ -158,10 +166,10 @@ class AuthorizeRequestTest extends RequestTestCase
         $this->authorizeRequest->initialize(
             array_merge(
                 [
+                    'currency' => 'EUR',
                     'locale' => 'nl_NL',
                     'amount' => '100.00',
-                    'tax_amount' => 21,
-                    'currency' => 'EUR',
+                    'tax_amount' => new Money(2100, new Currency('EUR')),
                     'purchase_country' => 'DE',
                 ],
                 $this->getMinimalValidMerchantUrlData()
@@ -182,6 +190,43 @@ class AuthorizeRequestTest extends RequestTestCase
                 'purchase_currency' => 'EUR',
                 'shipping_address' => $shippingAddress,
                 'billing_address' => $billingAddress,
+            ],
+            $this->authorizeRequest->getData()
+        );
+    }
+
+    public function testGetDataWithCustomerWillReturnCorrectData()
+    {
+        $customer = [
+            'date_of_birth' => '1995-10-20',
+            'type' => 'organization',
+        ];
+
+        $this->authorizeRequest->initialize(
+            array_merge(
+                [
+                    'locale' => 'nl_NL',
+                    'amount' => '100.00',
+                    'tax_amount' => 2100,
+                    'currency' => 'EUR',
+                    'purchase_country' => 'FR',
+                ],
+                $this->getCompleteValidMerchantUrlData()
+            )
+        );
+        $this->authorizeRequest->setCustomer($customer);
+        $this->authorizeRequest->setItems([$this->getItemMock()]);
+
+        self::assertEquals(
+            [
+                'locale' => 'nl-NL',
+                'order_amount' => 10000,
+                'order_tax_amount' => 2100,
+                'order_lines' => [$this->getExpectedOrderLine()],
+                'merchant_urls' => $this->getCompleteExpectedMerchantUrlData(),
+                'purchase_country' => 'FR',
+                'purchase_currency' => 'EUR',
+                'customer' => $customer,
             ],
             $this->authorizeRequest->getData()
         );
@@ -216,7 +261,7 @@ class AuthorizeRequestTest extends RequestTestCase
                 [
                     'locale' => 'nl_NL',
                     'amount' => '100.00',
-                    'tax_amount' => 21,
+                    'tax_amount' => 2100,
                     'currency' => 'EUR',
                     'shipping_countries' => ['NL', 'DE'],
                     'purchase_country' => 'BE',
@@ -243,43 +288,6 @@ class AuthorizeRequestTest extends RequestTestCase
         );
     }
 
-    public function testGetDataWithCustomerWillReturnCorrectData()
-    {
-        $customer = [
-            'date_of_birth' => '1995-10-20',
-            'type' => 'organization',
-        ];
-
-        $this->authorizeRequest->initialize(
-            array_merge(
-                [
-                    'locale' => 'nl_NL',
-                    'amount' => '100.00',
-                    'tax_amount' => 21,
-                    'currency' => 'EUR',
-                    'purchase_country' => 'FR',
-                ],
-                $this->getCompleteValidMerchantUrlData()
-            )
-        );
-        $this->authorizeRequest->setCustomer($customer);
-        $this->authorizeRequest->setItems([$this->getItemMock()]);
-
-        self::assertEquals(
-            [
-                'locale' => 'nl-NL',
-                'order_amount' => 10000,
-                'order_tax_amount' => 2100,
-                'order_lines' => [$this->getExpectedOrderLine()],
-                'merchant_urls' => $this->getCompleteExpectedMerchantUrlData(),
-                'purchase_country' => 'FR',
-                'purchase_currency' => 'EUR',
-                'customer' => $customer,
-            ],
-            $this->authorizeRequest->getData()
-        );
-    }
-
     public function testSendDataWillCreateOrderAndReturnResponse()
     {
         $inputData = ['request-data' => 'yey?'];
@@ -287,7 +295,7 @@ class AuthorizeRequestTest extends RequestTestCase
 
         $response = $this->setExpectedPostRequest($inputData, $expectedData, self::BASE_URL.'/checkout/v3/orders');
 
-        $response->shouldReceive('getStatusCode')->once()->andReturn(200);
+        $response->expects(self::once())->method('getStatusCode')->willReturn(200);
 
         $this->authorizeRequest->initialize(
             [
@@ -315,10 +323,11 @@ class AuthorizeRequestTest extends RequestTestCase
             self::BASE_URL.'/checkout/v3/orders/f60e69e8-464a-48c0-a452-6fd562540f37'
         );
 
-        $response->shouldReceive('getStatusCode')->once()->andReturn(200);
+        $response->expects(self::once())->method('getStatusCode')->willReturn(200);
 
         $this->authorizeRequest->initialize(
             [
+                'render_url' => 'foobar',
                 'base_url' => self::BASE_URL,
                 'username' => self::USERNAME,
                 'secret' => self::SECRET,
@@ -334,18 +343,15 @@ class AuthorizeRequestTest extends RequestTestCase
 
     public function testSendDataWillRaiseExceptionOnErrorResponses()
     {
-        $request = \Mockery::mock(RequestInterface::class);
-        $this->httpClient->shouldReceive('createRequest')->andReturn($request);
+        $response = $this->createMock(ResponseInterface::class);
+        $this->httpClient->expects(self::once())->method('request')->willReturn($response);
 
-        $response = \Mockery::mock(Response::class);
-        $request->shouldReceive('send')->once()->andReturn($response);
-
-        $response->shouldReceive('getStatusCode')->once()->andReturn(401);
+        $response->expects(self::once())->method('getStatusCode')->willReturn(401);
 
         $responseMessage = 'FooBar';
-        $response->shouldReceive('getMessage')->once()->andReturn($responseMessage);
+        $response->expects(self::once())->method('getReasonPhrase')->willReturn($responseMessage);
 
-        $this->setExpectedException(InvalidResponseException::class, $responseMessage);
+        $this->expectExceptionObject(new InvalidResponseException($responseMessage));
 
         $this->authorizeRequest->sendData([]);
     }

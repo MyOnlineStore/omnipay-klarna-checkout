@@ -1,15 +1,20 @@
 <?php
+declare(strict_types=1);
 
 namespace MyOnlineStore\Tests\Omnipay\KlarnaCheckout\Message;
 
 use MyOnlineStore\Omnipay\KlarnaCheckout\Message\UpdateTransactionRequest;
 use MyOnlineStore\Omnipay\KlarnaCheckout\Message\UpdateTransactionResponse;
+use MyOnlineStore\Tests\Omnipay\KlarnaCheckout\ExpectedAuthorizationHeaderTrait;
 use Omnipay\Common\Exception\InvalidRequestException;
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\StreamInterface;
 
 class UpdateTransactionRequestTest extends RequestTestCase
 {
     use ItemDataTestTrait;
     use MerchantUrlsDataTestTrait;
+    use ExpectedAuthorizationHeaderTrait;
 
     const TRANSACTION_REFERENCE = 1234;
 
@@ -30,7 +35,7 @@ class UpdateTransactionRequestTest extends RequestTestCase
     /**
      * @return array
      */
-    public function merchantUrlDataProvider()
+    public function merchantUrlDataProvider(): array
     {
         return [
             [$this->getMinimalValidMerchantUrlData(), $this->getMinimalExpectedMerchantUrlData()],
@@ -38,20 +43,12 @@ class UpdateTransactionRequestTest extends RequestTestCase
         ];
     }
 
-    public function testGetDataWillThrowExceptionForInvalidRequest()
-    {
-        $this->updateTransactionRequest->initialize([]);
-
-        $this->setExpectedException(InvalidRequestException::class);
-        $this->updateTransactionRequest->getData();
-    }
-
     public function testGetDataWillReturnCorrectData()
     {
         $this->updateTransactionRequest->initialize(
             [
                 'amount' => '100.00',
-                'tax_amount' => 21,
+                'tax_amount' => 2100,
                 'currency' => 'EUR',
                 'transactionReference' => self::TRANSACTION_REFERENCE,
                 'gui_minimal_confirmation' => true,
@@ -78,6 +75,14 @@ class UpdateTransactionRequestTest extends RequestTestCase
         );
     }
 
+    public function testGetDataWillThrowExceptionForInvalidRequest()
+    {
+        $this->updateTransactionRequest->initialize([]);
+
+        $this->expectException(InvalidRequestException::class);
+        $this->updateTransactionRequest->getData();
+    }
+
     public function testGetDataWithAddressWillReturnCorrectData()
     {
         $organization = 'Foo inc';
@@ -98,8 +103,8 @@ class UpdateTransactionRequestTest extends RequestTestCase
 
         $shippingAddress = [
             'organization_name' => $organization,
-            "reference" => $reference,
-            "attention" => $attention,
+            'reference' => $reference,
+            'attention' => $attention,
             'given_name' => 'foo',
             'family_name' => 'bar',
             'email' => $email,
@@ -117,8 +122,8 @@ class UpdateTransactionRequestTest extends RequestTestCase
         ];
         $billingAddress = [
             'organization_name' => $organization,
-            "reference" => $reference,
-            "attention" => $attention,
+            'reference' => $reference,
+            'attention' => $attention,
             'given_name' => 'bar',
             'family_name' => 'foo',
             'email' => $email,
@@ -139,7 +144,7 @@ class UpdateTransactionRequestTest extends RequestTestCase
             [
                 'locale' => 'nl_NL',
                 'amount' => '100.00',
-                'tax_amount' => 21,
+                'tax_amount' => 2100,
                 'currency' => 'EUR',
                 'transactionReference' => self::TRANSACTION_REFERENCE,
                 'gui_minimal_confirmation' => true,
@@ -171,64 +176,6 @@ class UpdateTransactionRequestTest extends RequestTestCase
         );
     }
 
-    public function testGetDataWithOptionsWillReturnCorrectData()
-    {
-        $widgetOptions = [
-            'acquiring_channel' => 'foo',
-            'allow_separate_shipping_address' => true,
-            'color_button' => '#FFFFF',
-            'color_button_text' => '#FFFFF',
-            'color_checkbox' => '#FFFFF',
-            'color_checkbox_checkmark' => '#FFFFF',
-            'color_header' => '#FFFFF',
-            'color_link' => '#FFFFF',
-            'date_of_birth_mandatory' => true,
-            'shipping_details' => 'Delivered within 1-3 working days',
-            'title_mandatory' => true,
-            'additional_checkbox' => [
-                'text' => 'Please add me to the newsletter list',
-                'checked' => false,
-                'required' => false,
-            ],
-            'radius_border' => '5px',
-            'show_subtotal_detail' => true,
-            'require_validate_callback_success' => true,
-        ];
-
-        $this->updateTransactionRequest->initialize(
-            [
-                'locale' => 'nl_NL',
-                'amount' => '100.00',
-                'tax_amount' => 21,
-                'currency' => 'EUR',
-                'transactionReference' => self::TRANSACTION_REFERENCE,
-                'gui_minimal_confirmation' => true,
-                'gui_autofocus' => false,
-                'merchant_reference1' => '12345',
-                'merchant_reference2' => 678,
-                'purchase_country' => 'DE',
-            ]
-        );
-        $this->updateTransactionRequest->setItems([$this->getItemMock()]);
-        $this->updateTransactionRequest->setWidgetOptions($widgetOptions);
-
-        self::assertEquals(
-            [
-                'locale' => 'nl-NL',
-                'order_amount' => 10000,
-                'order_tax_amount' => 2100,
-                'order_lines' => [$this->getExpectedOrderLine()],
-                'purchase_country' => 'DE',
-                'purchase_currency' => 'EUR',
-                'gui' => ['options' => ['disable_autofocus', 'minimal_confirmation']],
-                'merchant_reference1' => '12345',
-                'merchant_reference2' => 678,
-                'options' => $widgetOptions,
-            ],
-            $this->updateTransactionRequest->getData()
-        );
-    }
-
     public function testGetDataWithCustomerWillReturnCorrectData()
     {
         $customer = [
@@ -240,7 +187,7 @@ class UpdateTransactionRequestTest extends RequestTestCase
             [
                 'locale' => 'nl_NL',
                 'amount' => '100.00',
-                'tax_amount' => 21,
+                'tax_amount' => 2100,
                 'currency' => 'EUR',
                 'transactionReference' => self::TRANSACTION_REFERENCE,
                 'purchase_country' => 'FR',
@@ -277,7 +224,7 @@ class UpdateTransactionRequestTest extends RequestTestCase
             array_merge(
                 [
                     'amount' => '100.00',
-                    'tax_amount' => 21,
+                    'tax_amount' => 2100,
                     'currency' => 'EUR',
                     'transactionReference' => self::TRANSACTION_REFERENCE,
                     'gui_minimal_confirmation' => true,
@@ -302,9 +249,69 @@ class UpdateTransactionRequestTest extends RequestTestCase
                 'purchase_currency' => 'EUR',
                 'gui' => ['options' => ['disable_autofocus', 'minimal_confirmation']],
                 'merchant_reference1' => '12345',
-                'merchant_reference2' => 678,
+                'merchant_reference2' => '678',
                 'purchase_country' => 'FR',
                 'merchant_urls' => $expectedMerchantUrls,
+            ],
+            $this->updateTransactionRequest->getData()
+        );
+    }
+
+    public function testGetDataWithOptionsWillReturnCorrectData()
+    {
+        $widgetOptions = [
+            'acquiring_channel' => 'foo',
+            'allow_separate_shipping_address' => true,
+            'color_button' => '#FFFFF',
+            'color_button_text' => '#FFFFF',
+            'color_checkbox' => '#FFFFF',
+            'color_checkbox_checkmark' => '#FFFFF',
+            'color_header' => '#FFFFF',
+            'color_link' => '#FFFFF',
+            'date_of_birth_mandatory' => true,
+            'shipping_details' => 'Delivered within 1-3 working days',
+            'title_mandatory' => true,
+            'additional_checkbox' => [
+                'text' => 'Please add me to the newsletter list',
+                'checked' => false,
+                'required' => false,
+            ],
+            'radius_border' => '5px',
+            'show_subtotal_detail' => true,
+            'require_validate_callback_success' => true,
+        ];
+
+        $this->updateTransactionRequest->initialize(
+            [
+                'locale' => 'nl_NL',
+                'amount' => '100.00',
+                'tax_amount' => 2100,
+                'currency' => 'EUR',
+                'transactionReference' => self::TRANSACTION_REFERENCE,
+                'gui_minimal_confirmation' => true,
+                'gui_autofocus' => false,
+                'merchant_reference1' => '12345',
+                'merchant_reference2' => 678,
+                'purchase_country' => 'DE',
+            ]
+        );
+        $this->updateTransactionRequest->setItems([$this->getItemMock()]);
+        $this->updateTransactionRequest->setWidgetOptions($widgetOptions);
+
+        /** @noinspection PhpUnhandledExceptionInspection */
+        /** @noinspection PhpUnhandledExceptionInspection */
+        self::assertEquals(
+            [
+                'locale' => 'nl-NL',
+                'order_amount' => 10000,
+                'order_tax_amount' => 2100,
+                'order_lines' => [$this->getExpectedOrderLine()],
+                'purchase_country' => 'DE',
+                'purchase_currency' => 'EUR',
+                'gui' => ['options' => ['disable_autofocus', 'minimal_confirmation']],
+                'merchant_reference1' => '12345',
+                'merchant_reference2' => 678,
+                'options' => $widgetOptions,
             ],
             $this->updateTransactionRequest->getData()
         );
@@ -336,57 +343,110 @@ class UpdateTransactionRequestTest extends RequestTestCase
         self::assertSame($responseData, $updateTransactionResponse->getData());
     }
 
-    public function testSendDataWillUpdateOrderManagementMerchantReferences()
-    {
-        $merchantReferencesData = ['merchant_reference1' => 'baz', 'merchant_reference2' => 'quz'];
-
-        $this->setExpectedPostRequest(
-            $merchantReferencesData,
-            ['error_code' => 'READ_ONLY_ORDER'],
-            sprintf('%s/checkout/v3/orders/%s', self::BASE_URL, self::TRANSACTION_REFERENCE)
-        );
-
-        $this->setExpectedPatchRequest(
-            $merchantReferencesData,
-            [],
-            sprintf('%s/ordermanagement/v1/orders/%s/merchant-references', self::BASE_URL, self::TRANSACTION_REFERENCE)
-        );
-
-        $this->updateTransactionRequest->initialize([
-            'base_url' => self::BASE_URL,
-            'username' => self::USERNAME,
-            'secret' => self::SECRET,
-            'transactionReference' => self::TRANSACTION_REFERENCE,
-        ]);
-
-        $updateTransactionResponse = $this->updateTransactionRequest->sendData($merchantReferencesData);
-        self::assertEmpty($updateTransactionResponse->getData());
-        self::assertTrue($updateTransactionResponse->isSuccessful());
-    }
-
     public function testSendDataWillUpdateManagementCustomerDetailsAndFailUpdatingMerchantReferences()
     {
         $inputData = ['merchant_reference1' => 'foo'];
 
-        $this->setExpectedPostRequest(
-            $inputData,
-            ['error_code' => 'READ_ONLY_ORDER'],
-            sprintf('%s/checkout/v3/orders/%s', self::BASE_URL, self::TRANSACTION_REFERENCE)
-        );
+        $response = $this->createMock(ResponseInterface::class);
+        $stream = $this->createMock(StreamInterface::class);
 
-        $this->setExpectedPatchRequest(
-            $inputData,
-            ['error_code' => 'doomsday'],
-            sprintf('%s/ordermanagement/v1/orders/%s/merchant-references', self::BASE_URL, self::TRANSACTION_REFERENCE)
-        );
+        $this->httpClient->expects(self::exactly(2))
+            ->method('request')
+            ->withConsecutive(
+                [
+                    'POST',
+                    sprintf('%s/checkout/v3/orders/%s', self::BASE_URL, self::TRANSACTION_REFERENCE),
+                    array_merge(['Content-Type' => 'application/json'], $this->getExpectedHeaders()),
+                    \json_encode($inputData),
+                    [],
+                ],
+                [
+                    'PATCH',
+                    sprintf(
+                        '%s/ordermanagement/v1/orders/%s/merchant-references',
+                        self::BASE_URL,
+                        self::TRANSACTION_REFERENCE
+                    ),
+                    array_merge(
+                        ['Content-Type' => 'application/json'],
+                        $this->getExpectedHeaders()
+                    ),
+                    \json_encode($inputData),
+                    [],
+                ]
+            )
+            ->willReturn($response);
 
-        $this->updateTransactionRequest->initialize([
-            'base_url' => self::BASE_URL,
-            'username' => self::USERNAME,
-            'secret' => self::SECRET,
-            'transactionReference' => self::TRANSACTION_REFERENCE,
-        ]);
+        $response->method('getBody')->willReturn($stream);
+        $stream->expects(self::exactly(2))
+            ->method('getContents')
+            ->willReturnOnConsecutiveCalls(
+                \json_encode(['error_code' => 'READ_ONLY_ORDER']),
+                \json_encode(['error_code' => 'doomsday'])
+            );
+
+        $this->updateTransactionRequest->initialize(
+            [
+                'base_url' => self::BASE_URL,
+                'username' => self::USERNAME,
+                'secret' => self::SECRET,
+                'transactionReference' => self::TRANSACTION_REFERENCE,
+            ]
+        );
 
         self::assertFalse($this->updateTransactionRequest->sendData($inputData)->isSuccessful());
+    }
+
+    public function testSendDataWillUpdateOrderManagementMerchantReferences()
+    {
+        $merchantReferencesData = ['merchant_reference1' => 'baz', 'merchant_reference2' => 'quz'];
+
+        $response = $this->createMock(ResponseInterface::class);
+        $stream = $this->createMock(StreamInterface::class);
+
+        $this->httpClient->expects(self::exactly(2))
+            ->method('request')
+            ->withConsecutive(
+                [
+                    'POST',
+                    sprintf('%s/checkout/v3/orders/%s', self::BASE_URL, self::TRANSACTION_REFERENCE),
+                    array_merge(['Content-Type' => 'application/json'], $this->getExpectedHeaders()),
+                    \json_encode($merchantReferencesData),
+                    [],
+                ],
+                [
+                    'PATCH',
+                    sprintf(
+                        '%s/ordermanagement/v1/orders/%s/merchant-references',
+                        self::BASE_URL,
+                        self::TRANSACTION_REFERENCE
+                    ),
+                    array_merge(['Content-Type' => 'application/json'], $this->getExpectedHeaders()),
+                    \json_encode($merchantReferencesData),
+                    [],
+                ]
+            )
+            ->willReturn($response);
+
+        $response->method('getBody')->willReturn($stream);
+        $stream->expects(self::exactly(2))
+            ->method('getContents')
+            ->willReturnOnConsecutiveCalls(
+                \json_encode(['error_code' => 'READ_ONLY_ORDER']),
+                \json_encode([])
+            );
+
+        $this->updateTransactionRequest->initialize(
+            [
+                'base_url' => self::BASE_URL,
+                'username' => self::USERNAME,
+                'secret' => self::SECRET,
+                'transactionReference' => self::TRANSACTION_REFERENCE,
+            ]
+        );
+
+        $updateTransactionResponse = $this->updateTransactionRequest->sendData($merchantReferencesData);
+        self::assertEmpty($updateTransactionResponse->getData());
+        self::assertTrue($updateTransactionResponse->isSuccessful());
     }
 }

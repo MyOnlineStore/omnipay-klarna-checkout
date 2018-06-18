@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace MyOnlineStore\Tests\Omnipay\KlarnaCheckout\Message;
 
@@ -8,20 +9,9 @@ use Omnipay\Tests\TestCase;
 final class WidgetOptionsTest extends TestCase
 {
     /**
-     * @dataProvider dataProvider
-     *
-     * @param array $data
-     * @param array $expectedOutcome
-     */
-    public function testFromArrayShoulReturnArrayWithCorrectKeys($data, $expectedOutcome)
-    {
-        self::assertEquals($expectedOutcome, WidgetOptions::fromArray($data)->getArrayCopy());
-    }
-
-    /**
      * @return array
      */
-    public function dataProvider()
+    public function dataProvider(): array
     {
         return [
             [
@@ -109,5 +99,16 @@ final class WidgetOptionsTest extends TestCase
                 ],
             ],
         ];
+    }
+
+    /**
+     * @dataProvider dataProvider
+     *
+     * @param array $data
+     * @param array $expectedOutcome
+     */
+    public function testFromArrayShoulReturnArrayWithCorrectKeys($data, $expectedOutcome)
+    {
+        self::assertEquals($expectedOutcome, WidgetOptions::fromArray($data)->getArrayCopy());
     }
 }

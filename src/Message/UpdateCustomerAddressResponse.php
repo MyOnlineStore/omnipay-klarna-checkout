@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace MyOnlineStore\Omnipay\KlarnaCheckout\Message;
 
@@ -26,7 +27,7 @@ final class UpdateCustomerAddressResponse extends AbstractResponse
     /**
      * @inheritDoc
      */
-    public function isSuccessful()
+    public function isSuccessful(): bool
     {
         return parent::isSuccessful() && 204 === $this->statusCode;
     }

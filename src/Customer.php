@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace MyOnlineStore\Omnipay\KlarnaCheckout;
 
@@ -9,7 +10,7 @@ final class Customer extends \ArrayObject
      *
      * @return Customer
      */
-    public static function fromArray(array $data)
+    public static function fromArray(array $data): Customer
     {
         $defaults = [
             'date_of_birth' => null,

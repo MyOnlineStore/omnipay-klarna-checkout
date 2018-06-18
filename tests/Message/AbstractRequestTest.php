@@ -1,16 +1,15 @@
 <?php
+declare(strict_types=1);
 
 namespace MyOnlineStore\Tests\Omnipay\KlarnaCheckout\Message;
 
-use Guzzle\Common\Event;
-use Guzzle\Http\ClientInterface;
-use Guzzle\Http\Message\Response;
+use Money\Currency;
+use Money\Money;
 use MyOnlineStore\Omnipay\KlarnaCheckout\ItemBag;
 use MyOnlineStore\Omnipay\KlarnaCheckout\Message\AbstractRequest;
 use Omnipay\Tests\TestCase;
-use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
-class AbstractRequestTest extends TestCase
+final class AbstractRequestTest extends TestCase
 {
     /**
      * @var AbstractRequest
@@ -19,31 +18,41 @@ class AbstractRequestTest extends TestCase
 
     protected function setUp()
     {
-        $this->request = $this->getMockBuilder(AbstractRequest::class)
-            ->setConstructorArgs([$this->getHttpClient(), $this->getHttpRequest()])
-            ->setMethods([])
-            ->getMockForAbstractClass();
+        $httpClient = $this->getHttpClient();
+        $httpRequest = $this->getHttpRequest();
+
+        $this->request = new class($httpClient, $httpRequest) extends AbstractRequest
+        {
+            /**
+             * @inheritdoc
+             */
+            public function sendData($data)
+            {
+                return parent::sendData($data);
+            }
+
+            /**
+             * @inheritdoc
+             */
+            public function getData()
+            {
+                return parent::getData();
+            }
+        };
     }
 
     public function testGetters()
     {
         $locale = 'nl_NL';
-        $taxAmount = 50.1;
+        $taxAmount = 500;
+        $currencyIso = 'EUR';
 
+        $this->request->setCurrency($currencyIso);
         $this->request->setLocale($locale);
-        $this->request->setTaxAmount($taxAmount);
+        $this->request->setTaxAmount(new Money($taxAmount, new Currency($currencyIso)));
 
         self::assertSame($locale, $this->request->getLocale());
-        self::assertSame($taxAmount, $this->request->getTaxAmount());
-    }
-
-    public function testSetItemsWithItemBag()
-    {
-        $itemBag = $this->getMockBuilder(ItemBag::class)->disableOriginalConstructor()->getMock();
-
-        $this->request->setItems($itemBag);
-
-        self::assertSame($itemBag, $this->request->getParameters()['items']);
+        self::assertSame((string) $taxAmount, $this->request->getTaxAmount()->getAmount());
     }
 
     public function testSetItemsWithArray()
@@ -55,37 +64,12 @@ class AbstractRequestTest extends TestCase
         self::assertEquals(new ItemBag($itemsArray), $this->request->getParameters()['items']);
     }
 
-    public function testClientErrorPropagationIsStopped()
+    public function testSetItemsWithItemBag()
     {
-        $eventDispatcher = \Mockery::mock(EventDispatcherInterface::class);
-        $eventDispatcher->shouldReceive('addListener')
-            ->with('request.error', \Mockery::on(
-                function (callable $functionToValidate) {
-                    $eventA = \Mockery::mock(
-                        Event::class.'[stopPropagation]',
-                        [['response' => new Response(403)]]
-                    );
-                    $eventA->shouldReceive('stopPropagation')->once();
+        $itemBag = $this->createMock(ItemBag::class);
 
-                    $eventB = \Mockery::mock(
-                        Event::class.'[stopPropagation]',
-                        [['response' => new Response(200)]]
-                    );
-                    $eventB->shouldNotReceive('stopPropagation');
+        $this->request->setItems($itemBag);
 
-                    $functionToValidate($eventA);
-                    $functionToValidate($eventB);
-
-                    return true;
-                }
-            ))->once();
-
-        $httpClient = \Mockery::mock(ClientInterface::class);
-        $httpClient->shouldReceive('getEventDispatcher')->once()->andReturn($eventDispatcher);
-
-        $this->request = $this->getMockForAbstractClass(
-            AbstractRequest::class,
-            [$httpClient, $this->getHttpRequest()]
-        );
+        self::assertSame($itemBag, $this->request->getParameters()['items']);
     }
 }

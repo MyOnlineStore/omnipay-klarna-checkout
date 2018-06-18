@@ -12,9 +12,14 @@
         }
     },
     "require": {
-        "omnipay/common": "^2.5"
+        "php": "^7.0",
+        "omnipay/common": "~3"
     },
     "require-dev": {
-        "omnipay/tests": "^2.1"
+        "omnipay/tests": "~3"
+    },
+    "config": {
+        "vendor-dir": "vendor",
+        "sort-packages": true
     }
 }

@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace MyOnlineStore\Omnipay\KlarnaCheckout;
 
@@ -7,7 +8,7 @@ final class Item extends \Omnipay\Common\Item implements ItemInterface
     /**
      * @inheritDoc
      */
-    public function getMerchantData()
+    public function getMerchantData(): string
     {
         return $this->getParameter('merchant_data');
     }
@@ -31,7 +32,7 @@ final class Item extends \Omnipay\Common\Item implements ItemInterface
     /**
      * @inheritDoc
      */
-    public function getType()
+    public function getType(): string
     {
         return $this->getParameter('type');
     }

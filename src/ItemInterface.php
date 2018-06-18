@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace MyOnlineStore\Omnipay\KlarnaCheckout;
 
@@ -7,7 +8,7 @@ interface ItemInterface extends \Omnipay\Common\ItemInterface
     /**
      * @return string
      */
-    public function getMerchantData();
+    public function getMerchantData(): string;
 
     /**
      * Non-negative percentage (i.e. 25 = 25%)
@@ -28,5 +29,5 @@ interface ItemInterface extends \Omnipay\Common\ItemInterface
      *
      * @return string
      */
-    public function getType();
+    public function getType(): string;
 }

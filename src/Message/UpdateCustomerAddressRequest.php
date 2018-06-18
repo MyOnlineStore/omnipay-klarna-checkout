@@ -1,8 +1,8 @@
 <?php
+declare(strict_types=1);
 
 namespace MyOnlineStore\Omnipay\KlarnaCheckout\Message;
 
-use Guzzle\Http\Message\RequestInterface;
 use Omnipay\Common\Exception\InvalidRequestException;
 
 final class UpdateCustomerAddressRequest extends AbstractOrderRequest
@@ -12,24 +12,14 @@ final class UpdateCustomerAddressRequest extends AbstractOrderRequest
      *
      * @throws InvalidRequestException
      */
-    public function getData()
+    public function getData(): array
     {
         $this->validate('transactionReference', 'billing_address', 'shipping_address');
 
         return [
-            'shipping_address' => $this->getShippingAddress()->toArray($this->getExcludeEmptyValues()),
-            'billing_address' => $this->getBillingAddress()->toArray($this->getExcludeEmptyValues()),
+            'shipping_address' => $this->getShippingAddress()->getArrayCopy(),
+            'billing_address' => $this->getBillingAddress()->getArrayCopy(),
         ];
-    }
-
-    /**
-     * @return array
-     */
-    public function getExcludeEmptyValues()
-    {
-        $exludedKeys = $this->getParameter('exclude_empty_values');
-
-        return is_array($exludedKeys) ? $exludedKeys : [];
     }
 
     /**
@@ -38,7 +28,7 @@ final class UpdateCustomerAddressRequest extends AbstractOrderRequest
     public function sendData($data)
     {
         $response = $this->sendRequest(
-            RequestInterface::PATCH,
+            'PATCH',
             sprintf('/ordermanagement/v1/orders/%s/customer-details', $this->getTransactionReference()),
             $data
         );
@@ -51,17 +41,5 @@ final class UpdateCustomerAddressRequest extends AbstractOrderRequest
             ),
             $response->getStatusCode()
         );
-    }
-
-    /**
-     * @param array $exludedKeys
-     *
-     * @return $this
-     */
-    public function setExcludeEmptyValues(array $exludedKeys)
-    {
-        $this->setParameter('exclude_empty_values', $exludedKeys);
-
-        return $this;
     }
 }

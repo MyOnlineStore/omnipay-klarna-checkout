@@ -1,46 +1,47 @@
 <?php
+declare(strict_types=1);
 
 namespace MyOnlineStore\Omnipay\KlarnaCheckout\Message;
 
-use Guzzle\Common\Event;
-use Guzzle\Common\Exception\InvalidArgumentException;
-use Guzzle\Common\Exception\RuntimeException;
-use Guzzle\Http\ClientInterface;
-use Guzzle\Http\Exception\RequestException;
-use Guzzle\Http\Message\RequestInterface;
-use Guzzle\Http\Message\Response;
-use MyOnlineStore\Omnipay\KlarnaCheckout\AuthenticationRequestOptionProvider;
+use Money\Currency;
+use Money\Money;
+use MyOnlineStore\Omnipay\KlarnaCheckout\AuthenticationRequestHeaderProvider;
 use MyOnlineStore\Omnipay\KlarnaCheckout\CurrencyAwareTrait;
 use MyOnlineStore\Omnipay\KlarnaCheckout\ItemBag;
-use Symfony\Component\HttpFoundation\Request as HttpRequest;
+use Omnipay\Common\Message\AbstractRequest as BaseAbstractRequest;
+use Psr\Http\Message\ResponseInterface;
 
 /**
  * @method ItemBag|null getItems()
  */
-abstract class AbstractRequest extends \Omnipay\Common\Message\AbstractRequest
+abstract class AbstractRequest extends BaseAbstractRequest
 {
     use CurrencyAwareTrait;
 
     /**
-     * @inheritdoc
+     * @return Money|null
      */
-    public function __construct(ClientInterface $httpClient, HttpRequest $httpRequest)
+    public function getAmount()
     {
-        parent::__construct($httpClient, $httpRequest);
+        if (null === $amount = $this->getParameter('amount')) {
+            return null;
+        }
 
-        // don't throw exceptions for 4xx errors
-        $this->httpClient->getEventDispatcher()->addListener(
-            'request.error',
-            function (Event $event) {
-                if ($event['response']->isClientError()) {
-                    $event->stopPropagation();
-                }
-            }
-        );
+        if ($amount instanceof Money) {
+            return $amount;
+        }
+
+        try {
+            $currency = new Currency($this->getCurrency());
+        } catch (\InvalidArgumentException $exception) {
+            $currency = new Currency('USD');
+        }
+
+        return new Money($amount, $currency);
     }
 
     /**
-     * @return string REGION_* constant value
+     * @return string|null REGION_* constant value
      */
     public function getApiRegion()
     {
@@ -48,7 +49,7 @@ abstract class AbstractRequest extends \Omnipay\Common\Message\AbstractRequest
     }
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getBaseUrl()
     {
@@ -58,7 +59,7 @@ abstract class AbstractRequest extends \Omnipay\Common\Message\AbstractRequest
     /**
      * RFC 1766 customer's locale.
      *
-     * @return string
+     * @return string|null
      */
     public function getLocale()
     {
@@ -82,7 +83,7 @@ abstract class AbstractRequest extends \Omnipay\Common\Message\AbstractRequest
     }
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getSecret()
     {
@@ -92,15 +93,29 @@ abstract class AbstractRequest extends \Omnipay\Common\Message\AbstractRequest
     /**
      * The total tax amount of the order
      *
-     * @return int
+     * @return Money|null
      */
     public function getTaxAmount()
     {
-        return $this->getParameter('tax_amount');
+        if (null === $amount = $this->getParameter('tax_amount')) {
+            return null;
+        }
+
+        if ($amount instanceof Money) {
+            return $amount;
+        }
+
+        try {
+            $currency = new Currency($this->getCurrency());
+        } catch (\InvalidArgumentException $exception) {
+            $currency = new Currency('USD');
+        }
+
+        return new Money($amount, $currency);
     }
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getUsername()
     {
@@ -112,7 +127,7 @@ abstract class AbstractRequest extends \Omnipay\Common\Message\AbstractRequest
      *
      * @return $this
      */
-    public function setApiRegion($region)
+    public function setApiRegion(string $region): self
     {
         $this->setParameter('api_region', $region);
 
@@ -124,7 +139,7 @@ abstract class AbstractRequest extends \Omnipay\Common\Message\AbstractRequest
      *
      * @return $this
      */
-    public function setBaseUrl($baseUrl)
+    public function setBaseUrl(string $baseUrl): self
     {
         $this->setParameter('base_url', $baseUrl);
 
@@ -146,7 +161,7 @@ abstract class AbstractRequest extends \Omnipay\Common\Message\AbstractRequest
     /**
      * @param string $locale
      */
-    public function setLocale($locale)
+    public function setLocale(string $locale)
     {
         $this->setParameter('locale', $locale);
     }
@@ -156,7 +171,7 @@ abstract class AbstractRequest extends \Omnipay\Common\Message\AbstractRequest
      *
      * @return $this
      */
-    public function setMerchantReference1($merchantReference)
+    public function setMerchantReference1(string $merchantReference): self
     {
         $this->setParameter('merchant_reference1', $merchantReference);
 
@@ -168,7 +183,7 @@ abstract class AbstractRequest extends \Omnipay\Common\Message\AbstractRequest
      *
      * @return $this
      */
-    public function setMerchantReference2($merchantReference)
+    public function setMerchantReference2(string $merchantReference): self
     {
         $this->setParameter('merchant_reference2', $merchantReference);
 
@@ -180,7 +195,7 @@ abstract class AbstractRequest extends \Omnipay\Common\Message\AbstractRequest
      *
      * @return $this
      */
-    public function setSecret($secret)
+    public function setSecret(string $secret): self
     {
         $this->setParameter('secret', $secret);
 
@@ -188,7 +203,7 @@ abstract class AbstractRequest extends \Omnipay\Common\Message\AbstractRequest
     }
 
     /**
-     * @param int $value
+     * @param mixed $value
      */
     public function setTaxAmount($value)
     {
@@ -200,7 +215,7 @@ abstract class AbstractRequest extends \Omnipay\Common\Message\AbstractRequest
      *
      * @return $this
      */
-    public function setUsername($username)
+    public function setUsername(string $username): self
     {
         $this->setParameter('username', $username);
 
@@ -208,15 +223,13 @@ abstract class AbstractRequest extends \Omnipay\Common\Message\AbstractRequest
     }
 
     /**
-     * @param Response $response
+     * @param ResponseInterface $response
      *
      * @return array
-     *
-     * @throws RuntimeException
      */
-    protected function getResponseBody(Response $response)
+    protected function getResponseBody(ResponseInterface $response): array
     {
-        return empty($response->getBody(true)) ? [] : $response->json();
+        return \json_decode($response->getBody()->getContents(), true);
     }
 
     /**
@@ -224,31 +237,31 @@ abstract class AbstractRequest extends \Omnipay\Common\Message\AbstractRequest
      * @param string $url
      * @param mixed  $data
      *
-     * @return Response
-     *
-     * @throws RequestException
-     * @throws InvalidArgumentException
+     * @return ResponseInterface
      */
-    protected function sendRequest($method, $url, $data)
+    protected function sendRequest(string $method, string $url, $data): ResponseInterface
     {
-        $options = (new AuthenticationRequestOptionProvider())->getOptions($this);
+        $headers = (new AuthenticationRequestHeaderProvider())->getHeaders($this);
 
-        if (RequestInterface::GET === $method) {
-            return $this->httpClient->createRequest(
+        if ('GET' === $method) {
+            return $this->httpClient->request(
                 $method,
                 $this->getBaseUrl().$url,
+                $headers,
                 null,
-                null,
-                $options
-            )->send();
+                []
+            );
         }
 
-        return $this->httpClient->createRequest(
+        return $this->httpClient->request(
             $method,
             $this->getBaseUrl().$url,
-            ['Content-Type' => 'application/json'],
-            json_encode($data),
-            $options
-        )->send();
+            array_merge(
+                ['Content-Type' => 'application/json'],
+                $headers
+            ),
+            \json_encode($data),
+            []
+        );
     }
 }

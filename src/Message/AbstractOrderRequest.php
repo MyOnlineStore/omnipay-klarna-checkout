@@ -1,17 +1,20 @@
 <?php
+declare(strict_types=1);
 
 namespace MyOnlineStore\Omnipay\KlarnaCheckout\Message;
 
+use Money\Exception\UnknownCurrencyException;
 use MyOnlineStore\Omnipay\KlarnaCheckout\Address;
-use MyOnlineStore\Omnipay\KlarnaCheckout\WidgetOptions;
 use MyOnlineStore\Omnipay\KlarnaCheckout\Customer;
+use MyOnlineStore\Omnipay\KlarnaCheckout\WidgetOptions;
+use Omnipay\Common\Exception\InvalidRequestException;
 
 abstract class AbstractOrderRequest extends AbstractRequest
 {
     use ItemDataTrait;
 
     /**
-     * @return Address
+     * @return Address|null
      */
     public function getBillingAddress()
     {
@@ -19,7 +22,15 @@ abstract class AbstractOrderRequest extends AbstractRequest
     }
 
     /**
-     * @return bool
+     * @return Customer|null
+     */
+    public function getCustomer()
+    {
+        return $this->getParameter('customer');
+    }
+
+    /**
+     * @return bool|null
      */
     public function getGuiAutofocus()
     {
@@ -27,7 +38,7 @@ abstract class AbstractOrderRequest extends AbstractRequest
     }
 
     /**
-     * @return bool
+     * @return bool|null
      */
     public function getGuiMinimalConfirmation()
     {
@@ -35,7 +46,7 @@ abstract class AbstractOrderRequest extends AbstractRequest
     }
 
     /**
-     * @return bool
+     * @return string|null
      */
     public function getPurchaseCountry()
     {
@@ -43,7 +54,7 @@ abstract class AbstractOrderRequest extends AbstractRequest
     }
 
     /**
-     * @return Address
+     * @return Address|null
      */
     public function getShippingAddress()
     {
@@ -59,7 +70,7 @@ abstract class AbstractOrderRequest extends AbstractRequest
     }
 
     /**
-     * @return WidgetOptions
+     * @return WidgetOptions|null
      */
     public function getWidgetOptions()
     {
@@ -67,11 +78,15 @@ abstract class AbstractOrderRequest extends AbstractRequest
     }
 
     /**
-     * @return Customer
+     * @param array $billingAddress
+     *
+     * @return $this
      */
-    public function getCustomer()
+    public function setBillingAddress($billingAddress): self
     {
-        return $this->getParameter('customer');
+        $this->setParameter('billing_address', Address::fromArray($billingAddress));
+
+        return $this;
     }
 
     /**
@@ -79,21 +94,9 @@ abstract class AbstractOrderRequest extends AbstractRequest
      *
      * @return $this
      */
-    public function setCustomer($customer)
+    public function setCustomer(array $customer): self
     {
         $this->setParameter('customer', Customer::fromArray($customer));
-
-        return $this;
-    }
-
-    /**
-     * @param array $billingAddress
-     *
-     * @return $this
-     */
-    public function setBillingAddress($billingAddress)
-    {
-        $this->setParameter('billing_address', Address::fromArray($billingAddress));
 
         return $this;
     }
@@ -103,7 +106,7 @@ abstract class AbstractOrderRequest extends AbstractRequest
      *
      * @return $this
      */
-    public function setGuiAutofocus($value)
+    public function setGuiAutofocus(bool $value): self
     {
         $this->setParameter('gui_autofocus', $value);
 
@@ -115,7 +118,7 @@ abstract class AbstractOrderRequest extends AbstractRequest
      *
      * @return $this
      */
-    public function setGuiMinimalConfirmation($value)
+    public function setGuiMinimalConfirmation(bool $value): self
     {
         $this->setParameter('gui_minimal_confirmation', $value);
 
@@ -123,25 +126,13 @@ abstract class AbstractOrderRequest extends AbstractRequest
     }
 
     /**
-     * @param bool $value
+     * @param string $value
      *
      * @return $this
      */
-    public function setPurchaseCountry($value)
+    public function setPurchaseCountry(string $value): self
     {
         $this->setParameter('purchase_country', $value);
-
-        return $this;
-    }
-
-    /**
-     * @param string[] $countries ISO 3166 alpha-2 codes of shipping countries
-     *
-     * @return $this
-     */
-    public function setShippingCountries(array $countries)
-    {
-        $this->setParameter('shipping_countries', $countries);
 
         return $this;
     }
@@ -151,9 +142,21 @@ abstract class AbstractOrderRequest extends AbstractRequest
      *
      * @return $this
      */
-    public function setShippingAddress($shippingAddress)
+    public function setShippingAddress(array $shippingAddress): self
     {
         $this->setParameter('shipping_address', Address::fromArray($shippingAddress));
+
+        return $this;
+    }
+
+    /**
+     * @param string[] $countries ISO 3166 alpha-2 codes of shipping countries
+     *
+     * @return $this
+     */
+    public function setShippingCountries(array $countries): self
+    {
+        $this->setParameter('shipping_countries', $countries);
 
         return $this;
     }
@@ -163,7 +166,7 @@ abstract class AbstractOrderRequest extends AbstractRequest
      *
      * @return $this
      */
-    public function setWidgetOptions($widgetOptions)
+    public function setWidgetOptions(array $widgetOptions): self
     {
         $this->setParameter('widget_options', WidgetOptions::fromArray($widgetOptions));
 
@@ -172,16 +175,22 @@ abstract class AbstractOrderRequest extends AbstractRequest
 
     /**
      * @return array
+     *
+     * @throws InvalidRequestException
      */
-    protected function getOrderData()
+    protected function getOrderData(): array
     {
-        $data = [
-            'order_amount' => $this->getAmountInteger(),
-            'order_tax_amount' => $this->toCurrencyMinorUnits($this->getTaxAmount()),
-            'order_lines' => $this->getItemData($this->getItems()),
-            'purchase_currency' => $this->getCurrency(),
-            'purchase_country' => $this->getPurchaseCountry(),
-        ];
+        try {
+            $data = [
+                'order_amount' => $this->getAmountInteger(),
+                'order_tax_amount' => (int) $this->getTaxAmount()->getAmount(),
+                'order_lines' => $this->getItemData($this->getItems()),
+                'purchase_currency' => $this->getCurrency(),
+                'purchase_country' => $this->getPurchaseCountry(),
+            ];
+        } catch (UnknownCurrencyException $exception) {
+            throw new InvalidRequestException('invalid currency provided', 0, $exception);
+        }
 
         if (null !== $locale = $this->getLocale()) {
             $data['locale'] = str_replace('_', '-', $locale);

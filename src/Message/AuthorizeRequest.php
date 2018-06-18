@@ -1,8 +1,8 @@
 <?php
+declare(strict_types=1);
 
 namespace MyOnlineStore\Omnipay\KlarnaCheckout\Message;
 
-use Guzzle\Http\Message\RequestInterface;
 use Omnipay\Common\Exception\InvalidResponseException;
 
 /**
@@ -14,6 +14,9 @@ final class AuthorizeRequest extends AbstractOrderRequest
 
     /**
      * @inheritDoc
+     * @throws \Omnipay\Common\Exception\InvalidRequestException
+     * @throws \Omnipay\Common\Exception\InvalidRequestException
+     * @throws \Omnipay\Common\Exception\InvalidRequestException
      */
     public function getData()
     {
@@ -33,7 +36,7 @@ final class AuthorizeRequest extends AbstractOrderRequest
     }
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getRenderUrl()
     {
@@ -42,15 +45,16 @@ final class AuthorizeRequest extends AbstractOrderRequest
 
     /**
      * @inheritDoc
+     * @throws InvalidResponseException
      */
     public function sendData($data)
     {
         $response = $this->getTransactionReference() ?
-            $this->sendRequest(RequestInterface::GET, '/checkout/v3/orders/'.$this->getTransactionReference(), $data) :
-            $this->sendRequest(RequestInterface::POST, '/checkout/v3/orders', $data);
+            $this->sendRequest('GET', '/checkout/v3/orders/'.$this->getTransactionReference(), $data) :
+            $this->sendRequest('POST', '/checkout/v3/orders', $data);
 
         if ($response->getStatusCode() >= 400) {
-            throw new InvalidResponseException($response->getMessage());
+            throw new InvalidResponseException($response->getReasonPhrase());
         }
 
         return new AuthorizeResponse($this, $this->getResponseBody($response), $this->getRenderUrl());
@@ -61,7 +65,7 @@ final class AuthorizeRequest extends AbstractOrderRequest
      *
      * @return $this
      */
-    public function setRenderUrl($url)
+    public function setRenderUrl(string $url): self
     {
         $this->setParameter('render_url', $url);
 

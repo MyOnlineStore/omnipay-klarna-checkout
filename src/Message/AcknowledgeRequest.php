@@ -1,13 +1,16 @@
 <?php
+declare(strict_types=1);
 
 namespace MyOnlineStore\Omnipay\KlarnaCheckout\Message;
 
-use Guzzle\Http\Message\RequestInterface;
+use Omnipay\Common\Exception\InvalidRequestException;
 
 final class AcknowledgeRequest extends AbstractRequest
 {
     /**
      * @inheritDoc
+     *
+     * @throws InvalidRequestException
      */
     public function getData()
     {
@@ -22,7 +25,7 @@ final class AcknowledgeRequest extends AbstractRequest
     public function sendData($data)
     {
         $response = $this->sendRequest(
-            RequestInterface::POST,
+            'POST',
             sprintf(
                 '/ordermanagement/v1/orders/%s/acknowledge',
                 $this->getTransactionReference()

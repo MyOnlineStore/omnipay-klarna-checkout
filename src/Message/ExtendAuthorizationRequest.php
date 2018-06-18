@@ -1,10 +1,9 @@
 <?php
+declare(strict_types=1);
 
 namespace MyOnlineStore\Omnipay\KlarnaCheckout\Message;
 
-use Guzzle\Http\Message\RequestInterface;
 use Omnipay\Common\Exception\InvalidRequestException;
-use Omnipay\Common\Message\ResponseInterface;
 
 final class ExtendAuthorizationRequest extends AbstractRequest
 {
@@ -23,13 +22,13 @@ final class ExtendAuthorizationRequest extends AbstractRequest
     /**
      * @param mixed $data
      *
-     * @return ExtendAuthorizationResponse|ResponseInterface
+     * @return ExtendAuthorizationResponse
      */
-    public function sendData($data)
+    public function sendData($data): ExtendAuthorizationResponse
     {
         $responseBody = $this->getResponseBody(
             $this->sendRequest(
-                RequestInterface::POST,
+                'POST',
                 sprintf('/ordermanagement/v1/orders/%s/extend-authorization-time', $this->getTransactionReference()),
                 $data
             )

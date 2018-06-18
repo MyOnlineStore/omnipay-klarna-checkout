@@ -1,10 +1,8 @@
 <?php
+declare(strict_types=1);
 
 namespace MyOnlineStore\Omnipay\KlarnaCheckout\Message;
 
-use Guzzle\Common\Exception\InvalidArgumentException;
-use Guzzle\Http\Exception\RequestException;
-use Guzzle\Http\Message\RequestInterface;
 use Omnipay\Common\Exception\InvalidRequestException;
 
 final class VoidRequest extends AbstractRequest
@@ -22,15 +20,12 @@ final class VoidRequest extends AbstractRequest
     }
 
     /**
-     * {@inheritdoc}
-     *
-     * @throws RequestException
-     * @throws InvalidArgumentException
+     * @inheritdoc
      */
     public function sendData($data)
     {
         $baseUrl = sprintf('/ordermanagement/v1/orders/%s', $this->getTransactionReference());
-        $orderManagementResponse = $this->sendRequest(RequestInterface::GET, $baseUrl, []);
+        $orderManagementResponse = $this->sendRequest('GET', $baseUrl, []);
 
         $order = $this->getResponseBody($orderManagementResponse);
 
@@ -40,7 +35,7 @@ final class VoidRequest extends AbstractRequest
             $voidUrl = sprintf('%s/cancel', $baseUrl);
         }
 
-        $response = $this->sendRequest(RequestInterface::POST, $voidUrl, $data);
+        $response = $this->sendRequest('POST', $voidUrl, $data);
 
         return new VoidResponse(
             $this,
