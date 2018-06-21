@@ -7,8 +7,6 @@ use MyOnlineStore\Omnipay\KlarnaCheckout\Message\AbstractRequest;
 final class AuthenticationRequestOptionProvider
 {
     /**
-     * @todo fallback to getMerchantId can be removed in next major version
-     *
      * @param AbstractRequest $request
      *
      * @return array
@@ -17,7 +15,7 @@ final class AuthenticationRequestOptionProvider
     {
         return [
             'auth' => [
-                !empty($request->getMerchantId()) ? $request->getMerchantId() : $request->getUsername(),
+                $request->getUsername(),
                 $request->getSecret(),
             ],
         ];

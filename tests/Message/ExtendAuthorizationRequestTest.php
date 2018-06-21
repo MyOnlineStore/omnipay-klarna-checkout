@@ -52,7 +52,7 @@ final class ExtendAuthorizationRequestTest extends RequestTestCase
         $this->extendAuthorizationRequest->initialize(
             [
                 'base_url' => self::BASE_URL,
-                'merchant_id' => self::USERNAME,
+                'username' => self::USERNAME,
                 'secret' => self::SECRET,
                 'transactionReference' => 'foo',
             ]

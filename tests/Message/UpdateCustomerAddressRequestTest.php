@@ -164,7 +164,7 @@ final class UpdateCustomerAddressRequestTest extends RequestTestCase
         $this->updateCustomerAddressRequest->initialize(
             [
                 'base_url' => self::BASE_URL,
-                'merchant_id' => self::USERNAME,
+                'username' => self::USERNAME,
                 'secret' => self::SECRET,
                 'transactionReference' => $transactionReference,
             ]

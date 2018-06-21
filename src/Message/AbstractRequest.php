@@ -66,16 +66,6 @@ abstract class AbstractRequest extends \Omnipay\Common\Message\AbstractRequest
     }
 
     /**
-     * @deprecated use getUsername instead
-     *
-     * @return string
-     */
-    public function getMerchantId()
-    {
-        return $this->getParameter('merchant_id');
-    }
-
-    /**
      * @return string|null
      */
     public function getMerchantReference1()
@@ -159,20 +149,6 @@ abstract class AbstractRequest extends \Omnipay\Common\Message\AbstractRequest
     public function setLocale($locale)
     {
         $this->setParameter('locale', $locale);
-    }
-
-    /**
-     * @deprecated use setUsername instead
-     *
-     * @param string $merchantId
-     *
-     * @return $this
-     */
-    public function setMerchantId($merchantId)
-    {
-        $this->setParameter('merchant_id', $merchantId);
-
-        return $this;
     }
 
     /**
