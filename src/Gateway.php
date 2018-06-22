@@ -78,21 +78,10 @@ final class Gateway extends AbstractGateway implements GatewayInterface
     {
         return [
             'api_region' => self::API_VERSION_EUROPE,
-            'merchant_id' => '',
             'secret' => '',
             'testMode' => true,
             'username' => '',
         ];
-    }
-
-    /**
-     * @deprecated use getUsername instead
-     *
-     * @return string
-     */
-    public function getMerchantId()
-    {
-        return $this->getParameter('merchant_id');
     }
 
     /**
@@ -151,20 +140,6 @@ final class Gateway extends AbstractGateway implements GatewayInterface
     public function setApiRegion($region)
     {
         $this->setParameter('api_region', $region);
-
-        return $this;
-    }
-
-    /**
-     * @deprecated use setUsername instead
-     *
-     * @param string $merchantId
-     *
-     * @return $this
-     */
-    public function setMerchantId($merchantId)
-    {
-        $this->setParameter('merchant_id', $merchantId);
 
         return $this;
     }
