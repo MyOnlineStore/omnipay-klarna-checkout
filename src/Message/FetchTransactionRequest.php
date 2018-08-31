@@ -3,11 +3,16 @@ declare(strict_types=1);
 
 namespace MyOnlineStore\Omnipay\KlarnaCheckout\Message;
 
+use Omnipay\Common\Exception\InvalidRequestException;
+use Omnipay\Common\Http\Exception\NetworkException;
+use Omnipay\Common\Http\Exception\RequestException;
+
 final class FetchTransactionRequest extends AbstractRequest
 {
     /**
      * @inheritDoc
-     * @throws \Omnipay\Common\Exception\InvalidRequestException
+     *
+     * @throws InvalidRequestException
      */
     public function getData()
     {
@@ -18,6 +23,9 @@ final class FetchTransactionRequest extends AbstractRequest
 
     /**
      * @inheritDoc
+     *
+     * @throws RequestException when the HTTP client is passed a request that is invalid and cannot be sent.
+     * @throws NetworkException if there is an error with the network or the remote server cannot be reached.
      */
     public function sendData($data)
     {

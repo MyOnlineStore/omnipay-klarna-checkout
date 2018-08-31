@@ -48,7 +48,7 @@ class UpdateTransactionRequestTest extends RequestTestCase
         $this->updateTransactionRequest->initialize(
             [
                 'amount' => '100.00',
-                'tax_amount' => 2100,
+                'tax_amount' => 21,
                 'currency' => 'EUR',
                 'transactionReference' => self::TRANSACTION_REFERENCE,
                 'gui_minimal_confirmation' => true,
@@ -144,7 +144,7 @@ class UpdateTransactionRequestTest extends RequestTestCase
             [
                 'locale' => 'nl_NL',
                 'amount' => '100.00',
-                'tax_amount' => 2100,
+                'tax_amount' => 21,
                 'currency' => 'EUR',
                 'transactionReference' => self::TRANSACTION_REFERENCE,
                 'gui_minimal_confirmation' => true,
@@ -187,7 +187,7 @@ class UpdateTransactionRequestTest extends RequestTestCase
             [
                 'locale' => 'nl_NL',
                 'amount' => '100.00',
-                'tax_amount' => 2100,
+                'tax_amount' => 21,
                 'currency' => 'EUR',
                 'transactionReference' => self::TRANSACTION_REFERENCE,
                 'purchase_country' => 'FR',
@@ -224,7 +224,7 @@ class UpdateTransactionRequestTest extends RequestTestCase
             array_merge(
                 [
                     'amount' => '100.00',
-                    'tax_amount' => 2100,
+                    'tax_amount' => 21,
                     'currency' => 'EUR',
                     'transactionReference' => self::TRANSACTION_REFERENCE,
                     'gui_minimal_confirmation' => true,
@@ -285,7 +285,7 @@ class UpdateTransactionRequestTest extends RequestTestCase
             [
                 'locale' => 'nl_NL',
                 'amount' => '100.00',
-                'tax_amount' => 2100,
+                'tax_amount' => 21,
                 'currency' => 'EUR',
                 'transactionReference' => self::TRANSACTION_REFERENCE,
                 'gui_minimal_confirmation' => true,

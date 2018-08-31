@@ -6,28 +6,28 @@ namespace MyOnlineStore\Omnipay\KlarnaCheckout;
 interface ItemInterface extends \Omnipay\Common\ItemInterface
 {
     /**
-     * @return string
+     * @return string|null
      */
-    public function getMerchantData(): string;
+    public function getMerchantData();
 
     /**
      * Non-negative percentage (i.e. 25 = 25%)
      *
-     * @return float
+     * @return float|null
      */
     public function getTaxRate();
 
     /**
      * Total amount of tax
      *
-     * @return float
+     * @return float|null
      */
     public function getTotalTaxAmount();
 
     /**
      * Product type
      *
-     * @return string
+     * @return string|null
      */
-    public function getType(): string;
+    public function getType();
 }

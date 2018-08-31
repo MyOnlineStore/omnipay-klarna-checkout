@@ -221,7 +221,7 @@ class AuthorizeRequestTest extends RequestTestCase
             [
                 'locale' => 'nl-NL',
                 'order_amount' => 10000,
-                'order_tax_amount' => 2100,
+                'order_tax_amount' => 210000,
                 'order_lines' => [$this->getExpectedOrderLine()],
                 'merchant_urls' => $this->getCompleteExpectedMerchantUrlData(),
                 'purchase_country' => 'FR',
@@ -261,7 +261,7 @@ class AuthorizeRequestTest extends RequestTestCase
                 [
                     'locale' => 'nl_NL',
                     'amount' => '100.00',
-                    'tax_amount' => 2100,
+                    'tax_amount' => 21,
                     'currency' => 'EUR',
                     'shipping_countries' => ['NL', 'DE'],
                     'purchase_country' => 'BE',

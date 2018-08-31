@@ -3,11 +3,12 @@ declare(strict_types=1);
 
 namespace MyOnlineStore\Omnipay\KlarnaCheckout\Message;
 
-use Money\Currency;
 use Money\Money;
 use MyOnlineStore\Omnipay\KlarnaCheckout\AuthenticationRequestHeaderProvider;
 use MyOnlineStore\Omnipay\KlarnaCheckout\CurrencyAwareTrait;
 use MyOnlineStore\Omnipay\KlarnaCheckout\ItemBag;
+use Omnipay\Common\Http\Exception\NetworkException;
+use Omnipay\Common\Http\Exception\RequestException;
 use Omnipay\Common\Message\AbstractRequest as BaseAbstractRequest;
 use Psr\Http\Message\ResponseInterface;
 
@@ -27,17 +28,7 @@ abstract class AbstractRequest extends BaseAbstractRequest
             return null;
         }
 
-        if ($amount instanceof Money) {
-            return $amount;
-        }
-
-        try {
-            $currency = new Currency($this->getCurrency());
-        } catch (\InvalidArgumentException $exception) {
-            $currency = new Currency('USD');
-        }
-
-        return new Money($amount, $currency);
+        return $this->convertToMoney($amount);
     }
 
     /**
@@ -101,17 +92,7 @@ abstract class AbstractRequest extends BaseAbstractRequest
             return null;
         }
 
-        if ($amount instanceof Money) {
-            return $amount;
-        }
-
-        try {
-            $currency = new Currency($this->getCurrency());
-        } catch (\InvalidArgumentException $exception) {
-            $currency = new Currency('USD');
-        }
-
-        return new Money($amount, $currency);
+        return $this->convertToMoney($amount);
     }
 
     /**
@@ -151,6 +132,11 @@ abstract class AbstractRequest extends BaseAbstractRequest
      */
     public function setItems($items)
     {
+        if ($items && !$items instanceof ItemBag) {
+            $items = new ItemBag($items);
+        }
+
+
         if ($items && !$items instanceof ItemBag) {
             $items = new ItemBag($items);
         }
@@ -238,6 +224,9 @@ abstract class AbstractRequest extends BaseAbstractRequest
      * @param mixed  $data
      *
      * @return ResponseInterface
+     *
+     * @throws RequestException when the HTTP client is passed a request that is invalid and cannot be sent.
+     * @throws NetworkException if there is an error with the network or the remote server cannot be reached.
      */
     protected function sendRequest(string $method, string $url, $data): ResponseInterface
     {

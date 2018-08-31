@@ -41,6 +41,28 @@ final class AbstractRequestTest extends TestCase
         };
     }
 
+    public function testGetTaxAmountWithDecimalStringShouldReturnCorrectValue()
+    {
+        $taxAmount = '5.25';
+        $currencyIso = 'EUR';
+
+        $this->request->setCurrency($currencyIso);
+        $this->request->setTaxAmount($taxAmount);
+
+        self::assertSame('525', $this->request->getTaxAmount()->getAmount());
+    }
+
+    public function testGetAmountWithDecimalStringShouldReturnCorrectValue()
+    {
+        $amount = '5.25';
+        $currencyIso = 'EUR';
+
+        $this->request->setCurrency($currencyIso);
+        $this->request->setAmount($amount);
+
+        self::assertSame('525', $this->request->getAmount()->getAmount());
+    }
+
     public function testGetters()
     {
         $locale = 'nl_NL';

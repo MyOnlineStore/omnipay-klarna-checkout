@@ -127,7 +127,7 @@ trait MerchantUrlsDataTrait
     }
 
     /**
-     * @param string ...$validatable a variable length list of required parameters
+     * @param string $validatable,... a variable length list of required parameters
      *
      * @throws InvalidRequestException
      */

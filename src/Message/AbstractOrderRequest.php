@@ -3,15 +3,15 @@ declare(strict_types=1);
 
 namespace MyOnlineStore\Omnipay\KlarnaCheckout\Message;
 
-use Money\Exception\UnknownCurrencyException;
 use MyOnlineStore\Omnipay\KlarnaCheckout\Address;
+use MyOnlineStore\Omnipay\KlarnaCheckout\CurrencyAwareTrait;
 use MyOnlineStore\Omnipay\KlarnaCheckout\Customer;
 use MyOnlineStore\Omnipay\KlarnaCheckout\WidgetOptions;
-use Omnipay\Common\Exception\InvalidRequestException;
 
 abstract class AbstractOrderRequest extends AbstractRequest
 {
     use ItemDataTrait;
+    use CurrencyAwareTrait;
 
     /**
      * @return Address|null
@@ -175,22 +175,16 @@ abstract class AbstractOrderRequest extends AbstractRequest
 
     /**
      * @return array
-     *
-     * @throws InvalidRequestException
      */
     protected function getOrderData(): array
     {
-        try {
-            $data = [
-                'order_amount' => $this->getAmountInteger(),
-                'order_tax_amount' => (int) $this->getTaxAmount()->getAmount(),
-                'order_lines' => $this->getItemData($this->getItems()),
-                'purchase_currency' => $this->getCurrency(),
-                'purchase_country' => $this->getPurchaseCountry(),
-            ];
-        } catch (UnknownCurrencyException $exception) {
-            throw new InvalidRequestException('invalid currency provided', 0, $exception);
-        }
+        $data = [
+            'order_amount' => $this->getAmountInteger(),
+            'order_tax_amount' => null === $this->getTaxAmount() ? 0 : (int) $this->getTaxAmount()->getAmount(),
+            'order_lines' => $this->getItemData($this->getItems()),
+            'purchase_currency' => $this->getCurrency(),
+            'purchase_country' => $this->getPurchaseCountry(),
+        ];
 
         if (null !== $locale = $this->getLocale()) {
             $data['locale'] = str_replace('_', '-', $locale);

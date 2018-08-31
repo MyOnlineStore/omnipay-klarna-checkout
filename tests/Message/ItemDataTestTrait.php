@@ -13,9 +13,9 @@ trait ItemDataTestTrait
             'type' => 'shipping_fee',
             'name' => 'item-name',
             'quantity' => 1,
-            'tax_rate' => 2003,
+            'tax_rate' => 200300,
             'total_amount' => 1000,
-            'total_tax_amount' => 200,
+            'total_tax_amount' => 20000,
             'unit_price' => 1000,
             'merchant_data' => 'foobar',
         ];

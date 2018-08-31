@@ -8,7 +8,7 @@ final class Item extends \Omnipay\Common\Item implements ItemInterface
     /**
      * @inheritDoc
      */
-    public function getMerchantData(): string
+    public function getMerchantData()
     {
         return $this->getParameter('merchant_data');
     }
@@ -32,7 +32,7 @@ final class Item extends \Omnipay\Common\Item implements ItemInterface
     /**
      * @inheritDoc
      */
-    public function getType(): string
+    public function getType()
     {
         return $this->getParameter('type');
     }
