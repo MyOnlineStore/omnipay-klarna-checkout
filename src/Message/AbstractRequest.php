@@ -136,11 +136,6 @@ abstract class AbstractRequest extends BaseAbstractRequest
             $items = new ItemBag($items);
         }
 
-
-        if ($items && !$items instanceof ItemBag) {
-            $items = new ItemBag($items);
-        }
-
         return $this->setParameter('items', $items);
     }
 

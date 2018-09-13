@@ -13,7 +13,7 @@ trait ItemDataTestTrait
             'type' => 'shipping_fee',
             'name' => 'item-name',
             'quantity' => 1,
-            'tax_rate' => 200300,
+            'tax_rate' => 21,
             'total_amount' => 1000,
             'total_tax_amount' => 20000,
             'unit_price' => 1000,
@@ -30,7 +30,7 @@ trait ItemDataTestTrait
         $item->method('getType')->willReturn('shipping_fee');
         $item->method('getName')->willReturn('item-name');
         $item->method('getQuantity')->willReturn(1);
-        $item->method('getTaxRate')->willReturn(2003);
+        $item->method('getTaxRate')->willReturn(21);
         $item->method('getQuantity')->willReturn(1);
         $item->method('getPrice')->willReturn(1000);
         $item->method('getTotalTaxAmount')->willReturn(200);

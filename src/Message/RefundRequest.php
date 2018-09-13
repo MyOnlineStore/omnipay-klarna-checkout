@@ -3,7 +3,6 @@ declare(strict_types=1);
 
 namespace MyOnlineStore\Omnipay\KlarnaCheckout\Message;
 
-use MyOnlineStore\Omnipay\KlarnaCheckout\CurrencyAwareTrait;
 use Omnipay\Common\Exception\InvalidRequestException;
 use Omnipay\Common\Http\Exception\NetworkException;
 use Omnipay\Common\Http\Exception\RequestException;
@@ -11,7 +10,6 @@ use Omnipay\Common\Http\Exception\RequestException;
 final class RefundRequest extends AbstractRequest
 {
     use ItemDataTrait;
-    use CurrencyAwareTrait;
 
     /**
      * @inheritDoc

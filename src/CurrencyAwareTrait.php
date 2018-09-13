@@ -15,6 +15,8 @@ trait CurrencyAwareTrait
      * @param mixed $amount
      *
      * @return Money
+     *
+     * @throws ParserException
      */
     protected function convertToMoney($amount): Money
     {

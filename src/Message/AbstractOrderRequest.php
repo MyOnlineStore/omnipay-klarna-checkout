@@ -4,14 +4,12 @@ declare(strict_types=1);
 namespace MyOnlineStore\Omnipay\KlarnaCheckout\Message;
 
 use MyOnlineStore\Omnipay\KlarnaCheckout\Address;
-use MyOnlineStore\Omnipay\KlarnaCheckout\CurrencyAwareTrait;
 use MyOnlineStore\Omnipay\KlarnaCheckout\Customer;
 use MyOnlineStore\Omnipay\KlarnaCheckout\WidgetOptions;
 
 abstract class AbstractOrderRequest extends AbstractRequest
 {
     use ItemDataTrait;
-    use CurrencyAwareTrait;
 
     /**
      * @return Address|null
