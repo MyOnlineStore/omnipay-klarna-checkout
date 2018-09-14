@@ -26,7 +26,7 @@ trait ItemDataTrait
                 'type' => $item->getType(),
                 'name' => $item->getName(),
                 'quantity' => $item->getQuantity(),
-                'tax_rate' => null === $taxRate ? 0 : (int) $taxRate,
+                'tax_rate' => null === $taxRate ? 0 : (int) ($item->getTaxRate() * 100),
                 'total_amount' => null === $price ? 0 : $item->getQuantity() * $price,
                 'total_tax_amount' => null === $totalTaxAmount ? 0 : (int) $this->convertToMoney($totalTaxAmount)
                     ->getAmount(),
