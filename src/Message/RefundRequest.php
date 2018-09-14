@@ -1,11 +1,11 @@
 <?php
+declare(strict_types=1);
 
 namespace MyOnlineStore\Omnipay\KlarnaCheckout\Message;
 
-use Guzzle\Common\Exception\InvalidArgumentException;
-use Guzzle\Http\Exception\RequestException;
-use Guzzle\Http\Message\RequestInterface;
 use Omnipay\Common\Exception\InvalidRequestException;
+use Omnipay\Common\Http\Exception\NetworkException;
+use Omnipay\Common\Http\Exception\RequestException;
 
 final class RefundRequest extends AbstractRequest
 {
@@ -15,14 +15,17 @@ final class RefundRequest extends AbstractRequest
      * @inheritDoc
      *
      * @throws InvalidRequestException
+     * @throws RequestException
+     * @throws \InvalidArgumentException
      */
     public function getData()
     {
         $this->validate('transactionReference', 'amount');
 
         $data = ['refunded_amount' => $this->getAmountInteger()];
+        $items = $this->getItems();
 
-        if (null !== $items = $this->getItems()) {
+        if (null !== $items) {
             $data['order_lines'] = $this->getItemData($items);
         }
 
@@ -30,15 +33,15 @@ final class RefundRequest extends AbstractRequest
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      *
-     * @throws RequestException
-     * @throws InvalidArgumentException
+     * @throws RequestException when the HTTP client is passed a request that is invalid and cannot be sent.
+     * @throws NetworkException if there is an error with the network or the remote server cannot be reached.
      */
     public function sendData($data)
     {
         $response = $this->sendRequest(
-            RequestInterface::POST,
+            'POST',
             sprintf('/ordermanagement/v1/orders/%s/refunds', $this->getTransactionReference()),
             $data
         );

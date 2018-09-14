@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace MyOnlineStore\Tests\Omnipay\KlarnaCheckout\Message;
 
@@ -7,7 +8,7 @@ trait MerchantUrlsDataTestTrait
     /**
      * @return array
      */
-    public function getCompleteExpectedMerchantUrlData()
+    public function getCompleteExpectedMerchantUrlData(): array
     {
         return [
             'address_update' => 'localhost/address-update',
@@ -23,7 +24,7 @@ trait MerchantUrlsDataTestTrait
     /**
      * @return array
      */
-    public function getCompleteValidMerchantUrlData()
+    public function getCompleteValidMerchantUrlData(): array
     {
         return [
             'addressUpdateUrl' => 'localhost/address-update',
@@ -38,7 +39,7 @@ trait MerchantUrlsDataTestTrait
     /**
      * @return array
      */
-    public function getMinimalExpectedMerchantUrlData()
+    public function getMinimalExpectedMerchantUrlData(): array
     {
         return [
             'checkout' => 'localhost/return',
@@ -52,7 +53,7 @@ trait MerchantUrlsDataTestTrait
     /**
      * @return array
      */
-    public function getMinimalValidMerchantUrlData()
+    public function getMinimalValidMerchantUrlData(): array
     {
         return [
             'returnUrl' => 'localhost/return',

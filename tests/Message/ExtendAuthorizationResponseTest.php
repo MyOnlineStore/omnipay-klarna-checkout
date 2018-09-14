@@ -1,8 +1,10 @@
 <?php
+declare(strict_types=1);
 
 namespace MyOnlineStore\Tests\Omnipay\KlarnaCheckout\Message;
 
 use MyOnlineStore\Omnipay\KlarnaCheckout\Message\ExtendAuthorizationResponse;
+use Omnipay\Common\Message\RequestInterface;
 use Omnipay\Tests\TestCase;
 
 final class ExtendAuthorizationResponseTest extends TestCase
@@ -10,7 +12,7 @@ final class ExtendAuthorizationResponseTest extends TestCase
     /**
      * @return array
      */
-    public function responseDataProvider()
+    public function responseDataProvider(): array
     {
         return [
             [['error_code' => 'oh_noes'], false],
@@ -20,8 +22,10 @@ final class ExtendAuthorizationResponseTest extends TestCase
 
     public function testGetters()
     {
+        $request = $this->createMock(RequestInterface::class);
+
         $responseData = ['order_id' => 'foo'];
-        $response = new ExtendAuthorizationResponse($this->getMockRequest(), $responseData);
+        $response = new ExtendAuthorizationResponse($request, $responseData);
 
         self::assertSame('foo', $response->getTransactionReference());
     }
@@ -34,7 +38,8 @@ final class ExtendAuthorizationResponseTest extends TestCase
      */
     public function testIsSuccessfulWillReturnWhetherResponseIsSuccessfull($responseData, $expected)
     {
-        $response = new ExtendAuthorizationResponse($this->getMockRequest(), $responseData);
+        $request = $this->createMock(RequestInterface::class);
+        $response = new ExtendAuthorizationResponse($request, $responseData);
 
         self::assertEquals($expected, $response->isSuccessful());
     }

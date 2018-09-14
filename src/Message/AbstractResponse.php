@@ -1,9 +1,26 @@
 <?php
+declare(strict_types=1);
 
 namespace MyOnlineStore\Omnipay\KlarnaCheckout\Message;
 
 abstract class AbstractResponse extends \Omnipay\Common\Message\AbstractResponse
 {
+    /**
+     * @inheritdoc
+     */
+    public function getCode()
+    {
+        return $this->data['error_code'] ?? null;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getMessage()
+    {
+        return $this->data['error_message'] ?? null;
+    }
+
     /**
      * @inheritDoc
      */
@@ -15,25 +32,9 @@ abstract class AbstractResponse extends \Omnipay\Common\Message\AbstractResponse
     /**
      * @inheritDoc
      */
-    public function isSuccessful()
+    public function isSuccessful(): bool
     {
         return !isset($this->data['error_code']);
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function getMessage()
-    {
-        return isset($this->data['error_message']) ? $this->data['error_message'] : null;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function getCode()
-    {
-        return isset($this->data['error_code']) ? $this->data['error_code'] : null;
     }
 }
 

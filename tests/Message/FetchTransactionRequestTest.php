@@ -1,13 +1,19 @@
 <?php
+declare(strict_types=1);
 
 namespace MyOnlineStore\Tests\Omnipay\KlarnaCheckout\Message;
 
 use MyOnlineStore\Omnipay\KlarnaCheckout\Message\FetchTransactionRequest;
 use MyOnlineStore\Omnipay\KlarnaCheckout\Message\FetchTransactionResponse;
+use MyOnlineStore\Tests\Omnipay\KlarnaCheckout\ExpectedAuthorizationHeaderTrait;
 use Omnipay\Common\Exception\InvalidRequestException;
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\StreamInterface;
 
-class FetchTransactionRequestTest extends RequestTestCase
+final class FetchTransactionRequestTest extends RequestTestCase
 {
+    use ExpectedAuthorizationHeaderTrait;
+
     /**
      * @var FetchTransactionRequest
      */
@@ -31,57 +37,30 @@ class FetchTransactionRequestTest extends RequestTestCase
 
     public function testGetDataThrowsExceptionWhenMissingTransactionReference()
     {
-        $this->setExpectedException(InvalidRequestException::class);
+        $this->expectException(InvalidRequestException::class);
 
         $this->fetchTransactionRequest->initialize([]);
         $this->fetchTransactionRequest->getData();
     }
 
-    public function testSendDataWillReturnResponseFromManagementApiForDeletedCheckoutOrder()
+    public function testSendDataWillReturnResponseFromCheckoutApiForIncompleteOrder()
     {
-        $expectedCheckoutData = [];
-        $expectedManagementData = ['response-data' => 'yay!'];
+        $expectedCheckoutData = ['status' => 'checkout_incomplete'];
 
-        $checkoutRequest = $this->setExpectedGetRequest(
+        $response = $this->setExpectedGetRequest(
             $expectedCheckoutData,
             self::BASE_URL.'/checkout/v3/orders/foo'
         );
-        $checkoutRequest->shouldReceive('getStatusCode')->once()->andReturn(404);
+        $response->expects(self::once())->method('getStatusCode')->willReturn(200);
 
-        $this->setExpectedGetRequest($expectedManagementData, self::BASE_URL.'/ordermanagement/v1/orders/foo');
-
-        $this->fetchTransactionRequest->initialize([
-            'base_url' => self::BASE_URL,
-            'username' => self::USERNAME,
-            'secret' => self::SECRET,
-            'transactionReference' => 'foo',
-        ]);
-
-        $fetchResponse = $this->fetchTransactionRequest->sendData([]);
-
-        self::assertInstanceOf(FetchTransactionResponse::class, $fetchResponse);
-        self::assertSame(
-            ['checkout' => $expectedCheckoutData, 'management' => $expectedManagementData],
-            $fetchResponse->getData()
+        $this->fetchTransactionRequest->initialize(
+            [
+                'base_url' => self::BASE_URL,
+                'username' => self::USERNAME,
+                'secret' => self::SECRET,
+                'transactionReference' => 'foo',
+            ]
         );
-    }
-
-    public function testSendDataWillReturnResponseFromCheckoutApiForUnknownOrder()
-    {
-        $expectedCheckoutData = ['response-data' => 'nay!'];
-
-        $checkoutRequest = $this->setExpectedGetRequest(
-            $expectedCheckoutData,
-            self::BASE_URL.'/checkout/v3/orders/foo'
-        );
-        $checkoutRequest->shouldReceive('getStatusCode')->once()->andReturn(200);
-
-        $this->fetchTransactionRequest->initialize([
-            'base_url' => self::BASE_URL,
-            'username' => self::USERNAME,
-            'secret' => self::SECRET,
-            'transactionReference' => 'foo',
-        ]);
 
         $fetchResponse = $this->fetchTransactionRequest->sendData([]);
 
@@ -89,22 +68,24 @@ class FetchTransactionRequestTest extends RequestTestCase
         self::assertSame(['checkout' => $expectedCheckoutData], $fetchResponse->getData());
     }
 
-    public function testSendDataWillReturnResponseFromCheckoutApiForIncompleteOrder()
+    public function testSendDataWillReturnResponseFromCheckoutApiForUnknownOrder()
     {
-        $expectedCheckoutData = ['status' => 'checkout_incomplete'];
+        $expectedCheckoutData = ['response-data' => 'nay!'];
 
-        $checkoutRequest = $this->setExpectedGetRequest(
+        $response = $this->setExpectedGetRequest(
             $expectedCheckoutData,
             self::BASE_URL.'/checkout/v3/orders/foo'
         );
-        $checkoutRequest->shouldReceive('getStatusCode')->once()->andReturn(200);
+        $response->expects(self::once())->method('getStatusCode')->willReturn(200);
 
-        $this->fetchTransactionRequest->initialize([
-            'base_url' => self::BASE_URL,
-            'username' => self::USERNAME,
-            'secret' => self::SECRET,
-            'transactionReference' => 'foo',
-        ]);
+        $this->fetchTransactionRequest->initialize(
+            [
+                'base_url' => self::BASE_URL,
+                'username' => self::USERNAME,
+                'secret' => self::SECRET,
+                'transactionReference' => 'foo',
+            ]
+        );
 
         $fetchResponse = $this->fetchTransactionRequest->sendData([]);
 
@@ -116,21 +97,98 @@ class FetchTransactionRequestTest extends RequestTestCase
     {
         $expectedCheckoutData = ['status' => 'checkout_complete'];
         $expectedManagementData = ['response-data' => 'yay!'];
+        $response = $this->createMock(ResponseInterface::class);
+        $stream = $this->createMock(StreamInterface::class);
 
-        $checkoutRequest = $this->setExpectedGetRequest(
-            $expectedCheckoutData,
-            self::BASE_URL.'/checkout/v3/orders/foo'
+        $this->httpClient->expects(self::exactly(2))
+            ->method('request')
+            ->withConsecutive(
+                [
+                    'GET',
+                    self::BASE_URL.'/checkout/v3/orders/foo',
+                    $this->getExpectedHeaders(),
+                    null,
+                    [],
+                ],
+                [
+                    'GET',
+                    self::BASE_URL.'/ordermanagement/v1/orders/foo',
+                    $this->getExpectedHeaders(),
+                    null,
+                    [],
+                ]
+            )->willReturn($response);
+
+        $response->method('getBody')->willReturn($stream);
+        $stream->expects(self::exactly(2))
+            ->method('getContents')
+            ->willReturnOnConsecutiveCalls(
+                \json_encode($expectedCheckoutData),
+                \json_encode($expectedManagementData)
+            );
+
+        $this->fetchTransactionRequest->initialize(
+            [
+                'base_url' => self::BASE_URL,
+                'username' => self::USERNAME,
+                'secret' => self::SECRET,
+                'transactionReference' => 'foo',
+            ]
         );
-        $checkoutRequest->shouldReceive('getStatusCode')->once()->andReturn(200);
 
-        $this->setExpectedGetRequest($expectedManagementData, self::BASE_URL.'/ordermanagement/v1/orders/foo');
+        $fetchResponse = $this->fetchTransactionRequest->sendData([]);
 
-        $this->fetchTransactionRequest->initialize([
-            'base_url' => self::BASE_URL,
-            'username' => self::USERNAME,
-            'secret' => self::SECRET,
-            'transactionReference' => 'foo',
-        ]);
+        self::assertInstanceOf(FetchTransactionResponse::class, $fetchResponse);
+        self::assertSame(
+            ['checkout' => $expectedCheckoutData, 'management' => $expectedManagementData],
+            $fetchResponse->getData()
+        );
+    }
+
+    public function testSendDataWillReturnResponseFromManagementApiForDeletedCheckoutOrder()
+    {
+        $expectedCheckoutData = [];
+        $expectedManagementData = ['response-data' => 'yay!'];
+        $response = $this->createMock(ResponseInterface::class);
+        $stream = $this->createMock(StreamInterface::class);
+
+        $this->httpClient->expects(self::exactly(2))
+            ->method('request')
+            ->withConsecutive(
+                [
+                    'GET',
+                    self::BASE_URL.'/checkout/v3/orders/foo',
+                    $this->getExpectedHeaders(),
+                    null,
+                    [],
+                ],
+                [
+                    'GET',
+                    self::BASE_URL.'/ordermanagement/v1/orders/foo',
+                    $this->getExpectedHeaders(),
+                    null,
+                    [],
+                ]
+            )->willReturn($response);
+
+        $response->method('getBody')->willReturn($stream);
+        $stream->expects(self::exactly(2))
+            ->method('getContents')
+            ->willReturnOnConsecutiveCalls(
+                \json_encode($expectedCheckoutData),
+                \json_encode($expectedManagementData)
+            );
+
+        $response->expects(self::once())->method('getStatusCode')->willReturn(404);
+
+        $this->fetchTransactionRequest->initialize(
+            [
+                'base_url' => self::BASE_URL,
+                'username' => self::USERNAME,
+                'secret' => self::SECRET,
+                'transactionReference' => 'foo',
+            ]
+        );
 
         $fetchResponse = $this->fetchTransactionRequest->sendData([]);
 

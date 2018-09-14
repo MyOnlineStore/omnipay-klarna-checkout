@@ -1,9 +1,12 @@
 <?php
+declare(strict_types=1);
 
 namespace MyOnlineStore\Omnipay\KlarnaCheckout\Message;
 
-use Guzzle\Http\Message\RequestInterface;
+use Omnipay\Common\Exception\InvalidRequestException;
 use Omnipay\Common\Exception\InvalidResponseException;
+use Omnipay\Common\Http\Exception\NetworkException;
+use Omnipay\Common\Http\Exception\RequestException;
 
 /**
  * Creates a Klarna Checkout order if it does not exist
@@ -14,6 +17,8 @@ final class AuthorizeRequest extends AbstractOrderRequest
 
     /**
      * @inheritDoc
+     *
+     * @throws InvalidRequestException
      */
     public function getData()
     {
@@ -33,7 +38,7 @@ final class AuthorizeRequest extends AbstractOrderRequest
     }
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getRenderUrl()
     {
@@ -42,15 +47,19 @@ final class AuthorizeRequest extends AbstractOrderRequest
 
     /**
      * @inheritDoc
+     *
+     * @throws InvalidResponseException
+     * @throws RequestException when the HTTP client is passed a request that is invalid and cannot be sent.
+     * @throws NetworkException if there is an error with the network or the remote server cannot be reached.
      */
     public function sendData($data)
     {
         $response = $this->getTransactionReference() ?
-            $this->sendRequest(RequestInterface::GET, '/checkout/v3/orders/'.$this->getTransactionReference(), $data) :
-            $this->sendRequest(RequestInterface::POST, '/checkout/v3/orders', $data);
+            $this->sendRequest('GET', '/checkout/v3/orders/'.$this->getTransactionReference(), $data) :
+            $this->sendRequest('POST', '/checkout/v3/orders', $data);
 
         if ($response->getStatusCode() >= 400) {
-            throw new InvalidResponseException($response->getMessage());
+            throw new InvalidResponseException($response->getReasonPhrase());
         }
 
         return new AuthorizeResponse($this, $this->getResponseBody($response), $this->getRenderUrl());
@@ -61,7 +70,7 @@ final class AuthorizeRequest extends AbstractOrderRequest
      *
      * @return $this
      */
-    public function setRenderUrl($url)
+    public function setRenderUrl(string $url): self
     {
         $this->setParameter('render_url', $url);
 

@@ -1,11 +1,12 @@
 <?php
+declare(strict_types=1);
 
 namespace MyOnlineStore\Tests\Omnipay\KlarnaCheckout\Message;
 
 use MyOnlineStore\Omnipay\KlarnaCheckout\Message\AcknowledgeRequest;
 use MyOnlineStore\Omnipay\KlarnaCheckout\Message\AcknowledgeResponse;
 
-class AcknowledgeRequestTest extends RequestTestCase
+final class AcknowledgeRequestTest extends RequestTestCase
 {
     /**
      * @var AcknowledgeRequest
@@ -18,6 +19,7 @@ class AcknowledgeRequestTest extends RequestTestCase
     protected function setUp()
     {
         parent::setUp();
+
         $this->acknowledgeRequest = new AcknowledgeRequest($this->httpClient, $this->getHttpRequest());
     }
 
@@ -39,14 +41,16 @@ class AcknowledgeRequestTest extends RequestTestCase
             self::BASE_URL.'/ordermanagement/v1/orders/foo/acknowledge'
         );
 
-        $response->shouldReceive('getStatusCode')->andReturn(204);
+        $response->expects(self::once())->method('getStatusCode')->willReturn(204);
 
-        $this->acknowledgeRequest->initialize([
-            'base_url' => self::BASE_URL,
-            'username' => self::USERNAME,
-            'secret' => self::SECRET,
-            'transactionReference' => 'foo',
-        ]);
+        $this->acknowledgeRequest->initialize(
+            [
+                'base_url' => self::BASE_URL,
+                'username' => self::USERNAME,
+                'secret' => self::SECRET,
+                'transactionReference' => 'foo',
+            ]
+        );
 
         $acknowledgeResponse = $this->acknowledgeRequest->sendData($inputData);
 

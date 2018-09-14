@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace MyOnlineStore\Omnipay\KlarnaCheckout;
 
@@ -9,7 +10,7 @@ final class Address extends \ArrayObject
      *
      * @return Address
      */
-    public static function fromArray(array $data)
+    public static function fromArray(array $data): Address
     {
         $defaults = [
             'organization_name' => null,
@@ -32,27 +33,5 @@ final class Address extends \ArrayObject
         ];
 
         return new self(\array_merge($defaults, \array_intersect_key($data, $defaults)));
-    }
-
-    /**
-     * @param string[] $excludeKeyWithEmptyValue
-     *
-     * @return array
-     */
-    public function toArray(array $excludeKeyWithEmptyValue = [])
-    {
-        $excludeKeyWithEmptyValue = array_flip($excludeKeyWithEmptyValue);
-
-        return array_filter(
-            $this->getArrayCopy(),
-            function ($value, $key) use ($excludeKeyWithEmptyValue) {
-                if (!isset($excludeKeyWithEmptyValue[$key])) {
-                    return true;
-                }
-
-                return !empty($value);
-            },
-            ARRAY_FILTER_USE_BOTH
-        );
     }
 }

@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace MyOnlineStore\Tests\Omnipay\KlarnaCheckout\Message;
 
@@ -9,7 +10,6 @@ class AbstractResponseTest extends TestCase
 {
     public function testGetTransactionReferenceReturnsIdFromOrder()
     {
-        /** @var AbstractResponse $response */
         $response = $this->getMockForAbstractClass(
             AbstractResponse::class,
             [$this->getMockRequest(), ['order_id' => 'foo']]
@@ -20,7 +20,6 @@ class AbstractResponseTest extends TestCase
 
     public function testIsSuccessfulWillReturnFalseIfResponseContainsErrors()
     {
-        /** @var AbstractResponse $response */
         $response = $this->getMockForAbstractClass(
             AbstractResponse::class,
             [$this->getMockRequest(), ['error_code' => 'foo']]
@@ -31,7 +30,6 @@ class AbstractResponseTest extends TestCase
 
     public function testIsSuccessfulWillReturnTrueIfResponseContainsNoErrors()
     {
-        /** @var AbstractResponse $response */
         $response = $this->getMockForAbstractClass(AbstractResponse::class, [$this->getMockRequest(), []]);
 
         self::assertTrue($response->isSuccessful());
@@ -39,7 +37,6 @@ class AbstractResponseTest extends TestCase
 
     public function testGetMessageWillReturnErrorMessage()
     {
-        /** @var AbstractResponse $response */
         $response = $this->getMockForAbstractClass(
             AbstractResponse::class,
             [$this->getMockRequest(), ['error_message' => 'oh noes!']]
@@ -50,7 +47,6 @@ class AbstractResponseTest extends TestCase
 
     public function testGetMessageWillReturnNullIfResponseContainsNoErrorMessage()
     {
-        /** @var AbstractResponse $response */
         $response = $this->getMockForAbstractClass(AbstractResponse::class, [$this->getMockRequest(), []]);
 
         self::assertNull($response->getMessage());
@@ -58,7 +54,6 @@ class AbstractResponseTest extends TestCase
 
     public function testGetCodeWillReturnErrorCode()
     {
-        /** @var AbstractResponse $response */
         $response = $this->getMockForAbstractClass(
             AbstractResponse::class,
             [$this->getMockRequest(), ['error_code' => 'oh_noes']]
@@ -69,7 +64,6 @@ class AbstractResponseTest extends TestCase
 
     public function testGetCodeWillReturnNullIfResponseContainsNoErrorCode()
     {
-        /** @var AbstractResponse $response */
         $response = $this->getMockForAbstractClass(AbstractResponse::class, [$this->getMockRequest(), []]);
 
         self::assertNull($response->getCode());
