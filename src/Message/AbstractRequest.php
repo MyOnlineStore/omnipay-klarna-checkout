@@ -231,9 +231,7 @@ abstract class AbstractRequest extends BaseAbstractRequest
             return $this->httpClient->request(
                 $method,
                 $this->getBaseUrl().$url,
-                $headers,
-                null,
-                []
+                $headers
             );
         }
 
@@ -244,8 +242,7 @@ abstract class AbstractRequest extends BaseAbstractRequest
                 ['Content-Type' => 'application/json'],
                 $headers
             ),
-            \json_encode($data),
-            []
+            \json_encode($data)
         );
     }
 }
