@@ -19,18 +19,19 @@ trait ItemDataTrait
 
         foreach ($items as $item) {
             $taxRate = $item->getTaxRate();
-            $totalTaxAmount = $item->getTotalTaxAmount();
-            $price = $item->getPrice();
+            $totalTaxAmount = null === $item->getTotalTaxAmount()
+                ? $this->convertToMoney(0)
+                : $this->convertToMoney($item->getTotalTaxAmount());
+            $price = null === $item->getPrice() ? $this->convertToMoney(0) : $this->convertToMoney($item->getPrice());
 
             $orderLines[] = [
                 'type' => $item->getType(),
                 'name' => $item->getName(),
                 'quantity' => $item->getQuantity(),
                 'tax_rate' => null === $taxRate ? 0 : (int) ($item->getTaxRate() * 100),
-                'total_amount' => null === $price ? 0 : $item->getQuantity() * $price,
-                'total_tax_amount' => null === $totalTaxAmount ? 0 : (int) $this->convertToMoney($totalTaxAmount)
-                    ->getAmount(),
-                'unit_price' => null === $price ? 0 : (int) $price,
+                'total_amount' => (int) $price->multiply($item->getQuantity())->getAmount(),
+                'total_tax_amount' => (int) $totalTaxAmount->getAmount(),
+                'unit_price' => (int) $price->getAmount(),
                 'merchant_data' => $item->getMerchantData(),
             ];
         }
