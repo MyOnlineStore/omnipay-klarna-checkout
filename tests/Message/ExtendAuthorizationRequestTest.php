@@ -1,10 +1,12 @@
 <?php
+declare(strict_types=1);
 
 namespace MyOnlineStore\Tests\Omnipay\KlarnaCheckout\Message;
 
 use MyOnlineStore\Omnipay\KlarnaCheckout\Message\ExtendAuthorizationRequest;
-use MyOnlineStore\Omnipay\KlarnaCheckout\Message\ExtendAuthorizationResponse;
 use Omnipay\Common\Exception\InvalidRequestException;
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\StreamInterface;
 
 final class ExtendAuthorizationRequestTest extends RequestTestCase
 {
@@ -24,7 +26,7 @@ final class ExtendAuthorizationRequestTest extends RequestTestCase
 
     public function testGetDataThrowsExceptionWhenMissingTransactionReference()
     {
-        $this->setExpectedException(InvalidRequestException::class);
+        $this->expectException(InvalidRequestException::class);
 
         $this->extendAuthorizationRequest->initialize([]);
         $this->extendAuthorizationRequest->getData();
@@ -39,20 +41,44 @@ final class ExtendAuthorizationRequestTest extends RequestTestCase
 
     public function testSendDataWillWillSendDataToKlarnaEndPointAndReturnCorrectResponse()
     {
-        $this->setExpectedPostRequest(
-            [],
-            ['hello' => 'world'],
-            sprintf(
-                '%s/ordermanagement/v1/orders/%s/extend-authorization-time',
-                self::BASE_URL,
-                'foo'
+        $response = $this->createMock(ResponseInterface::class);
+        $stream = $this->createMock(StreamInterface::class);
+
+        $this->httpClient->expects(self::once())
+            ->method('request')
+            ->with(
+                'POST',
+                sprintf(
+                    '%s/ordermanagement/v1/orders/%s/extend-authorization-time',
+                    self::BASE_URL,
+                    'foo'
+                ),
+                array_merge(
+                    ['Content-Type' => 'application/json'],
+                    [
+                        'Authorization' => sprintf(
+                            'Basic %s',
+                            base64_encode(
+                                sprintf(
+                                    '%s:%s',
+                                    null,
+                                    self::SECRET
+                                )
+                            )
+                        ),
+                    ]
+                ),
+                \json_encode([]),
+                []
             )
-        );
+            ->willReturn($response);
+
+        $response->method('getBody')->willReturn($stream);
+        $stream->method('getContents')->willReturn(\json_encode(['hello' => 'world']));
 
         $this->extendAuthorizationRequest->initialize(
             [
                 'base_url' => self::BASE_URL,
-                'username' => self::USERNAME,
                 'secret' => self::SECRET,
                 'transactionReference' => 'foo',
             ]
@@ -60,7 +86,6 @@ final class ExtendAuthorizationRequestTest extends RequestTestCase
 
         $extendAuthorizationResponse = $this->extendAuthorizationRequest->sendData([]);
 
-        self::assertInstanceOf(ExtendAuthorizationResponse::class, $extendAuthorizationResponse);
         self::assertSame('foo', $extendAuthorizationResponse->getTransactionReference());
         self::assertSame(
             [

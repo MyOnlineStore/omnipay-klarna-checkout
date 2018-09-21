@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace MyOnlineStore\Omnipay\KlarnaCheckout\Message;
 
@@ -24,18 +25,18 @@ final class VoidResponse extends AbstractResponse
     }
 
     /**
-     * @inheritDoc
+     * @return int
      */
-    public function isSuccessful()
+    public function getStatusCode(): int
     {
-        return parent::isSuccessful() && 204 === $this->statusCode;
+        return $this->statusCode;
     }
 
     /**
-     * @return int
+     * @inheritDoc
      */
-    public function getStatusCode()
+    public function isSuccessful(): bool
     {
-        return $this->statusCode;
+        return parent::isSuccessful() && 204 === $this->statusCode;
     }
 }

@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace MyOnlineStore\Tests\Omnipay\KlarnaCheckout\Message;
 
@@ -29,7 +30,7 @@ final class UpdateCustomerAddressRequestTest extends RequestTestCase
     /**
      * @return array
      */
-    public function addressDataProvider()
+    public function addressDataProvider(): array
     {
         return [
             [
@@ -53,6 +54,7 @@ final class UpdateCustomerAddressRequestTest extends RequestTestCase
                     'country' => 'NL',
                 ],
                 [
+                    'organization_name' => null,
                     'reference' => 'ref',
                     'attention' => 'quz',
                     'given_name' => 'foo',
@@ -127,7 +129,6 @@ final class UpdateCustomerAddressRequestTest extends RequestTestCase
                 'transactionReference' => 123,
                 'billing_address' => $addressData,
                 'shipping_address' => $addressData,
-                'exclude_empty_values' => ['organization_name'],
             ]
         );
 
@@ -143,7 +144,7 @@ final class UpdateCustomerAddressRequestTest extends RequestTestCase
 
     public function testGetDataWillThrowExceptionOnMissingData()
     {
-        $this->setExpectedException(InvalidRequestException::class);
+        $this->expectException(InvalidRequestException::class);
 
         $this->updateCustomerAddressRequest->getData();
     }
@@ -160,13 +161,13 @@ final class UpdateCustomerAddressRequestTest extends RequestTestCase
             sprintf('%s/ordermanagement/v1/orders/%s/customer-details', self::BASE_URL, $transactionReference)
         );
 
-        $response->shouldReceive('getStatusCode')->andReturn(204);
+        $response->expects(self::once())->method('getStatusCode')->willReturn(204);
 
         $this->updateCustomerAddressRequest->initialize(
             [
                 'base_url' => self::BASE_URL,
-                'username' => self::USERNAME,
                 'secret' => self::SECRET,
+                'username' => self::USERNAME,
                 'transactionReference' => $transactionReference,
             ]
         );
@@ -180,13 +181,5 @@ final class UpdateCustomerAddressRequestTest extends RequestTestCase
             $updateCustomerAddressResponse->getData()
         );
         self::assertTrue($updateCustomerAddressResponse->isSuccessful());
-    }
-
-    public function testSetAndGetExcludeEmptyValues()
-    {
-        $parameters = ['foo'];
-        $this->updateCustomerAddressRequest->setExcludeEmptyValues($parameters);
-
-        self::assertSame($parameters, $this->updateCustomerAddressRequest->getExcludeEmptyValues());
     }
 }

@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace MyOnlineStore\Omnipay\KlarnaCheckout;
 
@@ -11,33 +12,33 @@ interface GatewayInterface extends \Omnipay\Common\GatewayInterface
      *
      * @return RequestInterface
      */
-    public function acknowledge(array $options = []);
+    public function acknowledge(array $options = []): RequestInterface;
 
     /**
      * @param array $options
      *
      * @return RequestInterface
      */
-    public function extendAuthorization(array $options = []);
+    public function extendAuthorization(array $options = []): RequestInterface;
 
     /**
      * @param array $options
      *
      * @return RequestInterface
      */
-    public function fetchTransaction(array $options = []);
+    public function fetchTransaction(array $options = []): RequestInterface;
 
     /**
      * @param array $options
      *
      * @return RequestInterface
      */
-    public function updateTransaction(array $options = []);
+    public function updateTransaction(array $options = []): RequestInterface;
 
     /**
      * @param array $options
      *
      * @return RequestInterface
      */
-    public function updateCustomerAddress(array $options = []);
+    public function updateCustomerAddress(array $options = []): RequestInterface;
 }

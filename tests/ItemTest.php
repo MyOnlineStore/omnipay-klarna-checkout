@@ -1,10 +1,12 @@
 <?php
+declare(strict_types=1);
 
 namespace MyOnlineStore\Tests\Omnipay\KlarnaCheckout;
 
 use MyOnlineStore\Omnipay\KlarnaCheckout\Item;
+use PHPUnit\Framework\TestCase;
 
-class ItemTest extends \PHPUnit_Framework_TestCase
+final class ItemTest extends TestCase
 {
     public function testGetters()
     {

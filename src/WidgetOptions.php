@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace MyOnlineStore\Omnipay\KlarnaCheckout;
 
@@ -9,7 +10,7 @@ final class WidgetOptions extends \ArrayObject
      *
      * @return WidgetOptions
      */
-    public static function fromArray(array $data)
+    public static function fromArray(array $data): WidgetOptions
     {
         $defaults = [
             'acquiring_channel' => 'eCommerce',

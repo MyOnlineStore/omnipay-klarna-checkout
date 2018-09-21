@@ -1,35 +1,51 @@
 <?php
+declare(strict_types=1);
 
 namespace MyOnlineStore\Omnipay\KlarnaCheckout;
 
-use Omnipay\Common\Currency;
+use Money\Currencies\ISOCurrencies;
+use Money\Currency;
+use Money\Exception\ParserException;
+use Money\Money;
+use Money\Parser\DecimalMoneyParser;
 
 trait CurrencyAwareTrait
 {
     /**
-     * @return int
+     * @param mixed $amount
+     *
+     * @return Money
+     *
+     * @throws ParserException
      */
-    protected function getCurrencyMinorUnitCount()
+    protected function convertToMoney($amount): Money
     {
-        if ($currency = Currency::find($this->getCurrency())) {
-            return $currency->getDecimals();
+        if ($amount instanceof Money) {
+            return $amount;
         }
 
-        return 2;
+        try {
+            $currency = new Currency($this->getCurrency());
+        } catch (\InvalidArgumentException $exception) {
+            $currency = new Currency('USD');
+        }
+
+        $moneyParser = new DecimalMoneyParser(new ISOCurrencies());
+
+        return $moneyParser->parse((string) $amount, $currency);
     }
 
     /**
-     * @param float|int $amount
+     * @param Money $money
      *
      * @return int
+     *
+     * @throws ParserException
      */
-    protected function toCurrencyMinorUnits($amount)
+    protected function toCurrencyMinorUnits(Money $money): int
     {
-        return (int) round($amount * pow(10, $this->getCurrencyMinorUnitCount()));
-    }
+        $moneyParser = new DecimalMoneyParser(new ISOCurrencies());
 
-    /**
-     * @return string
-     */
-    abstract public function getCurrency();
+        return (int) $moneyParser->parse($money->getAmount(), $money->getCurrency())->getAmount();
+    }
 }

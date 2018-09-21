@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace MyOnlineStore\Omnipay\KlarnaCheckout\Message;
 
@@ -32,14 +33,6 @@ final class AuthorizeResponse extends AbstractResponse implements RedirectRespon
     /**
      * @inheritDoc
      */
-    public function getRedirectMethod()
-    {
-        return 'GET';
-    }
-
-    /**
-     * @inheritDoc
-     */
     public function getRedirectUrl()
     {
         return $this->renderUrl;
@@ -48,7 +41,7 @@ final class AuthorizeResponse extends AbstractResponse implements RedirectRespon
     /**
      * @inheritDoc
      */
-    public function isRedirect()
+    public function isRedirect(): bool
     {
         return null !== $this->renderUrl;
     }
@@ -56,7 +49,7 @@ final class AuthorizeResponse extends AbstractResponse implements RedirectRespon
     /**
      * @inheritDoc
      */
-    public function isSuccessful()
+    public function isSuccessful(): bool
     {
         // Authorize is only successful once it has been acknowledged
         return false;

@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace MyOnlineStore\Omnipay\KlarnaCheckout;
 
@@ -12,6 +13,7 @@ use MyOnlineStore\Omnipay\KlarnaCheckout\Message\UpdateCustomerAddressRequest;
 use MyOnlineStore\Omnipay\KlarnaCheckout\Message\UpdateTransactionRequest;
 use MyOnlineStore\Omnipay\KlarnaCheckout\Message\VoidRequest;
 use Omnipay\Common\AbstractGateway;
+use Omnipay\Common\Message\RequestInterface;
 
 final class Gateway extends AbstractGateway implements GatewayInterface
 {
@@ -26,7 +28,7 @@ final class Gateway extends AbstractGateway implements GatewayInterface
     /**
      * @inheritdoc
      */
-    public function acknowledge(array $options = [])
+    public function acknowledge(array $options = []): RequestInterface
     {
         return $this->createRequest(AcknowledgeRequest::class, $options);
     }
@@ -50,7 +52,7 @@ final class Gateway extends AbstractGateway implements GatewayInterface
     /**
      * @inheritdoc
      */
-    public function extendAuthorization(array $options = [])
+    public function extendAuthorization(array $options = []): RequestInterface
     {
         return $this->createRequest(ExtendAuthorizationRequest::class, $options);
     }
@@ -58,7 +60,7 @@ final class Gateway extends AbstractGateway implements GatewayInterface
     /**
      * @inheritdoc
      */
-    public function fetchTransaction(array $options = [])
+    public function fetchTransaction(array $options = []): RequestInterface
     {
         return $this->createRequest(FetchTransactionRequest::class, $options);
     }
@@ -66,7 +68,7 @@ final class Gateway extends AbstractGateway implements GatewayInterface
     /**
      * @return string REGION_* constant value
      */
-    public function getApiRegion()
+    public function getApiRegion(): string
     {
         return $this->getParameter('api_region');
     }
@@ -74,7 +76,7 @@ final class Gateway extends AbstractGateway implements GatewayInterface
     /**
      * @inheritDoc
      */
-    public function getDefaultParameters()
+    public function getDefaultParameters(): array
     {
         return [
             'api_region' => self::API_VERSION_EUROPE,
@@ -87,7 +89,7 @@ final class Gateway extends AbstractGateway implements GatewayInterface
     /**
      * @inheritDoc
      */
-    public function getName()
+    public function getName(): string
     {
         return 'KlarnaCheckout';
     }
@@ -95,7 +97,7 @@ final class Gateway extends AbstractGateway implements GatewayInterface
     /**
      * @return string
      */
-    public function getSecret()
+    public function getSecret(): string
     {
         return $this->getParameter('secret');
     }
@@ -103,7 +105,7 @@ final class Gateway extends AbstractGateway implements GatewayInterface
     /**
      * @return string
      */
-    public function getUsername()
+    public function getUsername(): string
     {
         return $this->getParameter('username');
     }
@@ -137,7 +139,7 @@ final class Gateway extends AbstractGateway implements GatewayInterface
      *
      * @return $this
      */
-    public function setApiRegion($region)
+    public function setApiRegion(string $region): self
     {
         $this->setParameter('api_region', $region);
 
@@ -149,7 +151,7 @@ final class Gateway extends AbstractGateway implements GatewayInterface
      *
      * @return $this
      */
-    public function setSecret($secret)
+    public function setSecret(string $secret): self
     {
         $this->setParameter('secret', $secret);
 
@@ -161,7 +163,7 @@ final class Gateway extends AbstractGateway implements GatewayInterface
      *
      * @return $this
      */
-    public function setUsername($username)
+    public function setUsername(string $username): self
     {
         $this->setParameter('username', $username);
 
@@ -171,7 +173,7 @@ final class Gateway extends AbstractGateway implements GatewayInterface
     /**
      * @inheritDoc
      */
-    public function updateCustomerAddress(array $options = [])
+    public function updateCustomerAddress(array $options = []): RequestInterface
     {
         return $this->createRequest(UpdateCustomerAddressRequest::class, $options);
     }
@@ -179,7 +181,7 @@ final class Gateway extends AbstractGateway implements GatewayInterface
     /**
      * @inheritdoc
      */
-    public function updateTransaction(array $options = [])
+    public function updateTransaction(array $options = []): RequestInterface
     {
         return $this->createRequest(UpdateTransactionRequest::class, $options);
     }

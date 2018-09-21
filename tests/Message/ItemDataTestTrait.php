@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace MyOnlineStore\Tests\Omnipay\KlarnaCheckout\Message;
 
@@ -6,10 +7,7 @@ use MyOnlineStore\Omnipay\KlarnaCheckout\ItemInterface;
 
 trait ItemDataTestTrait
 {
-    /**
-     * @return array
-     */
-    protected function getExpectedOrderLine()
+    protected function getExpectedOrderLine(): array
     {
         return [
             'type' => 'shipping_fee',
@@ -17,26 +15,26 @@ trait ItemDataTestTrait
             'quantity' => 1,
             'tax_rate' => 2003,
             'total_amount' => 1000,
-            'total_tax_amount' => 200,
+            'total_tax_amount' => 20000,
             'unit_price' => 1000,
             'merchant_data' => 'foobar',
         ];
     }
 
     /**
-     * @return \Mockery\MockInterface|ItemInterface
+     * @return \PHPUnit_Framework_MockObject_MockObject
      */
-    protected function getItemMock()
+    protected function getItemMock(): \PHPUnit_Framework_MockObject_MockObject
     {
-        $item = \Mockery::mock(ItemInterface::class);
-        $item->shouldReceive('getType')->andReturn('shipping_fee');
-        $item->shouldReceive('getName')->andReturn('item-name');
-        $item->shouldReceive('getQuantity')->andReturn(1);
-        $item->shouldReceive('getTaxRate')->andReturn(20.03);
-        $item->shouldReceive('getQuantity')->andReturn(1);
-        $item->shouldReceive('getPrice')->andReturn(10);
-        $item->shouldReceive('getTotalTaxAmount')->andReturn(2);
-        $item->shouldReceive('getMerchantData')->andReturn('foobar');
+        $item = $this->createMock(ItemInterface::class);
+        $item->method('getType')->willReturn('shipping_fee');
+        $item->method('getName')->willReturn('item-name');
+        $item->method('getQuantity')->willReturn(1);
+        $item->method('getTaxRate')->willReturn(20.03);
+        $item->method('getQuantity')->willReturn(1);
+        $item->method('getPrice')->willReturn(1000);
+        $item->method('getTotalTaxAmount')->willReturn(200);
+        $item->method('getMerchantData')->willReturn('foobar');
 
         return $item;
     }

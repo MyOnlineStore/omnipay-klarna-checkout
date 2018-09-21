@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace MyOnlineStore\Tests\Omnipay\KlarnaCheckout\Message;
 
@@ -28,7 +29,7 @@ final class AddressTest extends TestCase
     /**
      * @return array
      */
-    public function fromArrayDataProvider()
+    public function fromArrayDataProvider(): array
     {
         return [
             [
@@ -163,21 +164,9 @@ final class AddressTest extends TestCase
     }
 
     /**
-     * @dataProvider toArrayDataProvider
-     *
-     * @param array $data
-     * @param array $expectedOutcome
-     * @param array $excludeKeyWithEmptyValue
-     */
-    public function testToArray(array $data, array $expectedOutcome, array $excludeKeyWithEmptyValue)
-    {
-        self::assertEquals($expectedOutcome, Address::fromArray($data)->toArray($excludeKeyWithEmptyValue));
-    }
-
-    /**
      * @return array
      */
-    public function toArrayDataProvider()
+    public function toArrayDataProvider(): array
     {
         return [
             [

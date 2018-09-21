@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace MyOnlineStore\Omnipay\KlarnaCheckout\Message;
 
@@ -8,7 +9,7 @@ use Omnipay\Common\Exception\RuntimeException;
 trait MerchantUrlsDataTrait
 {
     /**
-     * @return string
+     * @return string|null
      */
     public function getAddressUpdateUrl()
     {
@@ -16,7 +17,7 @@ trait MerchantUrlsDataTrait
     }
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getCancellationTermsUrl()
     {
@@ -28,7 +29,7 @@ trait MerchantUrlsDataTrait
      *
      * @throws InvalidRequestException
      */
-    public function getMerchantUrls()
+    public function getMerchantUrls(): array
     {
         $this->validate('notifyUrl', 'returnUrl', 'termsUrl', 'validationUrl');
 
@@ -52,17 +53,17 @@ trait MerchantUrlsDataTrait
     }
 
     /**
-     * @return string
+     * @return string|null
      */
     abstract public function getNotifyUrl();
 
     /**
-     * @return string
+     * @return string|null
      */
     abstract public function getReturnUrl();
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getTermsUrl()
     {
@@ -70,7 +71,7 @@ trait MerchantUrlsDataTrait
     }
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getValidationUrl()
     {
@@ -82,7 +83,7 @@ trait MerchantUrlsDataTrait
      *
      * @return $this
      */
-    public function setAddressUpdateUrl($url)
+    public function setAddressUpdateUrl(string $url): self
     {
         $this->setParameter('addressUpdateUrl', $url);
 
@@ -94,7 +95,7 @@ trait MerchantUrlsDataTrait
      *
      * @return $this
      */
-    public function setCancellationTermsUrl($url)
+    public function setCancellationTermsUrl(string $url): self
     {
         $this->setParameter('cancellationTermsUrl', $url);
 
@@ -106,7 +107,7 @@ trait MerchantUrlsDataTrait
      *
      * @return $this
      */
-    public function setTermsUrl($url)
+    public function setTermsUrl(string $url): self
     {
         $this->setParameter('termsUrl', $url);
 
@@ -118,14 +119,15 @@ trait MerchantUrlsDataTrait
      *
      * @return $this
      */
-    public function setValidationUrl($url)
+    public function setValidationUrl(string $url): self
     {
         $this->setParameter('validationUrl', $url);
 
         return $this;
     }
+
     /**
-     * @param string ... a variable length list of required parameters
+     * @param string $validatable,... a variable length list of required parameters
      *
      * @throws InvalidRequestException
      */

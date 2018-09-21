@@ -1,21 +1,24 @@
 <?php
+declare(strict_types=1);
 
 namespace MyOnlineStore\Tests\Omnipay\KlarnaCheckout\Message;
 
-use Guzzle\Http\ClientInterface;
-use Guzzle\Http\Message\RequestInterface;
-use Guzzle\Http\Message\Response;
+use MyOnlineStore\Tests\Omnipay\KlarnaCheckout\ExpectedAuthorizationHeaderTrait;
+use Omnipay\Common\Http\ClientInterface;
 use Omnipay\Tests\TestCase;
-use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\StreamInterface;
 
 abstract class RequestTestCase extends TestCase
 {
+    use ExpectedAuthorizationHeaderTrait;
+
     const BASE_URL = 'http://localhost';
-    const USERNAME = 'merchant-32';
     const SECRET = 'very-secret-stuff';
+    const USERNAME = 'merchant-32';
 
     /**
-     * @var ClientInterface|\Mockery\MockInterface
+     * @var ClientInterface|\PHPUnit_Framework_MockObject_MockObject
      */
     protected $httpClient;
 
@@ -24,24 +27,18 @@ abstract class RequestTestCase extends TestCase
      */
     protected function setUp()
     {
-        $eventDispatcher = \Mockery::mock(EventDispatcherInterface::class);
-        $eventDispatcher->shouldReceive('addListener')->with('request.error', \Mockery::type('callable'));
-
-        $this->httpClient = \Mockery::mock(ClientInterface::class);
-        $this->httpClient->shouldReceive('getEventDispatcher')
-            ->once()
-            ->andReturn($eventDispatcher);
+        $this->httpClient = $this->createMock(ClientInterface::class);
     }
 
     /**
      * @param array  $responseData
      * @param string $url
      *
-     * @return \Mockery\MockInterface
+     * @return ResponseInterface|\PHPUnit_Framework_MockObject_MockObject
      */
     protected function setExpectedGetRequest(array $responseData, $url)
     {
-        return $this->setExpectedRequest(RequestInterface::GET, $url, [], [], $responseData);
+        return $this->setExpectedRequest('GET', $url, [], null, $responseData);
     }
 
     /**
@@ -49,12 +46,12 @@ abstract class RequestTestCase extends TestCase
      * @param array  $responseData
      * @param string $url
      *
-     * @return \Mockery\MockInterface
+     * @return ResponseInterface|\PHPUnit_Framework_MockObject_MockObject
      */
     protected function setExpectedPatchRequest(array $inputData, array $responseData, $url)
     {
         return $this->setExpectedRequest(
-            RequestInterface::PATCH,
+            'PATCH',
             $url,
             ['Content-Type' => 'application/json'],
             $inputData,
@@ -67,12 +64,12 @@ abstract class RequestTestCase extends TestCase
      * @param array  $responseData
      * @param string $url
      *
-     * @return \Mockery\MockInterface
+     * @return ResponseInterface|\PHPUnit_Framework_MockObject_MockObject
      */
     protected function setExpectedPostRequest(array $inputData, array $responseData, $url)
     {
         return $this->setExpectedRequest(
-            RequestInterface::POST,
+            'POST',
             $url,
             ['Content-Type' => 'application/json'],
             $inputData,
@@ -87,25 +84,34 @@ abstract class RequestTestCase extends TestCase
      * @param array  $inputData
      * @param array  $responseData
      *
-     * @return \Mockery\MockInterface
+     * @return ResponseInterface|\PHPUnit_Framework_MockObject_MockObject
      */
-    private function setExpectedRequest($requestMethod, $url, array $headers, array $inputData, array $responseData)
-    {
-        $response = \Mockery::mock(Response::class);
-        $response->shouldReceive('getBody')->with(true)->once()->andReturn(json_encode($responseData));
-        $response->shouldReceive('json')->once()->andReturn($responseData);
+    private function setExpectedRequest(
+        $requestMethod,
+        $url,
+        array $headers,
+        array $inputData = null,
+        array $responseData
+    ) {
+        $response = $this->createMock(ResponseInterface::class);
+        $stream = $this->createMock(StreamInterface::class);
 
-        $request = \Mockery::mock(RequestInterface::class);
-        $request->shouldReceive('send')->once()->andReturn($response);
-
-        $this->httpClient->shouldReceive('createRequest')
+        $this->httpClient->expects(self::once())
+            ->method('request')
             ->with(
                 $requestMethod,
                 $url,
-                $headers,
-                json_encode($inputData),
-                ['auth' => [self::USERNAME, self::SECRET]]
-            )->andReturn($request);
+                array_merge(
+                    $headers,
+                    $this->getExpectedHeaders()
+                ),
+                $inputData === null ? null : \json_encode($inputData),
+                []
+            )
+            ->willReturn($response);
+
+        $response->method('getBody')->willReturn($stream);
+        $stream->method('getContents')->willReturn(\json_encode($responseData));
 
         return $response;
     }

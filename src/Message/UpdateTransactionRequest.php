@@ -1,9 +1,11 @@
 <?php
+declare(strict_types=1);
 
 namespace MyOnlineStore\Omnipay\KlarnaCheckout\Message;
 
-use Guzzle\Http\Message\RequestInterface;
 use Omnipay\Common\Exception\InvalidRequestException;
+use Omnipay\Common\Http\Exception\NetworkException;
+use Omnipay\Common\Http\Exception\RequestException;
 
 final class UpdateTransactionRequest extends AbstractOrderRequest
 {
@@ -12,6 +14,9 @@ final class UpdateTransactionRequest extends AbstractOrderRequest
 
     /**
      * @inheritdoc
+     *
+     * @throws InvalidRequestException
+     * @throws InvalidRequestException
      */
     public function getData()
     {
@@ -29,12 +34,15 @@ final class UpdateTransactionRequest extends AbstractOrderRequest
 
     /**
      * @inheritdoc
+     *
+     * @throws RequestException when the HTTP client is passed a request that is invalid and cannot be sent.
+     * @throws NetworkException if there is an error with the network or the remote server cannot be reached.
      */
     public function sendData($data)
     {
         $responseData = $this->getResponseBody(
             $this->sendRequest(
-                RequestInterface::POST,
+                'POST',
                 sprintf('/checkout/v3/orders/%s', $this->getTransactionReference()),
                 $data
             )
@@ -48,7 +56,7 @@ final class UpdateTransactionRequest extends AbstractOrderRequest
             $responseData = !empty($requestData) ?
                 $this->getResponseBody(
                     $this->sendRequest(
-                        RequestInterface::PATCH,
+                        'PATCH',
                         sprintf('/ordermanagement/v1/orders/%s/merchant-references', $this->getTransactionReference()),
                         $requestData
                     )

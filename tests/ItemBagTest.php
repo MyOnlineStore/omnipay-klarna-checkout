@@ -1,15 +1,17 @@
 <?php
+declare(strict_types=1);
 
 namespace MyOnlineStore\Tests\Omnipay\KlarnaCheckout;
 
 use MyOnlineStore\Omnipay\KlarnaCheckout\ItemBag;
 use MyOnlineStore\Omnipay\KlarnaCheckout\ItemInterface;
+use PHPUnit\Framework\TestCase;
 
-class ItemBagTest extends \PHPUnit_Framework_TestCase
+final class ItemBagTest extends TestCase
 {
     public function testAdd()
     {
-        $item = $this->getMock(ItemInterface::class);
+        $item = $this->createMock(ItemInterface::class);
 
         $itemBag = new ItemBag();
         $itemBag->add($item);
