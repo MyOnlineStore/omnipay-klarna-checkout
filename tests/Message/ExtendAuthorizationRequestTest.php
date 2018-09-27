@@ -68,8 +68,7 @@ final class ExtendAuthorizationRequestTest extends RequestTestCase
                         ),
                     ]
                 ),
-                \json_encode([]),
-                []
+                \json_encode([])
             )
             ->willReturn($response);
 

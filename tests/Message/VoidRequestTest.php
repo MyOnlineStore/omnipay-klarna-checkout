@@ -65,15 +65,13 @@ class VoidRequestTest extends RequestTestCase
                     'GET',
                     self::BASE_URL.'/ordermanagement/v1/orders/'.self::TRANSACTION_REF,
                     $this->getExpectedHeaders(),
-                    null,
-                    [],
+                    null
                 ],
                 [
                     'POST',
                     self::BASE_URL.'/ordermanagement/v1/orders/'.self::TRANSACTION_REF.$expectedPostRoute,
                     array_merge(['Content-Type' => 'application/json'], $this->getExpectedHeaders()),
-                    \json_encode($inputData),
-                    [],
+                    \json_encode($inputData)
                 ]
             )
             ->willReturn($response);

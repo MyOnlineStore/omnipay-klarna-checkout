@@ -107,15 +107,13 @@ final class FetchTransactionRequestTest extends RequestTestCase
                     'GET',
                     self::BASE_URL.'/checkout/v3/orders/foo',
                     $this->getExpectedHeaders(),
-                    null,
-                    [],
+                    null
                 ],
                 [
                     'GET',
                     self::BASE_URL.'/ordermanagement/v1/orders/foo',
                     $this->getExpectedHeaders(),
-                    null,
-                    [],
+                    null
                 ]
             )->willReturn($response);
 
@@ -159,15 +157,13 @@ final class FetchTransactionRequestTest extends RequestTestCase
                     'GET',
                     self::BASE_URL.'/checkout/v3/orders/foo',
                     $this->getExpectedHeaders(),
-                    null,
-                    [],
+                    null
                 ],
                 [
                     'GET',
                     self::BASE_URL.'/ordermanagement/v1/orders/foo',
                     $this->getExpectedHeaders(),
-                    null,
-                    [],
+                    null
                 ]
             )->willReturn($response);
 

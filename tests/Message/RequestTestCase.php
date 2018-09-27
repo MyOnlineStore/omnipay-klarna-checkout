@@ -105,8 +105,7 @@ abstract class RequestTestCase extends TestCase
                     $headers,
                     $this->getExpectedHeaders()
                 ),
-                $inputData === null ? null : \json_encode($inputData),
-                []
+                null === $inputData ? null : \json_encode($inputData)
             )
             ->willReturn($response);
 

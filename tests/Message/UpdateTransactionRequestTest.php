@@ -357,8 +357,7 @@ class UpdateTransactionRequestTest extends RequestTestCase
                     'POST',
                     sprintf('%s/checkout/v3/orders/%s', self::BASE_URL, self::TRANSACTION_REFERENCE),
                     array_merge(['Content-Type' => 'application/json'], $this->getExpectedHeaders()),
-                    \json_encode($inputData),
-                    [],
+                    \json_encode($inputData)
                 ],
                 [
                     'PATCH',
@@ -371,8 +370,7 @@ class UpdateTransactionRequestTest extends RequestTestCase
                         ['Content-Type' => 'application/json'],
                         $this->getExpectedHeaders()
                     ),
-                    \json_encode($inputData),
-                    [],
+                    \json_encode($inputData)
                 ]
             )
             ->willReturn($response);
@@ -411,8 +409,7 @@ class UpdateTransactionRequestTest extends RequestTestCase
                     'POST',
                     sprintf('%s/checkout/v3/orders/%s', self::BASE_URL, self::TRANSACTION_REFERENCE),
                     array_merge(['Content-Type' => 'application/json'], $this->getExpectedHeaders()),
-                    \json_encode($merchantReferencesData),
-                    [],
+                    \json_encode($merchantReferencesData)
                 ],
                 [
                     'PATCH',
@@ -422,8 +419,7 @@ class UpdateTransactionRequestTest extends RequestTestCase
                         self::TRANSACTION_REFERENCE
                     ),
                     array_merge(['Content-Type' => 'application/json'], $this->getExpectedHeaders()),
-                    \json_encode($merchantReferencesData),
-                    [],
+                    \json_encode($merchantReferencesData)
                 ]
             )
             ->willReturn($response);
