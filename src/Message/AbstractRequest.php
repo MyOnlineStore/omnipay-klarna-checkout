@@ -210,7 +210,11 @@ abstract class AbstractRequest extends BaseAbstractRequest
      */
     protected function getResponseBody(ResponseInterface $response): array
     {
-        return \json_decode($response->getBody()->getContents(), true);
+        try {
+            return \json_decode($response->getBody()->getContents(), true);
+        } catch (\TypeError $exception) {
+            return [];
+        }
     }
 
     /**
