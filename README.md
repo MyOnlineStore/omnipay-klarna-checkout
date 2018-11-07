@@ -16,10 +16,56 @@ To install, simply add it to your `composer.json` file:
 $ composer require myonlinestore/omnipay-klarna-checkout
 ```
 
+## Initialization
+
+```php
+$gateway = Omnipay::create('\MyOnlineStore\Omnipay\KlarnaCheckout\Gateway');
+
+$gateway->initialize(['username' => $username, 'secret' => $secret]);
+// or 
+$gateway->setUsername($username);
+$gateway->setSecret($secret);
+```
+
 ## Usage
 
 For general usage instructions, please see the main [Omnipay](https://github.com/thephpleague/omnipay)
 repository.
+
+To create a new order, use the `authorize` method:
+```php
+$data = [
+    'amount'           => 100,
+    'tax_amount'       => .2,
+    'currency'         => 'SEK',
+    'locale'           => 'SE',
+    'purchase_country' => 'SE',
+    
+    'notify_url' => '', // https://developers.klarna.com/api/#checkout-api__ordermerchant_urls__validation
+    'return_url' => '', // https://developers.klarna.com/api/#checkout-api__ordermerchant_urls__checkout
+    'terms_url' => '', // https://developers.klarna.com/api/#checkout-api__ordermerchant_urls__terms
+    'validation_url' => '', // https://developers.klarna.com/api/#checkout-api__ordermerchant_urls__validation
+
+    'items' => [
+        [
+            'type'             => 'physical',
+            'name'             => 'Shirt',
+            'quantity'         => 1,
+            'tax_rate'         => .2,
+            'price'            => 100,
+            'unit_price'       => 100,
+            'total_tax_amount' => 100 - 100 * 10000 / (10000 + 20) // https://developers.klarna.com/api/#checkout-api__create-a-new-order__order_lines__total_tax_amount
+        ]
+    ]
+];
+
+$response = $gateway->authorize($data)->send();
+```
+This will return the order details as well as the checkout HTML snippet to render on your site.
+
+## Units
+
+Klarna expresses amounts in minor units as described [here](https://developers.klarna.com/api/#data-types).
 
 ## Quirks
 
