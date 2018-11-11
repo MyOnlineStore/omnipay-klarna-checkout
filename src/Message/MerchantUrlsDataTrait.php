@@ -36,11 +36,11 @@ trait MerchantUrlsDataTrait
         $returnUrl = $this->getReturnUrl();
 
         $merchantUrls = [
-            'checkout'     => $returnUrl,
+            'checkout' => $returnUrl,
             'confirmation' => $this->getConfirmationUrl() ?? $returnUrl,
-            'push'         => $this->getNotifyUrl(),
-            'terms'        => $this->getTermsUrl(),
-            'validation'   => $this->getValidationUrl(),
+            'push' => $this->getNotifyUrl(),
+            'terms' => $this->getTermsUrl(),
+            'validation' => $this->getValidationUrl(),
         ];
 
         if (null !== ($cancellationTermsUrl = $this->getCancellationTermsUrl())) {
