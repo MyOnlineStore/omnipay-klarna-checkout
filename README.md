@@ -18,13 +18,24 @@ $ composer require myonlinestore/omnipay-klarna-checkout
 
 ## Initialization
 
+First, create the Omnipay gateway:
 ```php
-$gateway = Omnipay::create('\MyOnlineStore\Omnipay\KlarnaCheckout\Gateway');
-
-$gateway->initialize(['username' => $username, 'secret' => $secret]);
+$gateway = Omnipay\Omnipay::create('\MyOnlineStore\Omnipay\KlarnaCheckout\Gateway');
+// or
+$gateway = new MyOnlineStore\Omnipay\KlarnaCheckout\Gateway(/* $httpClient, $httpRequest */);
+```
+Then, initialize it with the correct credentials:
+```php
+$gateway->initialize([
+    'username' => $username, 
+    'secret' => $secret,
+    'api_region' => $region, // Optional, may be Gateway::API_VERSION_EUROPE (default) or Gateway::API_VERSION_NORTH_AMERICA
+    'testMode' => false // Optional, default: true
+]);
 // or 
 $gateway->setUsername($username);
 $gateway->setSecret($secret);
+$gateway->setApiRegion($region);
 ```
 
 ## Usage
@@ -35,10 +46,10 @@ repository.
 To create a new order, use the `authorize` method:
 ```php
 $data = [
-    'amount'           => 100,
-    'tax_amount'       => .2,
-    'currency'         => 'SEK',
-    'locale'           => 'SE',
+    'amount' => 100,
+    'tax_amount' => 20,
+    'currency' => 'SEK',
+    'locale' => 'SE',
     'purchase_country' => 'SE',
     
     'notify_url' => '', // https://developers.klarna.com/api/#checkout-api__ordermerchant_urls__validation
@@ -48,18 +59,18 @@ $data = [
 
     'items' => [
         [
-            'type'             => 'physical',
-            'name'             => 'Shirt',
-            'quantity'         => 1,
-            'tax_rate'         => .2,
-            'price'            => 100,
-            'unit_price'       => 100,
-            'total_tax_amount' => 100 - 100 * 10000 / (10000 + 20) // https://developers.klarna.com/api/#checkout-api__create-a-new-order__order_lines__total_tax_amount
+            'type' => 'physical',
+            'name' => 'Shirt',
+            'quantity' => 1,
+            'tax_rate' => 25,
+            'price' => 100,
+            'unit_price' => 100,
+            'total_tax_amount' => 20
         ]
     ]
 ];
 
-$response = $gateway->authorize($data)->send();
+$response = $gateway->authorize($data)->send()->getData();
 ```
 This will return the order details as well as the checkout HTML snippet to render on your site.
 
