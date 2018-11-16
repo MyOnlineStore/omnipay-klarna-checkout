@@ -33,9 +33,11 @@ trait MerchantUrlsDataTrait
     {
         $this->validate('notifyUrl', 'returnUrl', 'termsUrl', 'validationUrl');
 
+        $returnUrl = $this->getReturnUrl();
+
         $merchantUrls = [
-            'checkout' => $this->getReturnUrl(),
-            'confirmation' => $this->getReturnUrl(),
+            'checkout' => $returnUrl,
+            'confirmation' => $this->getConfirmationUrl() ?? $returnUrl,
             'push' => $this->getNotifyUrl(),
             'terms' => $this->getTermsUrl(),
             'validation' => $this->getValidationUrl(),
@@ -76,6 +78,14 @@ trait MerchantUrlsDataTrait
     public function getValidationUrl()
     {
         return $this->getParameter('validationUrl');
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getConfirmationUrl()
+    {
+        return $this->getParameter('confirmationUrl');
     }
 
     /**
@@ -122,6 +132,18 @@ trait MerchantUrlsDataTrait
     public function setValidationUrl(string $url): self
     {
         $this->setParameter('validationUrl', $url);
+
+        return $this;
+    }
+
+    /**
+     * @param string $url
+     *
+     * @return $this
+     */
+    public function setConfirmationUrl(string $url): self
+    {
+        $this->setParameter('confirmationUrl', $url);
 
         return $this;
     }
