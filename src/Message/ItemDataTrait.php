@@ -9,15 +9,15 @@ use MyOnlineStore\Omnipay\KlarnaCheckout\ItemBag;
 trait ItemDataTrait
 {
     /**
-     * @param ItemBag $items
+     * @param ItemBag|null $items
      *
      * @return array[]
      */
-    public function getItemData(ItemBag $items): array
+    public function getItemData(ItemBag $items = null): array
     {
         $orderLines = [];
 
-        foreach ($items as $item) {
+        foreach ($items ?? [] as $item) {
             $taxRate = $item->getTaxRate();
             $totalTaxAmount = null === $item->getTotalTaxAmount()
                 ? $this->convertToMoney(0)
