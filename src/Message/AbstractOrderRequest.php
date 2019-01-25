@@ -5,6 +5,7 @@ namespace MyOnlineStore\Omnipay\KlarnaCheckout\Message;
 
 use MyOnlineStore\Omnipay\KlarnaCheckout\Address;
 use MyOnlineStore\Omnipay\KlarnaCheckout\Customer;
+use MyOnlineStore\Omnipay\KlarnaCheckout\ItemBag;
 use MyOnlineStore\Omnipay\KlarnaCheckout\WidgetOptions;
 
 abstract class AbstractOrderRequest extends AbstractRequest
@@ -179,7 +180,7 @@ abstract class AbstractOrderRequest extends AbstractRequest
         $data = [
             'order_amount' => $this->getAmountInteger(),
             'order_tax_amount' => null === $this->getTaxAmount() ? 0 : (int) $this->getTaxAmount()->getAmount(),
-            'order_lines' => $this->getItemData($this->getItems()),
+            'order_lines' => $this->getItemData($this->getItems() ?? new ItemBag()),
             'purchase_currency' => $this->getCurrency(),
             'purchase_country' => $this->getPurchaseCountry(),
         ];

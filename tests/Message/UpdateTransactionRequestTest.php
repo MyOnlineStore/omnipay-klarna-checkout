@@ -75,6 +75,37 @@ class UpdateTransactionRequestTest extends RequestTestCase
         );
     }
 
+    public function testGetDataWillReturnCorrectDataForEmptyCart()
+    {
+        $this->updateTransactionRequest->initialize(
+            [
+                'amount' => '100.00',
+                'tax_amount' => 21,
+                'currency' => 'EUR',
+                'transactionReference' => self::TRANSACTION_REFERENCE,
+                'gui_minimal_confirmation' => true,
+                'gui_autofocus' => false,
+                'merchant_reference1' => '12345',
+                'merchant_reference2' => 678,
+                'purchase_country' => 'FR',
+            ]
+        );
+
+        self::assertEquals(
+            [
+                'order_amount' => 10000,
+                'order_tax_amount' => 2100,
+                'order_lines' => [],
+                'purchase_currency' => 'EUR',
+                'gui' => ['options' => ['disable_autofocus', 'minimal_confirmation']],
+                'merchant_reference1' => '12345',
+                'merchant_reference2' => 678,
+                'purchase_country' => 'FR',
+            ],
+            $this->updateTransactionRequest->getData()
+        );
+    }
+
     public function testGetDataWillThrowExceptionForInvalidRequest()
     {
         $this->updateTransactionRequest->initialize([]);
