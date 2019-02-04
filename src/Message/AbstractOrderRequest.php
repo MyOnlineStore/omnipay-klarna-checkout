@@ -179,7 +179,7 @@ abstract class AbstractOrderRequest extends AbstractRequest
         $data = [
             'order_amount' => $this->getAmountInteger(),
             'order_tax_amount' => $this->toCurrencyMinorUnits($this->getTaxAmount()),
-            'order_lines' => $this->getItemData($this->getItems() ?? new ItemBag()),
+            'order_lines' => $this->getItemData($this->getItems() ?: new ItemBag()),
             'purchase_currency' => $this->getCurrency(),
             'purchase_country' => $this->getPurchaseCountry(),
         ];
