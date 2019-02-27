@@ -168,8 +168,10 @@ final class Gateway extends AbstractGateway implements GatewayInterface
 
     public function setTestMode($testMode): self
     {
-        $this->setParameter('testMode', $testMode);
+        parent::setTestMode($testMode);
+
         $this->setBaseUrl();
+
         return $this;
     }
 
@@ -201,8 +203,12 @@ final class Gateway extends AbstractGateway implements GatewayInterface
     {
         if (self::API_VERSION_EUROPE === $this->getApiRegion()) {
             $this->parameters->set('base_url', $this->getTestMode() ? self::EU_TEST_BASE_URL : self::EU_BASE_URL);
-        } else {
-            $this->parameters->set('base_url', $this->getTestMode() ? self::NA_TEST_BASE_URL : self::NA_BASE_URL);
+
+            return $this;
         }
+
+        $this->parameters->set('base_url', $this->getTestMode() ? self::NA_TEST_BASE_URL : self::NA_BASE_URL);
+
+        return $this;
     }
 }
