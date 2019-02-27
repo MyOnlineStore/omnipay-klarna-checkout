@@ -17,6 +17,7 @@
         "ext-json": "*"
     },
     "require-dev": {
+        "myonlinestore/coding-standard": "^1.0",
         "omnipay/tests": "~3"
     },
     "config": {
