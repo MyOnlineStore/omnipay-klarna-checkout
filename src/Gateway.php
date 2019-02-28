@@ -204,11 +204,9 @@ final class Gateway extends AbstractGateway implements GatewayInterface
         if (self::API_VERSION_EUROPE === $this->getApiRegion()) {
             $this->parameters->set('base_url', $this->getTestMode() ? self::EU_TEST_BASE_URL : self::EU_BASE_URL);
 
-            return $this;
+            return;
         }
 
         $this->parameters->set('base_url', $this->getTestMode() ? self::NA_TEST_BASE_URL : self::NA_BASE_URL);
-
-        return $this;
     }
 }
