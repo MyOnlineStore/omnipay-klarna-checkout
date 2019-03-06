@@ -81,6 +81,20 @@ final class GatewayTest extends GatewayTestCase
         self::assertEquals($expectedUrl, $this->gateway->getParameter('base_url'));
     }
 
+    /**
+     * @dataProvider baseUrlDataProvider
+     *
+     * @param bool   $testMode
+     * @param string $region
+     * @param string $expectedUrl
+     */
+    public function testSetTestModeWillSetCorrectBaseUrl($testMode, $region, $expectedUrl)
+    {
+        $this->gateway->initialize(['api_region' => $region]);
+        $this->gateway->setTestMode($testMode);
+        self::assertEquals($expectedUrl, $this->gateway->getParameter('base_url'));
+    }
+
     public function testRefund()
     {
         $this->assertInstanceOf(RefundRequest::class, $this->gateway->refund());
