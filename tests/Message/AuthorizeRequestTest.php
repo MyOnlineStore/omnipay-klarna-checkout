@@ -254,6 +254,7 @@ class AuthorizeRequestTest extends RequestTestCase
             'radius_border' => '5px',
             'show_subtotal_detail' => true,
             'require_validate_callback_success' => true,
+            'allow_global_billing_countries' => false,
         ];
 
         $this->authorizeRequest->initialize(

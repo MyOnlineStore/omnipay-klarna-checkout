@@ -56,6 +56,7 @@ final class WidgetOptionsTest extends TestCase
                     'radius_border' => '5px',
                     'show_subtotal_detail' => true,
                     'require_validate_callback_success' => true,
+                    'allow_global_billing_countries' => false,
                 ],
             ],
             [
@@ -76,6 +77,7 @@ final class WidgetOptionsTest extends TestCase
                     'radius_border' => null,
                     'show_subtotal_detail' => false,
                     'require_validate_callback_success' => false,
+                    'allow_global_billing_countries' => false,
                 ],
             ],
             [
@@ -96,6 +98,7 @@ final class WidgetOptionsTest extends TestCase
                     'radius_border' => null,
                     'show_subtotal_detail' => false,
                     'require_validate_callback_success' => false,
+                    'allow_global_billing_countries' => false,
                 ],
             ],
         ];
