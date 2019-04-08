@@ -28,6 +28,7 @@ final class WidgetOptions extends \ArrayObject
             'radius_border' => null,
             'show_subtotal_detail' => false,
             'require_validate_callback_success' => false,
+            'allow_global_billing_countries' => false,
         ];
 
         return new self(array_merge($defaults, array_intersect_key($data, $defaults)));
