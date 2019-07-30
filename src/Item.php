@@ -24,9 +24,25 @@ final class Item extends \Omnipay\Common\Item implements ItemInterface
     /**
      * @inheritDoc
      */
+    public function getTotalAmount()
+    {
+        return $this->getParameter('total_amount');
+    }
+
+    /**
+     * @inheritDoc
+     */
     public function getTotalTaxAmount()
     {
         return $this->getParameter('total_tax_amount');
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getTotalDiscountAmount()
+    {
+        return $this->getParameter('total_discount_amount');
     }
 
     /**
@@ -56,9 +72,25 @@ final class Item extends \Omnipay\Common\Item implements ItemInterface
     /**
      * @param int $amount
      */
+    public function setTotalAmount($amount)
+    {
+        $this->setParameter('total_amount', $amount);
+    }
+
+    /**
+     * @param int $amount
+     */
     public function setTotalTaxAmount($amount)
     {
         $this->setParameter('total_tax_amount', $amount);
+    }
+
+    /**
+     * @param int $amount
+     */
+    public function setTotalDiscountAmount($amount)
+    {
+        $this->setParameter('total_discount_amount', $amount);
     }
 
     /**
