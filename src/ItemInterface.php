@@ -18,11 +18,25 @@ interface ItemInterface extends \Omnipay\Common\ItemInterface
     public function getTaxRate();
 
     /**
+     * Total amount
+     *
+     * @return float|null
+     */
+    public function getTotalAmount();
+
+    /**
      * Total amount of tax
      *
      * @return float|null
      */
     public function getTotalTaxAmount();
+
+    /**
+     * Total amount of discount
+     *
+     * @return float|null
+     */
+    public function getTotalDiscountAmount();
 
     /**
      * Product type

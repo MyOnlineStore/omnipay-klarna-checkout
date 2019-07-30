@@ -19,9 +19,7 @@ trait ItemDataTrait
 
         foreach ($items as $item) {
             $taxRate = $item->getTaxRate();
-            $price = null === $item->getPrice()
-                ? $this->convertToMoney(0)
-                : $this->convertToMoney($item->getPrice());
+            $price = null === $item->getPrice() ? $this->convertToMoney(0) : $this->convertToMoney($item->getPrice());
             $totalTaxAmount = null === $item->getTotalTaxAmount()
                 ? $this->convertToMoney(0)
                 : $this->convertToMoney($item->getTotalTaxAmount());
