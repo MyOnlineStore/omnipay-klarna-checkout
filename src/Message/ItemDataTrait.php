@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace MyOnlineStore\Omnipay\KlarnaCheckout\Message;
@@ -27,7 +28,7 @@ trait ItemDataTrait
                 ? $this->convertToMoney(0)
                 : $this->convertToMoney($item->getTotalDiscountAmount());
             $totalAmount = null === $item->getTotalAmount()
-                ? $price->multiply($item->getQuantity())
+                ? $price->multiply($item->getQuantity())->subtract($totalDiscountAmount)
                 : $this->convertToMoney($item->getTotalAmount());
 
             $orderLines[] = [
