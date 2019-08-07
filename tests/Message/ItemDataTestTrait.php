@@ -16,6 +16,7 @@ trait ItemDataTestTrait
             'tax_rate' => 2003,
             'total_amount' => 10000,
             'total_tax_amount' => 20000,
+            'total_discount_amount' => 0,
             'unit_price' => 10000,
             'merchant_data' => 'foobar',
         ];
@@ -33,7 +34,9 @@ trait ItemDataTestTrait
         $item->method('getTaxRate')->willReturn(20.03);
         $item->method('getQuantity')->willReturn(1);
         $item->method('getPrice')->willReturn(100);
+        $item->method('getTotalAmount')->willReturn(100);
         $item->method('getTotalTaxAmount')->willReturn(200);
+        $item->method('getTotalDiscountAmount')->willReturn(0);
         $item->method('getMerchantData')->willReturn('foobar');
 
         return $item;
