@@ -9,7 +9,7 @@ use Guzzle\Http\ClientInterface;
 use Guzzle\Http\Exception\RequestException;
 use Guzzle\Http\Message\RequestInterface;
 use Guzzle\Http\Message\Response;
-use MyOnlineStore\Omnipay\KlarnaCheckout\AuthenticationRequestOptionProvider;
+use MyOnlineStore\Omnipay\KlarnaCheckout\AuthenticationRequestHeaderProvider;
 use MyOnlineStore\Omnipay\KlarnaCheckout\CurrencyAwareTrait;
 use MyOnlineStore\Omnipay\KlarnaCheckout\ItemBag;
 use Symfony\Component\HttpFoundation\Request as HttpRequest;
@@ -231,24 +231,22 @@ abstract class AbstractRequest extends \Omnipay\Common\Message\AbstractRequest
      */
     protected function sendRequest($method, $url, $data)
     {
-        $options = (new AuthenticationRequestOptionProvider())->getOptions($this);
-
         if (RequestInterface::GET === $method) {
             return $this->httpClient->createRequest(
                 $method,
                 $this->getBaseUrl().$url,
-                null,
-                null,
-                $options
+                AuthenticationRequestHeaderProvider::getHeaders($this)
             )->send();
         }
 
         return $this->httpClient->createRequest(
             $method,
             $this->getBaseUrl().$url,
-            ['Content-Type' => 'application/json'],
-            json_encode($data),
-            $options
+            \array_merge(
+                AuthenticationRequestHeaderProvider::getHeaders($this),
+                ['Content-Type' => 'application/json']
+            ),
+            \json_encode($data)
         )->send();
     }
 }

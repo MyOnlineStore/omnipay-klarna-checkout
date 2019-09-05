@@ -2,7 +2,7 @@
 
 namespace MyOnlineStore\Tests\Omnipay\KlarnaCheckout;
 
-use MyOnlineStore\Omnipay\KlarnaCheckout\AuthenticationRequestOptionProvider;
+use MyOnlineStore\Omnipay\KlarnaCheckout\AuthenticationRequestHeaderProvider;
 use MyOnlineStore\Omnipay\KlarnaCheckout\Message\AbstractRequest;
 
 final class AuthenticationRequestOptionProviderTest extends \PHPUnit_Framework_TestCase
@@ -18,7 +18,7 @@ final class AuthenticationRequestOptionProviderTest extends \PHPUnit_Framework_T
 
         self::assertEquals(
             ['auth' => ['foobar', 'barbaz']],
-            (new AuthenticationRequestOptionProvider())->getOptions($request)
+            (new AuthenticationRequestHeaderProvider())->getOptions($request)
         );
     }
 }
