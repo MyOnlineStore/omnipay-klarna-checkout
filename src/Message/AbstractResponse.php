@@ -26,7 +26,7 @@ abstract class AbstractResponse extends \Omnipay\Common\Message\AbstractResponse
      */
     public function getTransactionReference()
     {
-        return $this->data['order_id'];
+        return $this->data['order_id'] ?? null;
     }
 
     /**
