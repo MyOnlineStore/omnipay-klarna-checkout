@@ -18,6 +18,16 @@ class AbstractResponseTest extends TestCase
         self::assertEquals('foo', $response->getTransactionReference());
     }
 
+    public function testGetTransactionReferenceReturnsNullIfNoOrderIdExists()
+    {
+        $response = $this->getMockForAbstractClass(
+            AbstractResponse::class,
+            [$this->getMockRequest(), []]
+        );
+
+        self::assertNull($response->getTransactionReference());
+    }
+
     public function testIsSuccessfulWillReturnFalseIfResponseContainsErrors()
     {
         $response = $this->getMockForAbstractClass(

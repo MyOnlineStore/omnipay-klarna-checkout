@@ -352,7 +352,8 @@ class AuthorizeRequestTest extends RequestTestCase
         $responseMessage = 'FooBar';
         $response->expects(self::once())->method('getReasonPhrase')->willReturn($responseMessage);
 
-        $this->expectExceptionObject(new InvalidResponseException($responseMessage));
+        $this->expectException(InvalidResponseException::class);
+        $this->expectExceptionMessage($responseMessage);
 
         $this->authorizeRequest->sendData([]);
     }
