@@ -77,6 +77,14 @@ abstract class AbstractOrderRequest extends AbstractRequest
     }
 
     /**
+     * @return array
+     */
+    public function getExternalPaymentMethods()
+    {
+        return $this->getParameter('external_payment_methods');
+    }
+
+    /**
      * @param array $billingAddress
      *
      * @return $this
@@ -173,6 +181,18 @@ abstract class AbstractOrderRequest extends AbstractRequest
     }
 
     /**
+     * @param array $paymentMethods
+     *
+     * @return $this
+     */
+    public function setExternalPaymentMethods(array $paymentMethods): self
+    {
+        $this->setParameter('external_payment_methods', $paymentMethods);
+
+        return $this;
+    }
+
+    /**
      * @return array
      */
     protected function getOrderData(): array
@@ -215,6 +235,10 @@ abstract class AbstractOrderRequest extends AbstractRequest
 
         if (null !== $customer = $this->getCustomer()) {
             $data['customer'] = $customer->getArrayCopy();
+        }
+
+        if (null !== $externalPaymentMethods = $this->getExternalPaymentMethods()) {
+            $data['external_payment_methods'] = $externalPaymentMethods;
         }
 
         $guiOptions = [];
