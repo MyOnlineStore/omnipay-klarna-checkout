@@ -36,6 +36,14 @@ final class Gateway extends AbstractGateway implements GatewayInterface
     /**
      * @inheritdoc
      */
+    public function completeAuthorize(array $options = array()): RequestInterface
+    {
+        return $this->acknowledge($options);
+    }
+
+    /**
+     * @inheritdoc
+     */
     public function authorize(array $options = [])
     {
         return $this->createRequest(AuthorizeRequest::class, $options);
