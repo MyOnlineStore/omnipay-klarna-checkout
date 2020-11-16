@@ -310,6 +310,7 @@ class UpdateTransactionRequestTest extends RequestTestCase
             'show_subtotal_detail' => true,
             'require_validate_callback_success' => true,
             'allow_global_billing_countries' => false,
+            'allowed_customer_types' => 'person',
         ];
 
         $this->updateTransactionRequest->initialize(
@@ -322,7 +323,7 @@ class UpdateTransactionRequestTest extends RequestTestCase
                 'gui_minimal_confirmation' => true,
                 'gui_autofocus' => false,
                 'merchant_reference1' => '12345',
-                'merchant_reference2' => 678,
+                'merchant_reference2' => '678',
                 'purchase_country' => 'DE',
             ]
         );
@@ -341,7 +342,7 @@ class UpdateTransactionRequestTest extends RequestTestCase
                 'purchase_currency' => 'EUR',
                 'gui' => ['options' => ['disable_autofocus', 'minimal_confirmation']],
                 'merchant_reference1' => '12345',
-                'merchant_reference2' => 678,
+                'merchant_reference2' => '678',
                 'options' => $widgetOptions,
             ],
             $this->updateTransactionRequest->getData()

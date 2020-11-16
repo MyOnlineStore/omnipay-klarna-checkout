@@ -255,6 +255,7 @@ class AuthorizeRequestTest extends RequestTestCase
             'show_subtotal_detail' => true,
             'require_validate_callback_success' => true,
             'allow_global_billing_countries' => false,
+            'allowed_customer_types' => 'person'
         ];
 
         $this->authorizeRequest->initialize(
