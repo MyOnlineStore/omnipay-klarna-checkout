@@ -59,7 +59,9 @@ final class AuthorizeRequest extends AbstractOrderRequest
             $this->sendRequest('POST', '/checkout/v3/orders', $data);
 
         if ($response->getStatusCode() >= 400) {
-            throw new InvalidResponseException($response->getReasonPhrase());
+            throw new InvalidResponseException(
+                \sprintf('Reason: %s (%s)', $response->getReasonPhrase(), $response->getBody())
+            );
         }
 
         return new AuthorizeResponse($this, $this->getResponseBody($response), $this->getRenderUrl());
