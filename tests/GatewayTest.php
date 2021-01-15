@@ -11,6 +11,7 @@ use MyOnlineStore\Omnipay\KlarnaCheckout\Message\ExtendAuthorizationRequest;
 use MyOnlineStore\Omnipay\KlarnaCheckout\Message\FetchTransactionRequest;
 use MyOnlineStore\Omnipay\KlarnaCheckout\Message\RefundRequest;
 use MyOnlineStore\Omnipay\KlarnaCheckout\Message\UpdateCustomerAddressRequest;
+use MyOnlineStore\Omnipay\KlarnaCheckout\Message\UpdateMerchantReferencesRequest;
 use MyOnlineStore\Omnipay\KlarnaCheckout\Message\UpdateTransactionRequest;
 use MyOnlineStore\Omnipay\KlarnaCheckout\Message\VoidRequest;
 use Omnipay\Tests\GatewayTestCase;
@@ -103,6 +104,11 @@ final class GatewayTest extends GatewayTestCase
     public function testUpdateCustomerAddress()
     {
         $this->assertInstanceOf(UpdateCustomerAddressRequest::class, $this->gateway->updateCustomerAddress());
+    }
+
+    public function testUpdateMerchantReferences()
+    {
+        $this->assertInstanceOf(UpdateMerchantReferencesRequest::class, $this->gateway->updateMerchantReferences());
     }
 
     public function testUpdateTransaction()

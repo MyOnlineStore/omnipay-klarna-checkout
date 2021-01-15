@@ -149,11 +149,11 @@ trait MerchantUrlsDataTrait
     }
 
     /**
-     * @param string $validatable,... a variable length list of required parameters
+     * @param string $args,... a variable length list of required parameters
      *
      * @throws InvalidRequestException
      */
-    abstract public function validate();
+    abstract public function validate(...$args);
 
     /**
      * @param string $key

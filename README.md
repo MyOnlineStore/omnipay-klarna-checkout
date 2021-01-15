@@ -251,6 +251,20 @@ $success = $gateway->refund([
 
 [API documentation](https://developers.klarna.com/api/#order-management-api-update-customer-addresses)
 
+### Update merchant reference(s)
+
+If an order has been authorized by the client, its merchant references may be updated:
+
+```php
+$response = $gateway->updateMerchantReferences([
+    'merchant_reference1' => 'foo',
+    'merchant_reference2' => 'bar',
+])->send();
+```
+
+[API documentation](https://developers.klarna.com/api/#order-management-api-update-merchant-references)
+
+
 ## Units
 
 Klarna expresses amounts in minor units as described [here](https://developers.klarna.com/api/#data-types).

@@ -40,5 +40,10 @@ interface GatewayInterface extends \Omnipay\Common\GatewayInterface
      *
      * @return RequestInterface
      */
+    public function updateMerchantReferences(array $options = []): RequestInterface;
+
+    /**
+     * @param array $options
+     */
     public function updateCustomerAddress(array $options = []): RequestInterface;
 }
