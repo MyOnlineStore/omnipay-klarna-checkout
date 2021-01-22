@@ -57,6 +57,7 @@ final class WidgetOptionsTest extends TestCase
                     'show_subtotal_detail' => true,
                     'require_validate_callback_success' => true,
                     'allow_global_billing_countries' => false,
+                    'allowed_customer_types' => 'person',
                 ],
             ],
             [
@@ -78,6 +79,7 @@ final class WidgetOptionsTest extends TestCase
                     'show_subtotal_detail' => false,
                     'require_validate_callback_success' => false,
                     'allow_global_billing_countries' => false,
+                    'allowed_customer_types' => 'person',
                 ],
             ],
             [
@@ -99,6 +101,7 @@ final class WidgetOptionsTest extends TestCase
                     'show_subtotal_detail' => false,
                     'require_validate_callback_success' => false,
                     'allow_global_billing_countries' => false,
+                    'allowed_customer_types' => 'person',
                 ],
             ],
         ];
