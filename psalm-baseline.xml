@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<files psalm-version="4.18.1@dda05fa913f4dc6eb3386f2f7ce5a45d37a71bcb">
+  <file src="src/AuthenticationRequestHeaderProvider.php">
+    <PossiblyNullArgument occurrences="2">
+      <code>$request-&gt;getSecret()</code>
+      <code>$request-&gt;getUsername()</code>
+    </PossiblyNullArgument>
+  </file>
+  <file src="src/Gateway.php">
+    <LessSpecificReturnStatement occurrences="1">
+      <code>$this</code>
+    </LessSpecificReturnStatement>
+    <MissingReturnType occurrences="5">
+      <code>authorize</code>
+      <code>capture</code>
+      <code>refund</code>
+      <code>setBaseUrl</code>
+      <code>void</code>
+    </MissingReturnType>
+    <MoreSpecificReturnType occurrences="1">
+      <code>self</code>
+    </MoreSpecificReturnType>
+  </file>
+  <file src="src/Item.php">
+    <MissingReturnType occurrences="6">
+      <code>setMerchantData</code>
+      <code>setTaxRate</code>
+      <code>setTotalAmount</code>
+      <code>setTotalDiscountAmount</code>
+      <code>setTotalTaxAmount</code>
+      <code>setType</code>
+    </MissingReturnType>
+  </file>
+  <file src="src/ItemBag.php">
+    <ImplementedReturnTypeMismatch occurrences="1">
+      <code>ItemInterface[]</code>
+    </ImplementedReturnTypeMismatch>
+    <MissingReturnType occurrences="1">
+      <code>add</code>
+    </MissingReturnType>
+    <PossiblyInvalidArgument occurrences="1">
+      <code>$item</code>
+    </PossiblyInvalidArgument>
+  </file>
+  <file src="src/Message/AbstractOrderRequest.php">
+    <PossiblyNullReference occurrences="1">
+      <code>getAmount</code>
+    </PossiblyNullReference>
+  </file>
+  <file src="src/Message/AbstractRequest.php">
+    <ImplementedReturnTypeMismatch occurrences="1">
+      <code>Money|null</code>
+    </ImplementedReturnTypeMismatch>
+    <MissingReturnType occurrences="2">
+      <code>setLocale</code>
+      <code>setTaxAmount</code>
+    </MissingReturnType>
+    <PossiblyInvalidArgument occurrences="1">
+      <code>$items</code>
+    </PossiblyInvalidArgument>
+  </file>
+  <file src="src/Message/AcknowledgeRequest.php">
+    <PropertyNotSetInConstructor occurrences="1">
+      <code>AcknowledgeRequest</code>
+    </PropertyNotSetInConstructor>
+  </file>
+  <file src="src/Message/AuthorizeRequest.php">
+    <ImplicitToStringCast occurrences="1">
+      <code>$response-&gt;getBody()</code>
+    </ImplicitToStringCast>
+    <PropertyNotSetInConstructor occurrences="1">
+      <code>AuthorizeRequest</code>
+    </PropertyNotSetInConstructor>
+  </file>
+  <file src="src/Message/AuthorizeResponse.php">
+    <InvalidNullableReturnType occurrences="2">
+      <code>getRedirectData</code>
+      <code>getRedirectUrl</code>
+    </InvalidNullableReturnType>
+    <MissingParamType occurrences="2">
+      <code>$data</code>
+      <code>$renderUrl</code>
+    </MissingParamType>
+    <NullableReturnStatement occurrences="2">
+      <code>$this-&gt;renderUrl</code>
+      <code>null</code>
+    </NullableReturnStatement>
+  </file>
+  <file src="src/Message/CaptureRequest.php">
+    <PropertyNotSetInConstructor occurrences="1">
+      <code>CaptureRequest</code>
+    </PropertyNotSetInConstructor>
+  </file>
+  <file src="src/Message/ExtendAuthorizationRequest.php">
+    <PropertyNotSetInConstructor occurrences="1">
+      <code>ExtendAuthorizationRequest</code>
+    </PropertyNotSetInConstructor>
+  </file>
+  <file src="src/Message/FetchTransactionRequest.php">
+    <PossiblyUndefinedVariable occurrences="1">
+      <code>$responseData</code>
+    </PossiblyUndefinedVariable>
+    <PropertyNotSetInConstructor occurrences="1">
+      <code>FetchTransactionRequest</code>
+    </PropertyNotSetInConstructor>
+  </file>
+  <file src="src/Message/RefundRequest.php">
+    <PropertyNotSetInConstructor occurrences="1">
+      <code>RefundRequest</code>
+    </PropertyNotSetInConstructor>
+  </file>
+  <file src="src/Message/UpdateCustomerAddressRequest.php">
+    <PossiblyNullReference occurrences="2">
+      <code>getArrayCopy</code>
+      <code>getArrayCopy</code>
+    </PossiblyNullReference>
+    <PropertyNotSetInConstructor occurrences="1">
+      <code>UpdateCustomerAddressRequest</code>
+    </PropertyNotSetInConstructor>
+  </file>
+  <file src="src/Message/UpdateCustomerAddressResponse.php">
+    <RedundantCastGivenDocblockType occurrences="1">
+      <code>(int) $statusCode</code>
+    </RedundantCastGivenDocblockType>
+  </file>
+  <file src="src/Message/UpdateMerchantReferencesRequest.php">
+    <PropertyNotSetInConstructor occurrences="1">
+      <code>UpdateMerchantReferencesRequest</code>
+    </PropertyNotSetInConstructor>
+  </file>
+  <file src="src/Message/UpdateTransactionRequest.php">
+    <PropertyNotSetInConstructor occurrences="1">
+      <code>UpdateTransactionRequest</code>
+    </PropertyNotSetInConstructor>
+  </file>
+  <file src="src/Message/VoidRequest.php">
+    <PropertyNotSetInConstructor occurrences="1">
+      <code>VoidRequest</code>
+    </PropertyNotSetInConstructor>
+  </file>
+  <file src="vendor/omnipay/common/src/Common/ParametersTrait.php">
+    <MissingDocblockType occurrences="1">
+      <code>public function initialize(array $parameters = [])</code>
+    </MissingDocblockType>
+  </file>
+</files>

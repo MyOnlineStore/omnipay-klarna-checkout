@@ -20,10 +20,10 @@ final class AuthenticationRequestHeaderProviderTest extends TestCase
 
         self::assertEquals(
             [
-                'Authorization' => sprintf(
+                'Authorization' => \sprintf(
                     'Basic %s',
-                    base64_encode(
-                        sprintf(
+                    \base64_encode(
+                        \sprintf(
                             '%s:%s',
                             $userName,
                             $secret

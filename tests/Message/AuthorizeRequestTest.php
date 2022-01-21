@@ -17,15 +17,10 @@ class AuthorizeRequestTest extends RequestTestCase
     use ItemDataTestTrait;
     use MerchantUrlsDataTestTrait;
 
-    /**
-     * @var AuthorizeRequest
-     */
+    /** @var AuthorizeRequest */
     private $authorizeRequest;
 
-    /**
-     * @inheritdoc
-     */
-    protected function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
         $this->authorizeRequest = new AuthorizeRequest($this->httpClient, $this->getHttpRequest());
@@ -39,7 +34,7 @@ class AuthorizeRequestTest extends RequestTestCase
         $itemBag = $this->createMock(ItemBag::class);
         $itemBag->method('getIterator')->willReturn(new \ArrayIterator([]));
 
-        $data = array_merge(
+        $data = \array_merge(
             [
                 'currency' => 'EUR',
                 'amount' => true,
@@ -48,13 +43,13 @@ class AuthorizeRequestTest extends RequestTestCase
                 'purchase_country' => true,
                 'tax_amount' => new Money(1, new Currency('EUR')),
             ],
-            array_fill_keys(array_keys($this->getMinimalValidMerchantUrlData()), true)
+            \array_fill_keys(\array_keys($this->getMinimalValidMerchantUrlData()), true)
         );
 
         $cases = [];
 
         foreach ($data as $key => $value) {
-            $cases[] = [array_diff_key($data, [$key => $value])];
+            $cases[] = [\array_diff_key($data, [$key => $value])];
         }
 
         return $cases;
@@ -63,7 +58,7 @@ class AuthorizeRequestTest extends RequestTestCase
     public function testGetDataWillReturnCorrectData()
     {
         $this->authorizeRequest->initialize(
-            array_merge(
+            \array_merge(
                 [
                     'currency' => 'EUR',
                     'locale' => 'nl_NL',
@@ -164,7 +159,7 @@ class AuthorizeRequestTest extends RequestTestCase
         ];
 
         $this->authorizeRequest->initialize(
-            array_merge(
+            \array_merge(
                 [
                     'currency' => 'EUR',
                     'locale' => 'nl_NL',
@@ -203,7 +198,7 @@ class AuthorizeRequestTest extends RequestTestCase
         ];
 
         $this->authorizeRequest->initialize(
-            array_merge(
+            \array_merge(
                 [
                     'locale' => 'nl_NL',
                     'amount' => '100.00',
@@ -258,7 +253,7 @@ class AuthorizeRequestTest extends RequestTestCase
         ];
 
         $this->authorizeRequest->initialize(
-            array_merge(
+            \array_merge(
                 [
                     'locale' => 'nl_NL',
                     'amount' => '100.00',
@@ -294,7 +289,7 @@ class AuthorizeRequestTest extends RequestTestCase
         $inputData = ['request-data' => 'yey?'];
         $expectedData = ['response-data' => 'yey!'];
 
-        $response = $this->setExpectedPostRequest($inputData, $expectedData, self::BASE_URL.'/checkout/v3/orders');
+        $response = $this->setExpectedPostRequest($inputData, $expectedData, self::BASE_URL . '/checkout/v3/orders');
 
         $response->expects(self::once())->method('getStatusCode')->willReturn(200);
 
@@ -321,7 +316,7 @@ class AuthorizeRequestTest extends RequestTestCase
 
         $response = $this->setExpectedGetRequest(
             $expectedData,
-            self::BASE_URL.'/checkout/v3/orders/f60e69e8-464a-48c0-a452-6fd562540f37'
+            self::BASE_URL . '/checkout/v3/orders/f60e69e8-464a-48c0-a452-6fd562540f37'
         );
 
         $response->expects(self::once())->method('getStatusCode')->willReturn(200);

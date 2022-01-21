@@ -29,12 +29,8 @@ abstract class AbstractResponse extends \Omnipay\Common\Message\AbstractResponse
         return $this->data['order_id'] ?? null;
     }
 
-    /**
-     * @inheritDoc
-     */
     public function isSuccessful(): bool
     {
         return !isset($this->data['error_code']);
     }
 }
-

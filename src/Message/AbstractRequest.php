@@ -139,9 +139,6 @@ abstract class AbstractRequest extends BaseAbstractRequest
         return $this->setParameter('items', $items);
     }
 
-    /**
-     * @param string $locale
-     */
     public function setLocale(string $locale)
     {
         $this->setParameter('locale', $locale);
@@ -234,15 +231,15 @@ abstract class AbstractRequest extends BaseAbstractRequest
         if ('GET' === $method) {
             return $this->httpClient->request(
                 $method,
-                $this->getBaseUrl().$url,
+                $this->getBaseUrl() . $url,
                 $headers
             );
         }
 
         return $this->httpClient->request(
             $method,
-            $this->getBaseUrl().$url,
-            array_merge(
+            $this->getBaseUrl() . $url,
+            \array_merge(
                 ['Content-Type' => 'application/json'],
                 $headers
             ),

@@ -22,7 +22,7 @@ final class UpdateMerchantReferencesRequest extends AbstractOrderRequest
             $this->getResponseBody(
                 $this->sendRequest(
                     'PATCH',
-                    sprintf('/ordermanagement/v1/orders/%s/merchant-references', $this->getTransactionReference()),
+                    \sprintf('/ordermanagement/v1/orders/%s/merchant-references', $this->getTransactionReference()),
                     $data
                 )
             )

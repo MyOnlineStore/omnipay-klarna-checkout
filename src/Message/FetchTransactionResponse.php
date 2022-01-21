@@ -13,9 +13,6 @@ final class FetchTransactionResponse extends AbstractResponse
         return $this->data['checkout']['order_id'] ?? $this->data['management']['order_id'];
     }
 
-    /**
-     * @inheritDoc
-     */
     public function isSuccessful(): bool
     {
         return parent::isSuccessful() &&

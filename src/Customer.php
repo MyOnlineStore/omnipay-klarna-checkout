@@ -17,6 +17,6 @@ final class Customer extends \ArrayObject
             'type' => 'person',
         ];
 
-        return new self(array_merge($defaults, array_intersect_key($data, $defaults)));
+        return new self(\array_merge($defaults, \array_intersect_key($data, $defaults)));
     }
 }

@@ -7,9 +7,7 @@ use Omnipay\Common\Message\RequestInterface;
 
 final class VoidResponse extends AbstractResponse
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     private $statusCode;
 
     /**
@@ -24,17 +22,11 @@ final class VoidResponse extends AbstractResponse
         $this->statusCode = $statusCode;
     }
 
-    /**
-     * @return int
-     */
     public function getStatusCode(): int
     {
         return $this->statusCode;
     }
 
-    /**
-     * @inheritDoc
-     */
     public function isSuccessful(): bool
     {
         return parent::isSuccessful() && 204 === $this->statusCode;

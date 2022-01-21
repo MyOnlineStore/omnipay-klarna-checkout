@@ -13,10 +13,10 @@ trait ExpectedAuthorizationHeaderTrait
     public function getExpectedHeaders(): array
     {
         return [
-            'Authorization' => sprintf(
+            'Authorization' => \sprintf(
                 'Basic %s',
-                base64_encode(
-                    sprintf(
+                \base64_encode(
+                    \sprintf(
                         '%s:%s',
                         RequestTestCase::USERNAME,
                         RequestTestCase::SECRET

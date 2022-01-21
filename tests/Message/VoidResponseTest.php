@@ -18,7 +18,7 @@ final class VoidResponseTest extends TestCase
      */
     public function responseCodeProvider(): array
     {
-        return [[204, true], [403, false],];
+        return [[204, true], [403, false]];
     }
 
     public function testGetCommonValuesReturnCorrectValues()

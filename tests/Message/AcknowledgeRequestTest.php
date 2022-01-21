@@ -8,15 +8,10 @@ use MyOnlineStore\Omnipay\KlarnaCheckout\Message\AcknowledgeResponse;
 
 final class AcknowledgeRequestTest extends RequestTestCase
 {
-    /**
-     * @var AcknowledgeRequest
-     */
+    /** @var AcknowledgeRequest */
     private $acknowledgeRequest;
 
-    /**
-     * @inheritdoc
-     */
-    protected function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
 
@@ -38,7 +33,7 @@ final class AcknowledgeRequestTest extends RequestTestCase
         $response = $this->setExpectedPostRequest(
             $inputData,
             $expectedData,
-            self::BASE_URL.'/ordermanagement/v1/orders/foo/acknowledge'
+            self::BASE_URL . '/ordermanagement/v1/orders/foo/acknowledge'
         );
 
         $response->expects(self::once())->method('getStatusCode')->willReturn(204);

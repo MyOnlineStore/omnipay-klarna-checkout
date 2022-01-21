@@ -39,7 +39,7 @@ final class CaptureRequest extends AbstractRequest
     {
         $response = $this->sendRequest(
             'POST',
-            sprintf(
+            \sprintf(
                 '/ordermanagement/v1/orders/%s/captures',
                 $this->getTransactionReference()
             ),

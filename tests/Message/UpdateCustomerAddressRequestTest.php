@@ -9,15 +9,10 @@ use Omnipay\Common\Exception\InvalidRequestException;
 
 final class UpdateCustomerAddressRequestTest extends RequestTestCase
 {
-    /**
-     * @var UpdateCustomerAddressRequest
-     */
+    /** @var UpdateCustomerAddressRequest */
     private $updateCustomerAddressRequest;
 
-    /**
-     * @inheritdoc
-     */
-    protected function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
 
@@ -158,7 +153,7 @@ final class UpdateCustomerAddressRequestTest extends RequestTestCase
         $response = $this->setExpectedPatchRequest(
             $data,
             $responseData,
-            sprintf('%s/ordermanagement/v1/orders/%s/customer-details', self::BASE_URL, $transactionReference)
+            \sprintf('%s/ordermanagement/v1/orders/%s/customer-details', self::BASE_URL, $transactionReference)
         );
 
         $response->expects(self::once())->method('getStatusCode')->willReturn(204);
@@ -177,7 +172,7 @@ final class UpdateCustomerAddressRequestTest extends RequestTestCase
         self::assertInstanceOf(UpdateCustomerAddressResponse::class, $updateCustomerAddressResponse);
         self::assertSame($transactionReference, $updateCustomerAddressResponse->getTransactionReference());
         self::assertSame(
-            array_merge($responseData, ['order_id' => $transactionReference]),
+            \array_merge($responseData, ['order_id' => $transactionReference]),
             $updateCustomerAddressResponse->getData()
         );
         self::assertTrue($updateCustomerAddressResponse->isSuccessful());

@@ -186,7 +186,7 @@ abstract class AbstractOrderRequest extends AbstractRequest
         ];
 
         if (null !== $locale = $this->getLocale()) {
-            $data['locale'] = str_replace('_', '-', $locale);
+            $data['locale'] = \str_replace('_', '-', $locale);
         }
 
         if (null !== $shippingCountries = $this->getShippingCountries()) {

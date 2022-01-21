@@ -34,7 +34,7 @@ final class UpdateCustomerAddressRequest extends AbstractOrderRequest
     {
         $response = $this->sendRequest(
             'PATCH',
-            sprintf('/ordermanagement/v1/orders/%s/customer-details', $this->getTransactionReference()),
+            \sprintf('/ordermanagement/v1/orders/%s/customer-details', $this->getTransactionReference()),
             $data
         );
 

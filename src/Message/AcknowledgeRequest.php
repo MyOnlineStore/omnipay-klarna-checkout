@@ -31,7 +31,7 @@ final class AcknowledgeRequest extends AbstractRequest
     {
         $response = $this->sendRequest(
             'POST',
-            sprintf(
+            \sprintf(
                 '/ordermanagement/v1/orders/%s/acknowledge',
                 $this->getTransactionReference()
             ),

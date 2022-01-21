@@ -55,7 +55,7 @@ final class AuthorizeRequest extends AbstractOrderRequest
     public function sendData($data)
     {
         $response = $this->getTransactionReference() ?
-            $this->sendRequest('GET', '/checkout/v3/orders/'.$this->getTransactionReference(), $data) :
+            $this->sendRequest('GET', '/checkout/v3/orders/' . $this->getTransactionReference(), $data) :
             $this->sendRequest('POST', '/checkout/v3/orders', $data);
 
         if ($response->getStatusCode() >= 400) {

@@ -15,17 +15,13 @@ class UpdateTransactionRequestTest extends RequestTestCase
     use ItemDataTestTrait;
     use MerchantUrlsDataTestTrait;
     use ExpectedAuthorizationHeaderTrait;
-    const TRANSACTION_REFERENCE = 1234;
 
-    /**
-     * @var UpdateTransactionRequest
-     */
+    public const TRANSACTION_REFERENCE = 1234;
+
+    /** @var UpdateTransactionRequest */
     private $updateTransactionRequest;
 
-    /**
-     * @inheritdoc
-     */
-    protected function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
         $this->updateTransactionRequest = new UpdateTransactionRequest($this->httpClient, $this->getHttpRequest());
@@ -251,7 +247,7 @@ class UpdateTransactionRequestTest extends RequestTestCase
         $expectedMerchantUrls
     ) {
         $this->updateTransactionRequest->initialize(
-            array_merge(
+            \array_merge(
                 [
                     'amount' => '100.00',
                     'tax_amount' => 21,
@@ -356,7 +352,7 @@ class UpdateTransactionRequestTest extends RequestTestCase
         $this->setExpectedPostRequest(
             $inputData,
             $responseData,
-            sprintf('%s/checkout/v3/orders/%s', self::BASE_URL, self::TRANSACTION_REFERENCE)
+            \sprintf('%s/checkout/v3/orders/%s', self::BASE_URL, self::TRANSACTION_REFERENCE)
         );
 
         $this->updateTransactionRequest->initialize(
@@ -386,18 +382,18 @@ class UpdateTransactionRequestTest extends RequestTestCase
             ->withConsecutive(
                 [
                     'POST',
-                    sprintf('%s/checkout/v3/orders/%s', self::BASE_URL, self::TRANSACTION_REFERENCE),
-                    array_merge(['Content-Type' => 'application/json'], $this->getExpectedHeaders()),
+                    \sprintf('%s/checkout/v3/orders/%s', self::BASE_URL, self::TRANSACTION_REFERENCE),
+                    \array_merge(['Content-Type' => 'application/json'], $this->getExpectedHeaders()),
                     \json_encode($inputData),
                 ],
                 [
                     'PATCH',
-                    sprintf(
+                    \sprintf(
                         '%s/ordermanagement/v1/orders/%s/merchant-references',
                         self::BASE_URL,
                         self::TRANSACTION_REFERENCE
                     ),
-                    array_merge(
+                    \array_merge(
                         ['Content-Type' => 'application/json'],
                         $this->getExpectedHeaders()
                     ),
@@ -438,18 +434,18 @@ class UpdateTransactionRequestTest extends RequestTestCase
             ->withConsecutive(
                 [
                     'POST',
-                    sprintf('%s/checkout/v3/orders/%s', self::BASE_URL, self::TRANSACTION_REFERENCE),
-                    array_merge(['Content-Type' => 'application/json'], $this->getExpectedHeaders()),
+                    \sprintf('%s/checkout/v3/orders/%s', self::BASE_URL, self::TRANSACTION_REFERENCE),
+                    \array_merge(['Content-Type' => 'application/json'], $this->getExpectedHeaders()),
                     \json_encode($merchantReferencesData),
                 ],
                 [
                     'PATCH',
-                    sprintf(
+                    \sprintf(
                         '%s/ordermanagement/v1/orders/%s/merchant-references',
                         self::BASE_URL,
                         self::TRANSACTION_REFERENCE
                     ),
-                    array_merge(['Content-Type' => 'application/json'], $this->getExpectedHeaders()),
+                    \array_merge(['Content-Type' => 'application/json'], $this->getExpectedHeaders()),
                     \json_encode($merchantReferencesData),
                 ]
             )

@@ -10,15 +10,10 @@ use Psr\Http\Message\StreamInterface;
 
 final class ExtendAuthorizationRequestTest extends RequestTestCase
 {
-    /**
-     * @var ExtendAuthorizationRequest
-     */
+    /** @var ExtendAuthorizationRequest */
     private $extendAuthorizationRequest;
 
-    /**
-     * @inheritdoc
-     */
-    protected function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
         $this->extendAuthorizationRequest = new ExtendAuthorizationRequest($this->httpClient, $this->getHttpRequest());
@@ -48,18 +43,18 @@ final class ExtendAuthorizationRequestTest extends RequestTestCase
             ->method('request')
             ->with(
                 'POST',
-                sprintf(
+                \sprintf(
                     '%s/ordermanagement/v1/orders/%s/extend-authorization-time',
                     self::BASE_URL,
                     'foo'
                 ),
-                array_merge(
+                \array_merge(
                     ['Content-Type' => 'application/json'],
                     [
-                        'Authorization' => sprintf(
+                        'Authorization' => \sprintf(
                             'Basic %s',
-                            base64_encode(
-                                sprintf(
+                            \base64_encode(
+                                \sprintf(
                                     '%s:%s',
                                     null,
                                     self::SECRET
