@@ -18,13 +18,13 @@ use Omnipay\Common\Message\RequestInterface;
 
 final class Gateway extends AbstractGateway implements GatewayInterface
 {
-    const API_VERSION_EUROPE = 'EU';
-    const API_VERSION_NORTH_AMERICA = 'NA';
+    public const API_VERSION_EUROPE = 'EU';
+    public const API_VERSION_NORTH_AMERICA = 'NA';
 
-    const EU_BASE_URL = 'https://api.klarna.com';
-    const EU_TEST_BASE_URL = 'https://api.playground.klarna.com';
-    const NA_BASE_URL = 'https://api-na.klarna.com';
-    const NA_TEST_BASE_URL = 'https://api-na.playground.klarna.com';
+    public const EU_BASE_URL = 'https://api.klarna.com';
+    public const EU_TEST_BASE_URL = 'https://api.playground.klarna.com';
+    public const NA_BASE_URL = 'https://api-na.klarna.com';
+    public const NA_TEST_BASE_URL = 'https://api-na.playground.klarna.com';
 
     /**
      * @inheritdoc
@@ -87,25 +87,16 @@ final class Gateway extends AbstractGateway implements GatewayInterface
         ];
     }
 
-    /**
-     * @inheritDoc
-     */
     public function getName(): string
     {
         return 'KlarnaCheckout';
     }
 
-    /**
-     * @return string
-     */
     public function getSecret(): string
     {
         return $this->getParameter('secret');
     }
 
-    /**
-     * @return string
-     */
     public function getUsername(): string
     {
         return $this->getParameter('username');
@@ -167,9 +158,9 @@ final class Gateway extends AbstractGateway implements GatewayInterface
         return $this;
     }
 
-    public function setTestMode($testMode): self
+    public function setTestMode($value): self
     {
-        parent::setTestMode($testMode);
+        parent::setTestMode($value);
 
         $this->setBaseUrl();
 

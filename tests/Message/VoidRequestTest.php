@@ -11,17 +11,12 @@ use Psr\Http\Message\StreamInterface;
 
 class VoidRequestTest extends RequestTestCase
 {
-    const TRANSACTION_REF = 'foo';
+    public const TRANSACTION_REF = 'foo';
 
-    /**
-     * @var VoidRequest
-     */
+    /** @var VoidRequest */
     private $voidRequest;
 
-    /**
-     * @inheritdoc
-     */
-    protected function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
         $this->voidRequest = new VoidRequest($this->httpClient, $this->getHttpRequest());
@@ -63,15 +58,15 @@ class VoidRequestTest extends RequestTestCase
             ->withConsecutive(
                 [
                     'GET',
-                    self::BASE_URL.'/ordermanagement/v1/orders/'.self::TRANSACTION_REF,
+                    self::BASE_URL . '/ordermanagement/v1/orders/' . self::TRANSACTION_REF,
                     $this->getExpectedHeaders(),
-                    null
+                    null,
                 ],
                 [
                     'POST',
-                    self::BASE_URL.'/ordermanagement/v1/orders/'.self::TRANSACTION_REF.$expectedPostRoute,
-                    array_merge(['Content-Type' => 'application/json'], $this->getExpectedHeaders()),
-                    \json_encode($inputData)
+                    self::BASE_URL . '/ordermanagement/v1/orders/' . self::TRANSACTION_REF . $expectedPostRoute,
+                    \array_merge(['Content-Type' => 'application/json'], $this->getExpectedHeaders()),
+                    \json_encode($inputData),
                 ]
             )
             ->willReturn($response);

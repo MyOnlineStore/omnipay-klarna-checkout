@@ -8,23 +8,23 @@ use Omnipay\Tests\TestCase;
 
 final class AddressTest extends TestCase
 {
-    const ATTENTION = 'quz';
-    const CITY = 'Oss';
-    const COUNTRY = 'NL';
-    const EMAIL = 'foo@bar.com';
-    const FAMILY_NAME = 'foo';
-    const GIVEN_NAME = 'bar';
-    const HOUSE_EXTENSION = 'C';
-    const ORGANIZATION_NAME = 'Foo Inc.';
-    const PHONE = '24234234';
-    const POSTAL_CODE = '523354';
-    const REFERENCE = 'ref';
-    const REGION = 'NB';
-    const STREET = 'Foo Street';
-    const STREET_ADDRESS_1 = 'Foo Street 1';
-    const STREET_ADDRESS_2 = 'App. 12A';
-    const STREET_NUMBER = '1';
-    const TITLE = 'Mr.';
+    public const ATTENTION = 'quz';
+    public const CITY = 'Oss';
+    public const COUNTRY = 'NL';
+    public const EMAIL = 'foo@bar.com';
+    public const FAMILY_NAME = 'foo';
+    public const GIVEN_NAME = 'bar';
+    public const HOUSE_EXTENSION = 'C';
+    public const ORGANIZATION_NAME = 'Foo Inc.';
+    public const PHONE = '24234234';
+    public const POSTAL_CODE = '523354';
+    public const REFERENCE = 'ref';
+    public const REGION = 'NB';
+    public const STREET = 'Foo Street';
+    public const STREET_ADDRESS_1 = 'Foo Street 1';
+    public const STREET_ADDRESS_2 = 'App. 12A';
+    public const STREET_NUMBER = '1';
+    public const TITLE = 'Mr.';
 
     /**
      * @return array

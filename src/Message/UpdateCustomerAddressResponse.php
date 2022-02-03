@@ -7,9 +7,7 @@ use Omnipay\Common\Message\RequestInterface;
 
 final class UpdateCustomerAddressResponse extends AbstractResponse
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     private $statusCode;
 
     /**
@@ -24,9 +22,6 @@ final class UpdateCustomerAddressResponse extends AbstractResponse
         $this->statusCode = (int) $statusCode;
     }
 
-    /**
-     * @inheritDoc
-     */
     public function isSuccessful(): bool
     {
         return parent::isSuccessful() && 204 === $this->statusCode;

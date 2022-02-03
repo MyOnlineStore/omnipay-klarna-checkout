@@ -10,10 +10,10 @@ final class AuthenticationRequestHeaderProvider
     public function getHeaders(AbstractRequest $request): array
     {
         return [
-            'Authorization' => sprintf(
+            'Authorization' => \sprintf(
                 'Basic %s',
-                base64_encode(
-                    sprintf(
+                \base64_encode(
+                    \sprintf(
                         '%s:%s',
                         $request->getUsername(),
                         $request->getSecret()

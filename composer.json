@@ -12,16 +12,21 @@
         }
     },
     "require": {
-        "php": "^7.0",
-        "omnipay/common": "~3",
+        "php": "^7.4 | ^8.0",
+        "omnipay/common": "^3.1",
         "ext-json": "*"
     },
     "require-dev": {
-        "myonlinestore/coding-standard": "^1.0",
-        "omnipay/tests": "~3"
+        "myonlinestore/coding-standard": "^3.1",
+        "myonlinestore/php-devtools": "^0.2",
+        "omnipay/tests": "^4.1",
+        "vimeo/psalm": "^4.18"
     },
     "config": {
-        "vendor-dir": "vendor",
-        "sort-packages": true
+        "sort-packages": true,
+        "allow-plugins": {
+            "dealerdirect/phpcodesniffer-composer-installer": true,
+            "composer/package-versions-deprecated": true
+        }
     }
 }

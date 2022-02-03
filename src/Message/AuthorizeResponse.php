@@ -8,9 +8,7 @@ use Omnipay\Common\Message\RequestInterface;
 
 final class AuthorizeResponse extends AbstractResponse implements RedirectResponseInterface
 {
-    /**
-     * @var string|null
-     */
+    /** @var string|null */
     private $renderUrl;
 
     /**
@@ -38,17 +36,11 @@ final class AuthorizeResponse extends AbstractResponse implements RedirectRespon
         return $this->renderUrl;
     }
 
-    /**
-     * @inheritDoc
-     */
     public function isRedirect(): bool
     {
         return null !== $this->renderUrl;
     }
 
-    /**
-     * @inheritDoc
-     */
     public function isSuccessful(): bool
     {
         // Authorize is only successful once it has been acknowledged

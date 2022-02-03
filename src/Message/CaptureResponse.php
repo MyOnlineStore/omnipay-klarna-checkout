@@ -7,14 +7,10 @@ use Omnipay\Common\Message\RequestInterface;
 
 final class CaptureResponse extends AbstractResponse
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     private $statusCode;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     private $transactionReference;
 
     /**
@@ -31,9 +27,6 @@ final class CaptureResponse extends AbstractResponse
         $this->statusCode = $statusCode;
     }
 
-    /**
-     * @return int
-     */
     public function getStatusCode(): int
     {
         return $this->statusCode;
@@ -47,9 +40,6 @@ final class CaptureResponse extends AbstractResponse
         return $this->transactionReference;
     }
 
-    /**
-     * @inheritDoc
-     */
     public function isSuccessful(): bool
     {
         return parent::isSuccessful() && 201 === $this->statusCode;

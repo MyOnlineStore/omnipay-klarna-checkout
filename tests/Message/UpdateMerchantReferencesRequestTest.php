@@ -10,12 +10,12 @@ use Psr\Http\Message\StreamInterface;
 
 final class UpdateMerchantReferencesRequestTest extends RequestTestCase
 {
-    const TRANSACTION_REFERENCE = 1234;
+    public const TRANSACTION_REFERENCE = 1234;
 
     /** @var UpdateTransactionRequest */
     private $updateTransactionRequest;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
 

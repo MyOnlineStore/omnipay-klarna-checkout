@@ -18,12 +18,10 @@ use Omnipay\Tests\GatewayTestCase;
 
 final class GatewayTest extends GatewayTestCase
 {
-    /**
-     * @var Gateway
-     */
+    /** @var Gateway */
     protected $gateway;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->gateway = new Gateway($this->getHttpClient(), $this->getHttpRequest());
     }

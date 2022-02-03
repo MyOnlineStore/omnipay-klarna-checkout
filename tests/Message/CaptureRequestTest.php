@@ -3,28 +3,20 @@ declare(strict_types=1);
 
 namespace MyOnlineStore\Tests\Omnipay\KlarnaCheckout\Message;
 
-use Money\Currency;
-use Money\Money;
 use MyOnlineStore\Omnipay\KlarnaCheckout\Message\CaptureRequest;
 use MyOnlineStore\Omnipay\KlarnaCheckout\Message\CaptureResponse;
 use Omnipay\Common\Exception\InvalidRequestException;
 
 class CaptureRequestTest extends RequestTestCase
 {
-    const CAPTURE_ID = 'bar';
-    const TRANSACTION_REF = 'foo';
-
+    public const CAPTURE_ID = 'bar';
+    public const TRANSACTION_REF = 'foo';
     use ItemDataTestTrait;
 
-    /**
-     * @var CaptureRequest
-     */
+    /** @var CaptureRequest */
     private $captureRequest;
 
-    /**
-     * @inheritdoc
-     */
-    protected function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
         $this->captureRequest = new CaptureRequest($this->httpClient, $this->getHttpRequest());
@@ -88,7 +80,7 @@ class CaptureRequestTest extends RequestTestCase
         $response = $this->setExpectedPostRequest(
             $requestdata,
             $responseData,
-            self::BASE_URL.'/ordermanagement/v1/orders/'.self::TRANSACTION_REF.'/captures'
+            self::BASE_URL . '/ordermanagement/v1/orders/' . self::TRANSACTION_REF . '/captures'
         );
         $response->expects(self::once())->method('getStatusCode')->willReturn(204);
 

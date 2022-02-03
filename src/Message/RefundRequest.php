@@ -42,7 +42,7 @@ final class RefundRequest extends AbstractRequest
     {
         $response = $this->sendRequest(
             'POST',
-            sprintf('/ordermanagement/v1/orders/%s/refunds', $this->getTransactionReference()),
+            \sprintf('/ordermanagement/v1/orders/%s/refunds', $this->getTransactionReference()),
             $data
         );
 

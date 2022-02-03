@@ -11,15 +11,10 @@ class RefundRequestTest extends RequestTestCase
 {
     use ItemDataTestTrait;
 
-    /**
-     * @var RefundRequest
-     */
+    /** @var RefundRequest */
     private $refundRequest;
 
-    /**
-     * @inheritdoc
-     */
-    protected function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
         $this->refundRequest = new RefundRequest($this->httpClient, $this->getHttpRequest());
@@ -77,7 +72,7 @@ class RefundRequestTest extends RequestTestCase
         $response = $this->setExpectedPostRequest(
             $inputData,
             $expectedData,
-            self::BASE_URL.'/ordermanagement/v1/orders/foo/refunds'
+            self::BASE_URL . '/ordermanagement/v1/orders/foo/refunds'
         );
 
         $response->expects(self::once())->method('getStatusCode')->willReturn(204);

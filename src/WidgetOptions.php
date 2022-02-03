@@ -31,6 +31,6 @@ final class WidgetOptions extends \ArrayObject
             'allow_global_billing_countries' => false,
         ];
 
-        return new self(array_merge($defaults, array_intersect_key($data, $defaults)));
+        return new self(\array_merge($defaults, \array_intersect_key($data, $defaults)));
     }
 }

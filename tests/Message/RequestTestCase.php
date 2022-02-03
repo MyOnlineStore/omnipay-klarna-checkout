@@ -6,6 +6,7 @@ namespace MyOnlineStore\Tests\Omnipay\KlarnaCheckout\Message;
 use MyOnlineStore\Tests\Omnipay\KlarnaCheckout\ExpectedAuthorizationHeaderTrait;
 use Omnipay\Common\Http\ClientInterface;
 use Omnipay\Tests\TestCase;
+use PHPUnit\Framework\MockObject\MockObject;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\StreamInterface;
 
@@ -13,19 +14,14 @@ abstract class RequestTestCase extends TestCase
 {
     use ExpectedAuthorizationHeaderTrait;
 
-    const BASE_URL = 'http://localhost';
-    const SECRET = 'very-secret-stuff';
-    const USERNAME = 'merchant-32';
+    public const BASE_URL = 'http://localhost';
+    public const SECRET = 'very-secret-stuff';
+    public const USERNAME = 'merchant-32';
 
-    /**
-     * @var ClientInterface|\PHPUnit_Framework_MockObject_MockObject
-     */
+    /** @var ClientInterface|MockObject */
     protected $httpClient;
 
-    /**
-     * @inheritdoc
-     */
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->httpClient = $this->createMock(ClientInterface::class);
     }
@@ -34,7 +30,7 @@ abstract class RequestTestCase extends TestCase
      * @param array  $responseData
      * @param string $url
      *
-     * @return ResponseInterface|\PHPUnit_Framework_MockObject_MockObject
+     * @return ResponseInterface|MockObject
      */
     protected function setExpectedGetRequest(array $responseData, $url)
     {
@@ -46,7 +42,7 @@ abstract class RequestTestCase extends TestCase
      * @param array  $responseData
      * @param string $url
      *
-     * @return ResponseInterface|\PHPUnit_Framework_MockObject_MockObject
+     * @return ResponseInterface|MockObject
      */
     protected function setExpectedPatchRequest(array $inputData, array $responseData, $url)
     {
@@ -64,7 +60,7 @@ abstract class RequestTestCase extends TestCase
      * @param array  $responseData
      * @param string $url
      *
-     * @return ResponseInterface|\PHPUnit_Framework_MockObject_MockObject
+     * @return ResponseInterface|MockObject
      */
     protected function setExpectedPostRequest(array $inputData, array $responseData, $url)
     {
@@ -84,13 +80,13 @@ abstract class RequestTestCase extends TestCase
      * @param array  $inputData
      * @param array  $responseData
      *
-     * @return ResponseInterface|\PHPUnit_Framework_MockObject_MockObject
+     * @return ResponseInterface|MockObject
      */
     private function setExpectedRequest(
         $requestMethod,
         $url,
         array $headers,
-        array $inputData = null,
+        ?array $inputData = null,
         array $responseData
     ) {
         $response = $this->createMock(ResponseInterface::class);
@@ -101,7 +97,7 @@ abstract class RequestTestCase extends TestCase
             ->with(
                 $requestMethod,
                 $url,
-                array_merge(
+                \array_merge(
                     $headers,
                     $this->getExpectedHeaders()
                 ),

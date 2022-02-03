@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace MyOnlineStore\Tests\Omnipay\KlarnaCheckout\Message;
 
 use MyOnlineStore\Omnipay\KlarnaCheckout\ItemInterface;
+use PHPUnit\Framework\MockObject\MockObject;
 
 trait ItemDataTestTrait
 {
@@ -22,10 +23,7 @@ trait ItemDataTestTrait
         ];
     }
 
-    /**
-     * @return \PHPUnit_Framework_MockObject_MockObject
-     */
-    protected function getItemMock(): \PHPUnit_Framework_MockObject_MockObject
+    protected function getItemMock(): MockObject
     {
         $item = $this->createMock(ItemInterface::class);
         $item->method('getType')->willReturn('shipping_fee');

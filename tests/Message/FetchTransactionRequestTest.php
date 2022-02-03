@@ -14,15 +14,10 @@ final class FetchTransactionRequestTest extends RequestTestCase
 {
     use ExpectedAuthorizationHeaderTrait;
 
-    /**
-     * @var FetchTransactionRequest
-     */
+    /** @var FetchTransactionRequest */
     private $fetchTransactionRequest;
 
-    /**
-     * @inheritdoc
-     */
-    protected function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
         $this->fetchTransactionRequest = new FetchTransactionRequest($this->httpClient, $this->getHttpRequest());
@@ -49,7 +44,7 @@ final class FetchTransactionRequestTest extends RequestTestCase
 
         $response = $this->setExpectedGetRequest(
             $expectedCheckoutData,
-            self::BASE_URL.'/checkout/v3/orders/foo'
+            self::BASE_URL . '/checkout/v3/orders/foo'
         );
         $response->expects(self::once())->method('getStatusCode')->willReturn(200);
 
@@ -74,7 +69,7 @@ final class FetchTransactionRequestTest extends RequestTestCase
 
         $response = $this->setExpectedGetRequest(
             $expectedCheckoutData,
-            self::BASE_URL.'/checkout/v3/orders/foo'
+            self::BASE_URL . '/checkout/v3/orders/foo'
         );
         $response->expects(self::once())->method('getStatusCode')->willReturn(200);
 
@@ -105,15 +100,15 @@ final class FetchTransactionRequestTest extends RequestTestCase
             ->withConsecutive(
                 [
                     'GET',
-                    self::BASE_URL.'/checkout/v3/orders/foo',
+                    self::BASE_URL . '/checkout/v3/orders/foo',
                     $this->getExpectedHeaders(),
-                    null
+                    null,
                 ],
                 [
                     'GET',
-                    self::BASE_URL.'/ordermanagement/v1/orders/foo',
+                    self::BASE_URL . '/ordermanagement/v1/orders/foo',
                     $this->getExpectedHeaders(),
-                    null
+                    null,
                 ]
             )->willReturn($response);
 
@@ -155,15 +150,15 @@ final class FetchTransactionRequestTest extends RequestTestCase
             ->withConsecutive(
                 [
                     'GET',
-                    self::BASE_URL.'/checkout/v3/orders/foo',
+                    self::BASE_URL . '/checkout/v3/orders/foo',
                     $this->getExpectedHeaders(),
-                    null
+                    null,
                 ],
                 [
                     'GET',
-                    self::BASE_URL.'/ordermanagement/v1/orders/foo',
+                    self::BASE_URL . '/ordermanagement/v1/orders/foo',
                     $this->getExpectedHeaders(),
-                    null
+                    null,
                 ]
             )->willReturn($response);
 

@@ -29,15 +29,15 @@ final class VoidRequest extends AbstractRequest
      */
     public function sendData($data)
     {
-        $baseUrl = sprintf('/ordermanagement/v1/orders/%s', $this->getTransactionReference());
+        $baseUrl = \sprintf('/ordermanagement/v1/orders/%s', $this->getTransactionReference());
         $orderManagementResponse = $this->sendRequest('GET', $baseUrl, []);
 
         $order = $this->getResponseBody($orderManagementResponse);
 
-        $voidUrl = sprintf('%s/release-remaining-authorization', $baseUrl);
+        $voidUrl = \sprintf('%s/release-remaining-authorization', $baseUrl);
 
         if (empty($order['captures'])) {
-            $voidUrl = sprintf('%s/cancel', $baseUrl);
+            $voidUrl = \sprintf('%s/cancel', $baseUrl);
         }
 
         $response = $this->sendRequest('POST', $voidUrl, $data);

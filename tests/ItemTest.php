@@ -12,7 +12,7 @@ final class ItemTest extends TestCase
     {
         $taxRate = 21;
         $totalTaxAmount = 9.45;
-        $totalAmount = ($totalTaxAmount / $taxRate) * 100;
+        $totalAmount = $totalTaxAmount / $taxRate * 100;
         $totalDiscountAmount = 1.00;
         $type = 'shipping_fee';
         $merchantData = 'foobar';
