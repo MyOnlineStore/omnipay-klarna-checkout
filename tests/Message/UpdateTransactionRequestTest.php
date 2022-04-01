@@ -7,8 +7,6 @@ use MyOnlineStore\Omnipay\KlarnaCheckout\Message\UpdateTransactionRequest;
 use MyOnlineStore\Omnipay\KlarnaCheckout\Message\UpdateTransactionResponse;
 use MyOnlineStore\Tests\Omnipay\KlarnaCheckout\ExpectedAuthorizationHeaderTrait;
 use Omnipay\Common\Exception\InvalidRequestException;
-use Psr\Http\Message\ResponseInterface;
-use Psr\Http\Message\StreamInterface;
 
 class UpdateTransactionRequestTest extends RequestTestCase
 {
@@ -18,8 +16,7 @@ class UpdateTransactionRequestTest extends RequestTestCase
 
     public const TRANSACTION_REFERENCE = 1234;
 
-    /** @var UpdateTransactionRequest */
-    private $updateTransactionRequest;
+    private UpdateTransactionRequest $updateTransactionRequest;
 
     protected function setUp(): void
     {
@@ -368,108 +365,5 @@ class UpdateTransactionRequestTest extends RequestTestCase
 
         self::assertInstanceOf(UpdateTransactionResponse::class, $updateTransactionResponse);
         self::assertSame($responseData, $updateTransactionResponse->getData());
-    }
-
-    public function testSendDataWillUpdateManagementCustomerDetailsAndFailUpdatingMerchantReferences()
-    {
-        $inputData = ['merchant_reference1' => 'foo'];
-
-        $response = $this->createMock(ResponseInterface::class);
-        $stream = $this->createMock(StreamInterface::class);
-
-        $this->httpClient->expects(self::exactly(2))
-            ->method('request')
-            ->withConsecutive(
-                [
-                    'POST',
-                    \sprintf('%s/checkout/v3/orders/%s', self::BASE_URL, self::TRANSACTION_REFERENCE),
-                    \array_merge(['Content-Type' => 'application/json'], $this->getExpectedHeaders()),
-                    \json_encode($inputData),
-                ],
-                [
-                    'PATCH',
-                    \sprintf(
-                        '%s/ordermanagement/v1/orders/%s/merchant-references',
-                        self::BASE_URL,
-                        self::TRANSACTION_REFERENCE
-                    ),
-                    \array_merge(
-                        ['Content-Type' => 'application/json'],
-                        $this->getExpectedHeaders()
-                    ),
-                    \json_encode($inputData),
-                ]
-            )
-            ->willReturn($response);
-
-        $response->method('getBody')->willReturn($stream);
-        $stream->expects(self::exactly(2))
-            ->method('getContents')
-            ->willReturnOnConsecutiveCalls(
-                \json_encode(['error_code' => 'READ_ONLY_ORDER']),
-                \json_encode(['error_code' => 'doomsday'])
-            );
-
-        $this->updateTransactionRequest->initialize(
-            [
-                'base_url' => self::BASE_URL,
-                'username' => self::USERNAME,
-                'secret' => self::SECRET,
-                'transactionReference' => self::TRANSACTION_REFERENCE,
-            ]
-        );
-
-        self::assertFalse($this->updateTransactionRequest->sendData($inputData)->isSuccessful());
-    }
-
-    public function testSendDataWillUpdateOrderManagementMerchantReferences()
-    {
-        $merchantReferencesData = ['merchant_reference1' => 'baz', 'merchant_reference2' => 'quz'];
-
-        $response = $this->createMock(ResponseInterface::class);
-        $stream = $this->createMock(StreamInterface::class);
-
-        $this->httpClient->expects(self::exactly(2))
-            ->method('request')
-            ->withConsecutive(
-                [
-                    'POST',
-                    \sprintf('%s/checkout/v3/orders/%s', self::BASE_URL, self::TRANSACTION_REFERENCE),
-                    \array_merge(['Content-Type' => 'application/json'], $this->getExpectedHeaders()),
-                    \json_encode($merchantReferencesData),
-                ],
-                [
-                    'PATCH',
-                    \sprintf(
-                        '%s/ordermanagement/v1/orders/%s/merchant-references',
-                        self::BASE_URL,
-                        self::TRANSACTION_REFERENCE
-                    ),
-                    \array_merge(['Content-Type' => 'application/json'], $this->getExpectedHeaders()),
-                    \json_encode($merchantReferencesData),
-                ]
-            )
-            ->willReturn($response);
-
-        $response->method('getBody')->willReturn($stream);
-        $stream->expects(self::exactly(2))
-            ->method('getContents')
-            ->willReturnOnConsecutiveCalls(
-                \json_encode(['error_code' => 'READ_ONLY_ORDER']),
-                \json_encode([])
-            );
-
-        $this->updateTransactionRequest->initialize(
-            [
-                'base_url' => self::BASE_URL,
-                'username' => self::USERNAME,
-                'secret' => self::SECRET,
-                'transactionReference' => self::TRANSACTION_REFERENCE,
-            ]
-        );
-
-        $updateTransactionResponse = $this->updateTransactionRequest->sendData($merchantReferencesData);
-        self::assertEmpty($updateTransactionResponse->getData());
-        self::assertTrue($updateTransactionResponse->isSuccessful());
     }
 }
