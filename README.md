@@ -1,3 +1,6 @@
+# NO LONGER MAINTAINED
+This repository is no longer being maintained.
+
 # Omnipay: Klarna Checkout
 [![Software License](https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square)](LICENSE)
 [![Scrutinizer Build](https://img.shields.io/scrutinizer/build/g/MyOnlineStore/omnipay-klarna-checkout.svg?style=flat-square)](https://github.com/MyOnlineStore/omnipay-klarna-checkout)
